@@ -751,7 +751,8 @@ const gl=glc.getContext('webgl',{antialias:false})||glc.getContext('experimental
 let render=()=>{}, buildGL=()=>{};
 const FS=`precision highp float;
 uniform vec2 uRes; uniform float uK; uniform vec2 uOff; uniform vec2 uC; uniform float uR; uniform vec3 uSun; uniform float uT; uniform float uPx;
-uniform sampler2D uLand; uniform sampler2D uLights;
+uniform int uPass;
+uniform sampler2D uLand; uniform sampler2D uLights; uniform sampler2D uSurf; uniform sampler2D uCl;
 vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
 vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
 vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
@@ -780,72 +781,77 @@ float fbm3(vec3 p){float s=0.,a=.5;for(int i=0;i<3;i++){s+=a*snoise(p);p=p*2.07+
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 void main(){
 vec2 px=vec2(gl_FragCoord.x, uRes.y-gl_FragCoord.y);
-vec2 uv=vec2(gl_FragCoord.x/uRes.x, 1.0-gl_FragCoord.y/uRes.y);
+vec2 uvC=vec2(gl_FragCoord.x/uRes.x, 1.0-gl_FragCoord.y/uRes.y);
+vec2 uvG=gl_FragCoord.xy/uRes;
 vec2 b=(px-uOff)/uK;
 vec2 q=vec2((b.x-uC.x)/uR, -(b.y-uC.y)/uR);
 float r=length(q);
-// space
-vec3 col=mix(vec3(.035,.06,.11),vec3(.01,.02,.04),clamp(length(uv-vec2(.62,.5))*1.3,0.,1.));
-vec2 cell=floor(px/(2.0*uPx));
-float hs=hash(cell);
-if(hs>.9975) col+=vec3(.75,.82,1.)*(hs-.9975)/.0025*.9;
-// halo outside the limb, brighter on the sunlit side
-float side=max(dot(normalize(vec3(q,0.0001)),uSun),0.);
-float dist=(r-1.)*uR;
-if(r>1.) col+=vec3(.25,.55,1.)*exp(-dist/14.)*(.18+.85*side);
 float aa=1.5*uPx/(uR*uK);
 float inside=smoothstep(1.0,1.0-aa,r);
-if(inside>0.){
 float nz=sqrt(max(0.,1.-r*r));
 vec3 n=vec3(q,nz);
-// world coordinates (globe rotated to lon 2, lat 50)
 float c0=cos(radians(50.)), s0=sin(radians(50.));
 vec3 w=vec3(n.x, n.y*c0+n.z*s0, -n.y*s0+n.z*c0);
 float lat=degrees(asin(clamp(w.y,-1.,1.)));
-float ang=uT*0.006; float ca=cos(ang), sa=sin(ang);
-vec3 wc=vec3(w.x*ca-w.z*sa, w.y, w.x*sa+w.z*ca);   // clouds drift slowly eastward
 float ndl=dot(n,uSun);
 float dif=max(ndl,0.);
 float day=smoothstep(-0.03,0.13,ndl);
-vec4 lt=texture2D(uLand,uv); float landM=lt.r; float shelf=lt.g;
-// land colour by latitude, mottled
-float ln=fbm3(w*22.);
-float L=lat+ln*7.;
-vec3 desert=vec3(.70,.55,.36), dry=vec3(.46,.40,.26), temp=vec3(.24,.31,.17), boreal=vec3(.17,.22,.16), ice=vec3(.86,.9,.94);
-vec3 lc=mix(desert,dry,smoothstep(25.,33.,L)); lc=mix(lc,temp,smoothstep(37.,46.,L)); lc=mix(lc,boreal,smoothstep(56.,64.,L)); lc=mix(lc,ice,smoothstep(70.,76.,L)*.85);
-lc*=.82+.38*(fbm3(w*70.)*.5+.5);
-// ocean
-float ov=fbm3(w*6.);
-vec3 oc=mix(vec3(.03,.17,.37),vec3(.06,.29,.54),.5+.5*ov);
-oc=mix(oc,vec3(.10,.45,.66),shelf*(1.-landM)*.7);
-vec3 surf=mix(oc,lc,landM);
-vec3 dayc=surf*(.62+.75*dif);
-vec3 h=normalize(uSun+vec3(0.,0.,1.)); float spec=pow(max(dot(n,h),0.),60.)*(1.-landM)*.35;
-dayc+=vec3(1.,.95,.85)*spec;
-vec3 nightc=mix(vec3(.010,.022,.045),vec3(.028,.036,.05),landM);
-// clouds: warped, east-west streaked systems with fine detail
-vec3 cp=wc*vec3(2.4,4.2,2.4);
-float wq=fbm5(cp*.8+vec3(0.,0.,3.));
-float cl=fbm5(cp*1.4+wq*1.35+vec3(5.2,1.3,2.8));
-float det=fbm3(wc*14.+cl*1.5);
-float cov=cl+det*.32+.10*cos(radians(lat-55.)*4.);
-float ca2=smoothstep(-.06,.36,cov);
-ca2*=.55+.45*smoothstep(-.2,.4,det);
-vec3 cday=vec3(.97,.98,1.)*(.62+.5*dif);
-vec3 cnight=vec3(.055,.07,.10);
-vec3 s=mix(nightc,dayc,day);
-vec3 cc=mix(cnight,cday,day);
-s=mix(s,cc,ca2);
-// city lights on the night side, dimmed by cloud
-vec3 li=texture2D(uLights,uv).rgb;
-s+=li*(1.-day)*(1.-ca2*.7)*1.35;
-// twilight warmth
-float tw=exp(-pow((ndl-.03)/.05,2.));
-s+=vec3(1.,.45,.18)*tw*(.05+.18*ca2);
-// atmosphere rim
-float fr=pow(1.-nz,2.6);
-s=s*(.82+.18*nz)+vec3(.30,.62,1.)*fr*(.10+.95*day);
-col=mix(col,s,inside);
+if(uPass==0){
+  // static surface: land, ocean, sunlight (rendered once)
+  if(r>1.0){ gl_FragColor=vec4(0.); return; }
+  vec4 lt=texture2D(uLand,uvC); float landM=lt.r; float shelf=lt.g;
+  float ln=fbm3(w*22.);
+  float L=lat+ln*7.;
+  vec3 desert=vec3(.70,.55,.36), dry=vec3(.46,.40,.26), temp=vec3(.24,.31,.17), boreal=vec3(.17,.22,.16), ice=vec3(.86,.9,.94);
+  vec3 lc=mix(desert,dry,smoothstep(25.,33.,L)); lc=mix(lc,temp,smoothstep(37.,46.,L)); lc=mix(lc,boreal,smoothstep(56.,64.,L)); lc=mix(lc,ice,smoothstep(70.,76.,L)*.85);
+  lc*=.82+.38*(fbm3(w*70.)*.5+.5);
+  float ov=fbm3(w*6.);
+  vec3 oc=mix(vec3(.03,.17,.37),vec3(.06,.29,.54),.5+.5*ov);
+  oc=mix(oc,vec3(.10,.45,.66),shelf*(1.-landM)*.7);
+  vec3 surf=mix(oc,lc,landM);
+  vec3 dayc=surf*(.62+.75*dif);
+  vec3 hv=normalize(uSun+vec3(0.,0.,1.)); float spec=pow(max(dot(n,hv),0.),60.)*(1.-landM)*.35;
+  dayc+=vec3(1.,.95,.85)*spec;
+  vec3 nightc=mix(vec3(.010,.022,.045),vec3(.028,.036,.05),landM);
+  gl_FragColor=vec4(mix(nightc,dayc,day),1.);
+  return;
+}
+if(uPass==1){
+  // clouds only, at reduced resolution, every frame
+  if(r>1.02){ gl_FragColor=vec4(0.); return; }
+  float ang=uT*0.006; float ca=cos(ang), sa=sin(ang);
+  vec3 wc=vec3(w.x*ca-w.z*sa, w.y, w.x*sa+w.z*ca);
+  vec3 cp=wc*vec3(2.4,4.2,2.4);
+  float wq=fbm5(cp*.8+vec3(0.,0.,3.));
+  float cl=fbm5(cp*1.4+wq*1.35+vec3(5.2,1.3,2.8));
+  float det=fbm3(wc*14.+cl*1.5);
+  float cov=cl+det*.32+.10*cos(radians(lat-55.)*4.);
+  float ca2=smoothstep(-.06,.36,cov);
+  ca2*=.55+.45*smoothstep(-.2,.4,det);
+  gl_FragColor=vec4(ca2,0.,0.,1.);
+  return;
+}
+// composite: space, stored surface, clouds, lights, atmosphere
+vec3 col=mix(vec3(.035,.06,.11),vec3(.01,.02,.04),clamp(length(uvC-vec2(.62,.5))*1.3,0.,1.));
+vec2 cell=floor(px/(2.0*uPx));
+float hs=hash(cell);
+if(hs>.9975) col+=vec3(.75,.82,1.)*(hs-.9975)/.0025*.9;
+float side=max(dot(normalize(vec3(q,0.0001)),uSun),0.);
+float dist=(r-1.)*uR;
+if(r>1.) col+=vec3(.25,.55,1.)*exp(-dist/14.)*(.18+.85*side);
+if(inside>0.){
+  vec3 s=texture2D(uSurf,uvG).rgb;
+  float ca2=texture2D(uCl,uvG).r;
+  vec3 cday=vec3(.97,.98,1.)*(.62+.5*dif);
+  vec3 cnight=vec3(.055,.07,.10);
+  s=mix(s,mix(cnight,cday,day),ca2);
+  vec3 li=texture2D(uLights,uvC).rgb;
+  s+=li*(1.-day)*(1.-ca2*.7)*1.35;
+  float tw=exp(-pow((ndl-.03)/.05,2.));
+  s+=vec3(1.,.45,.18)*tw*(.05+.18*ca2);
+  float fr=pow(1.-nz,2.6);
+  s=s*(.82+.18*nz)+vec3(.30,.62,1.)*fr*(.10+.95*day);
+  col=mix(col,s,inside);
 }
 gl_FragColor=vec4(col,1.);
 }`;
@@ -859,24 +865,34 @@ gl.useProgram(prog);
 const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
 const loc=gl.getAttribLocation(prog,'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
 const U=n=>gl.getUniformLocation(prog,n);
-gl.uniform1i(U('uLand'),0); gl.uniform1i(U('uLights'),1);
-let texL,texC;
-const tex=(unit,canvas)=>{ const t=gl.createTexture(); gl.activeTexture(gl.TEXTURE0+unit); gl.bindTexture(gl.TEXTURE_2D,t); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,canvas);
-gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+gl.uniform1i(U('uLand'),0); gl.uniform1i(U('uLights'),1); gl.uniform1i(U('uSurf'),2); gl.uniform1i(U('uCl'),3);
+const uPass=U('uPass'), uRes=U('uRes'), uK=U('uK'), uOff=U('uOff'), uPx=U('uPx'), uT=U('uT');
+const setTex=t=>{ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
 gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE); return t; };
+const tex=(unit,canvas)=>{ const t=gl.createTexture(); gl.activeTexture(gl.TEXTURE0+unit); gl.bindTexture(gl.TEXTURE_2D,t); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,canvas); return setTex(t); };
+const target=(w,h)=>{ const t=gl.createTexture(); gl.activeTexture(gl.TEXTURE4); gl.bindTexture(gl.TEXTURE_2D,t); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null); setTex(t); const f=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,f); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0); gl.bindFramebuffer(gl.FRAMEBUFFER,null); return {t,f,w,h}; };
+const dummy=gl.createTexture(); gl.activeTexture(gl.TEXTURE4); gl.bindTexture(gl.TEXTURE_2D,dummy); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,0]));
+const bind=(unit,t)=>{ gl.activeTexture(gl.TEXTURE0+unit); gl.bindTexture(gl.TEXTURE_2D,t); };
+let texL,texC,surf,cl,G=null;
+const pass=(p,fbo,scale)=>{ gl.bindFramebuffer(gl.FRAMEBUFFER,fbo?fbo.f:null); const w=fbo?fbo.w:G.w, h=fbo?fbo.h:G.h; gl.viewport(0,0,w,h);
+gl.uniform1i(uPass,p); gl.uniform2f(uRes,w,h); gl.uniform1f(uK,G.k*scale); gl.uniform2f(uOff,G.ox*scale,G.oy*scale); gl.uniform1f(uPx,G.gd*scale); gl.drawArrays(gl.TRIANGLE_STRIP,0,4); };
 buildGL=()=>{
 const r=glc.getBoundingClientRect(); if(!r.width) return; const gd=Math.min(1.5,devicePixelRatio||1);
-const w=Math.round(r.width*gd), h=Math.round(r.height*gd); glc.width=w; glc.height=h; gl.viewport(0,0,w,h);
-const L=layout(w,h), T=[L.k,0,0,L.k,L.ox,L.oy], u=gd/L.k;
+const w=Math.round(r.width*gd), h=Math.round(r.height*gd); glc.width=w; glc.height=h;
+const L=layout(w,h), T=[L.k,0,0,L.k,L.ox,L.oy], u=gd/L.k; G={w,h,gd,...L};
 const lc=offscreen(w,h), x=lc.getContext('2d'); x.fillStyle='#000'; x.fillRect(0,0,w,h); x.setTransform(...T);
 if('filter' in x){ x.filter=`blur(${Math.round(9*gd)}px)`; x.fillStyle='rgb(0,255,0)'; x.fill(land); x.filter='none'; }
 x.globalCompositeOperation='lighter'; x.fillStyle='rgb(255,0,0)'; x.fill(land);
 const lt=offscreen(w,h), y=lt.getContext('2d'); y.fillStyle='#000'; y.fillRect(0,0,w,h); drawLights(y,T,u);
-if(texL) gl.deleteTexture(texL); if(texC) gl.deleteTexture(texC); texL=tex(0,lc); texC=tex(1,lt);
-gl.uniform2f(U('uRes'),w,h); gl.uniform1f(U('uK'),L.k); gl.uniform2f(U('uOff'),L.ox,L.oy); gl.uniform2f(U('uC'),cx,cy); gl.uniform1f(U('uR'),R0); gl.uniform3f(U('uSun'),...sv); gl.uniform1f(U('uPx'),gd);
+[texL,texC].forEach(t=>t&&gl.deleteTexture(t)); [surf,cl].forEach(o=>{ if(o){ gl.deleteTexture(o.t); gl.deleteFramebuffer(o.f); } });
+texL=tex(0,lc); texC=tex(1,lt);
+gl.uniform2f(U('uC'),cx,cy); gl.uniform1f(U('uR'),R0); gl.uniform3f(U('uSun'),...sv);
+surf=target(w,h); cl=target(Math.ceil(w/2),Math.ceil(h/2));
+bind(2,dummy); bind(3,dummy); pass(0,surf,1);
 };
-const uT=U('uT');
-render=t=>{ gl.uniform1f(uT,t/1000); gl.drawArrays(gl.TRIANGLE_STRIP,0,4); };
+render=t=>{ if(!G) return; gl.uniform1f(uT,t/1000);
+bind(3,dummy); pass(1,cl,cl.w/G.w);
+bind(2,surf.t); bind(3,cl.t); pass(2,null,1); };
 ok=true;
 }catch(e){ console.warn(e); } }
 if(!ok){ // simple fallback: night globe with lights
@@ -921,7 +937,7 @@ build();
 if(document.fonts) document.fonts.ready.then(()=>overlay(performance.now()));
 let last=0;
 function loop(t){
-if(visible && !hero.closest('[hidden]')){ if(ok && t-last>60){ last=t; render(t); } overlay(t); }
+if(visible && !hero.closest('[hidden]')){ if(ok && t-last>30){ last=t; render(t); } overlay(t); }
 requestAnimationFrame(loop);
 }
 if(!reduce) requestAnimationFrame(loop);
