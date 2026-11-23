@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ocean Brief Prototype</title>
+<meta name="description" content="Concept prototype of an interactive Ocean Briefs platform: Europe from space, seven briefs and a full Marine litter brief. Design demo by WyvernAI.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 26 26%22%3E%3Ccircle cx=%2213%22 cy=%2213%22 r=%2211.5%22 fill=%22%230e2430%22/%3E%3Cpath d=%22M4 15c3-3 5-3 8 0s5 3 8 0%22 fill=%22none%22 stroke=%22%23e2571c%22 stroke-width=%222.4%22 stroke-linecap=%22round%22/%3E%3C/svg%3E">
+<style>:root{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single long-form "brief" read top to bottom, with a sticky reading bar that holds the pathway controls; each section is a reusable component. */
+:root{
+--paper:#eef3f2;      /* seafoam paper */
+--surface:#ffffff;
+--ink:#0e2430;        /* abyssal ink */
+--muted:#4d6470;
+--line:#c9d8d9;
+--sea:#cfe4e6;
+--sea-deep:#8fbfc6;
+--land:#d9d2c3;
+--buoy:#e2571c;       /* high-vis buoy orange */
+--buoy-ink:#ffffff;
+--signal:#0f6f7c;     /* data teal */
+--req:#6b3fa0;
+--f-display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+--f-body:"Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+--f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+--gutter-l:max(16px, env(safe-area-inset-left, 0px));
+--gutter-r:max(16px, env(safe-area-inset-right, 0px));
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+--paper:#0a1a22; --surface:#102631; --ink:#e3eef0; --muted:#98b0b8; --line:#23414d;
+--sea:#0f3442; --sea-deep:#1d5566; --land:#2d3a3a; --buoy:#ff7a3d; --buoy-ink:#1a0a02;
+--signal:#5cc4d1; --req:#c3a2ee; color-scheme:dark}}
+:root[data-theme="dark"]{
+--paper:#0a1a22; --surface:#102631; --ink:#e3eef0; --muted:#98b0b8; --line:#23414d;
+--sea:#0f3442; --sea-deep:#1d5566; --land:#2d3a3a; --buoy:#ff7a3d; --buoy-ink:#1a0a02;
+--signal:#5cc4d1; --req:#c3a2ee; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:1.0625rem;line-height:1.6}
+a{color:var(--signal);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--buoy);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1080px;margin:0 auto;padding-left:var(--gutter-l);padding-right:var(--gutter-r)}
+.prose{max-width:66ch}
+h1,h2,h3{font-family:var(--f-display);line-height:1.08;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.3rem,6vw,4.2rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(1.6rem,3.4vw,2.3rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.2rem;font-weight:700}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--signal)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.small{font-size:.875rem;color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer}
+/* Disclaimer band */
+.notice{background:var(--ink);color:var(--paper);font-size:.8rem;margin-top:calc(-1 * env(safe-area-inset-top, 0px));padding-top:env(safe-area-inset-top, 0px)}
+.notice .wrap{display:flex;flex-wrap:wrap;gap:4px 14px;padding-block:7px;align-items:center}
+.notice strong{font-family:var(--f-mono);font-weight:500;letter-spacing:.06em;text-transform:uppercase;font-size:.72rem;background:var(--buoy);color:var(--buoy-ink);padding:1px 7px;border-radius:3px}
+/* Sticky bar */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top, 0px);z-index:10;background:var(--surface)}
+.bar{position:sticky;top:env(safe-area-inset-top, 0px);z-index:9;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;align-items:center;gap:12px;padding-block:10px;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.05rem;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink)}
+.brand svg{flex:none}
+.bar nav{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+.chipbtn{border:1px solid var(--line);background:transparent;border-radius:999px;padding:5px 12px;font-size:.85rem}
+.chipbtn[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.progress{height:3px;background:var(--buoy);width:0;transition:width .1s linear}
+/* Hero */
+.hero{padding-block:clamp(36px,7vw,80px) 28px}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;align-items:end}
+.hero .lede{font-size:1.2rem;margin-top:18px;color:var(--muted);max-width:52ch}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:22px;font-size:.85rem;color:var(--muted)}
+.keys{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px}
+.keys ol{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:14px;counter-reset:k}
+.keys li{counter-increment:k;display:grid;grid-template-columns:28px 1fr;gap:10px;font-size:.98rem;line-height:1.45}
+.keys li::before{content:counter(k);font-family:var(--f-mono);font-size:.8rem;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--buoy);color:var(--buoy-ink);margin-top:1px}
+/* Pathway picker */
+.path{border-block:1px solid var(--line);background:var(--surface)}
+.path .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;padding-block:22px}
+.path h3{font-size:1rem;margin-bottom:10px}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.opt{border:1.5px solid var(--line);background:var(--paper);border-radius:8px;padding:9px 14px;text-align:left;display:flex;flex-direction:column;gap:1px;min-width:0}
+.opt b{font-family:var(--f-display);font-size:1rem}
+.opt span{font-size:.78rem;color:var(--muted)}
+.opt[aria-pressed="true"]{border-color:var(--buoy);background:color-mix(in srgb,var(--buoy) 10%,var(--surface))}
+.path-note{grid-column:1/-1;font-size:.85rem;color:var(--muted)}
+/* Sections */
+section.blk{padding-block:clamp(40px,6vw,72px);border-bottom:1px solid var(--line);position:relative}
+.blk-head{display:grid;gap:10px;margin-bottom:26px}
+.depth-2,.depth-3{transition:opacity .2s}
+body[data-depth="1"] .depth-2, body[data-depth="1"] .depth-3, body[data-depth="2"] .depth-3{display:none}
+.lens{display:none;border-left:3px solid var(--signal);padding:4px 0 4px 14px;margin-top:16px;font-size:.98rem}
+.lens .eyebrow{display:block;margin-bottom:2px}
+body[data-lens="policy"] .lens[data-lens="policy"],
+body[data-lens="science"] .lens[data-lens="science"],
+body[data-lens="coast"] .lens[data-lens="coast"]{display:block}
+details.deeper{margin-top:16px;border-top:1px dashed var(--line);padding-top:10px}
+details.deeper summary{cursor:pointer;font-weight:600;color:var(--signal);font-size:.95rem}
+details.deeper[open] summary{margin-bottom:8px}
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:8px}
+.stat .num{font-family:var(--f-display);font-weight:800;font-size:2.8rem;line-height:1;color:var(--buoy)}
+.stat .num small{font-size:1.1rem;font-weight:700}
+.stat .src{font-size:.78rem;color:var(--muted);margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+.bars{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px}
+.bar-row{display:grid;grid-template-columns:minmax(0,11rem) minmax(0,1fr) 3.2rem;gap:12px;align-items:center;font-size:.9rem;padding:5px 0}
+.bar-track{height:12px;background:var(--sea);border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;background:var(--signal);border-radius:2px}
+.bar-row .mono{text-align:right;font-size:.85rem}
+/* Drift sim */
+.sim{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:22px;align-items:start}
+.sim-canvas{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--sea);aspect-ratio:4/3;max-width:100%}
+.sim-canvas canvas{display:block;width:100%;height:100%;cursor:crosshair;touch-action:manipulation}
+.sim-hint{position:absolute;left:10px;bottom:10px;font-size:.75rem;background:color-mix(in srgb,var(--surface) 85%,transparent);padding:3px 8px;border-radius:4px;pointer-events:none}
+.sim-side{display:grid;gap:14px}
+.sim-ctrl{display:flex;flex-wrap:wrap;gap:8px}
+.btn{border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:6px;padding:7px 14px;font-weight:600;font-size:.9rem}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn[aria-pressed="true"]{background:var(--buoy);border-color:var(--buoy);color:var(--buoy-ink)}
+.readout{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.readout div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px}
+.readout b{display:block;font-family:var(--f-mono);font-size:1.35rem;font-weight:500;font-variant-numeric:tabular-nums}
+.readout span{font-size:.75rem;color:var(--muted)}
+.day{font-family:var(--f-mono);font-size:.9rem}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+/* Value chain */
+.vc{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px}
+.vc-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;position:relative;list-style:none;margin:0;padding:0}
+.vc-steps li{position:relative;display:flex}
+.vc-steps li:not(:last-child)::after{content:"";position:absolute;top:27px;left:calc(50% + 30px);right:calc(-50% + 30px);height:2px;background:repeating-linear-gradient(90deg,var(--signal) 0 6px,transparent 6px 11px)}
+.vc-step{flex:1;background:none;border:0;padding:4px 6px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;border-radius:8px}
+.vc-dot{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--signal);background:var(--paper);color:var(--signal);transition:background .15s,color .15s}
+.vc-step[aria-selected="true"] .vc-dot{background:var(--signal);color:var(--surface)}
+.vc-step .lbl{font-family:var(--f-display);font-weight:700;font-size:1rem}
+.vc-step .sub{font-size:.78rem;color:var(--muted);line-height:1.3}
+.vc-panel{margin-top:22px;border-top:1px solid var(--line);padding-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px}
+.vc-panel ul{margin:8px 0 0;padding-left:1.1em}
+.vc-panel li{margin-bottom:4px}
+.tag{display:inline-block;font-family:var(--f-mono);font-size:.72rem;border:1px solid var(--line);border-radius:4px;padding:1px 6px;margin:0 4px 4px 0;color:var(--muted)}
+/* Use cases */
+.cases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.case{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.case.hl{border-color:var(--buoy);box-shadow:0 0 0 1px var(--buoy)}
+.case .who{font-family:var(--f-mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.case .flow{font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;margin-top:auto}
+/* Links */
+.links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ext{display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;text-decoration:none;color:var(--ink)}
+.ext:hover{border-color:var(--signal)}
+.ext .ar{margin-left:auto;color:var(--signal);flex:none}
+.ext b{display:block;font-family:var(--f-display)}
+.ext span{font-size:.85rem;color:var(--muted)}
+/* Library */
+.lib{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px;background:var(--surface);display:flex;flex-direction:column;gap:6px;min-height:132px}
+.card.live{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.card.live .small{color:color-mix(in srgb,var(--paper) 75%,transparent)}
+.card .n{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.card.live .n{color:var(--buoy)}
+.card h3{font-size:1.05rem}
+.card .st{margin-top:auto;font-size:.75rem;font-family:var(--f-mono)}
+.card.add{border-style:dashed;background:transparent;color:var(--muted)}
+footer{padding-block:40px 60px;font-size:.85rem;color:var(--muted)}
+footer .wrap{display:grid;gap:10px}
+/* Reviewer mode */
+.req{display:none;font-family:var(--f-mono);font-size:.7rem;font-weight:500;color:var(--req);border:1px solid var(--req);border-radius:4px;padding:1px 6px;margin:0 6px 6px 0;background:color-mix(in srgb,var(--req) 8%,var(--surface));white-space:nowrap}
+body.review .req{display:inline-block}
+body.review [data-component]{outline:1px dashed var(--req);outline-offset:6px}
+body.review [data-component]::before{content:"component: " attr(data-component);position:absolute;font-family:var(--f-mono);font-size:.68rem;color:var(--req);transform:translateY(-22px)}
+.reqs{display:none}
+body.review .reqs{display:block}
+.reqpanel{background:var(--surface);border:1.5px solid var(--req);border-radius:10px;padding:18px;margin-top:22px}
+.reqpanel table{width:100%;border-collapse:collapse;font-size:.88rem}
+.reqpanel td{padding:6px 8px;border-top:1px solid var(--line);vertical-align:top}
+.reqpanel td:first-child{font-family:var(--f-mono);color:var(--req);white-space:nowrap;width:1%}
+.tbl{overflow-x:auto}
+/* ---------- Home view ---------- */
+[data-view][hidden]{display:none!important}
+.h-hero{position:relative;height:clamp(600px,86vh,900px);background:#03060c;color:#eaf4f8;overflow:hidden}
+.h-hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.h-scrim{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(3,6,12,.9) 0%,rgba(3,6,12,.6) 30%,rgba(3,6,12,0) 52%)}
+.h-copy{position:absolute;inset:0;display:flex;align-items:center;pointer-events:none}
+.h-copy > div{max-width:min(600px,46vw);display:grid;gap:18px;pointer-events:auto}
+.h-copy .eyebrow{color:#9fdcf0}
+.h-copy h1{font-size:clamp(2.3rem,4.6vw,4rem);line-height:.98;letter-spacing:-.025em}
+.h-copy h1 em{font-style:normal;color:#ffd08a}
+.h-copy p{font-size:1.1rem;color:rgba(234,244,248,.86);max-width:42ch}
+.h-btns{display:flex;flex-wrap:wrap;gap:10px}
+.h-btn{font:600 .95rem/1 var(--f-body);padding:.95em 1.35em;border-radius:999px;border:1.5px solid rgba(234,244,248,.7);color:#eaf4f8;background:transparent;text-decoration:none;cursor:pointer}
+.h-btn.pri{background:#ffd08a;border-color:#ffd08a;color:#1b1003}
+.h-cap{position:absolute;left:max(16px, env(safe-area-inset-left, 0px));bottom:14px;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.05em;color:rgba(234,244,248,.55);pointer-events:none}
+.h-tip{position:absolute;z-index:4;pointer-events:none;background:rgba(6,18,30,.94);border:1px solid rgba(160,210,235,.3);color:#eaf4f8;border-radius:8px;padding:.6em .8em;font-size:.85rem;max-width:260px;transform:translate(-50%,calc(-100% - 14px));opacity:0;transition:opacity .15s}
+.h-tip b{display:block;font-family:var(--f-display)}
+.h-tip span{opacity:.75}
+.h-legend{position:absolute;right:max(16px, env(safe-area-inset-right, 0px));bottom:14px;display:flex;gap:14px;font-size:.75rem;color:rgba(234,244,248,.7);pointer-events:none}
+.h-legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:0}
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.how div{display:grid;gap:6px;align-content:start}
+.how b{font-family:var(--f-display);font-size:1.15rem}
+.how p{color:var(--muted)}
+a.card{text-decoration:none;color:inherit}
+a.card.live:hover{outline:2px solid var(--buoy);outline-offset:2px}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:.9rem;text-decoration:none;color:var(--signal);font-weight:600}
+@media (max-width:820px){
+.h-hero{height:clamp(640px,92vh,820px)}
+.h-scrim{background:linear-gradient(180deg,rgba(3,6,12,.92) 0%,rgba(3,6,12,.65) 40%,rgba(3,6,12,0) 62%)}
+.h-copy{align-items:flex-start;padding-top:36px}
+.h-copy > div{max-width:none}
+.how{grid-template-columns:minmax(0,1fr)}
+.h-legend{display:none}
+}
+@media (max-width:820px){
+.hero .wrap,.path .wrap,.sim,.vc-panel{grid-template-columns:minmax(0,1fr)}
+.stats,.cases{grid-template-columns:minmax(0,1fr)}
+.lib{grid-template-columns:repeat(2,minmax(0,1fr))}
+.links{grid-template-columns:minmax(0,1fr)}
+.bar nav{margin-left:0}
+}
+@media (max-width:560px){
+.vc-steps{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:18px}
+.vc-steps li::after{display:none}
+.bar-row{grid-template-columns:minmax(0,1fr) 3rem}
+.bar-row .bar-track{grid-column:1/-1;grid-row:2}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="notice"><div class="wrap">
+<strong>Prototype</strong>
+<span data-i18n="notice">Concept demo by WyvernAI for tender 26546-EU4OO, Lot 1. Not an official EU4OceanObs or Mercator Ocean website. Figures are illustrative and pending expert review.</span>
+</div></div>
+<header class="bar"><div class="wrap">
+<a class="brand" href="#home" aria-label="Ocean Briefs home">
+<svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="12" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 15c3-3 5-3 8 0s5 3 8 0 4-2 4-2" fill="none" stroke="var(--buoy)" stroke-width="2.2" stroke-linecap="round"/></svg>
+Ocean Briefs
+</a>
+<nav aria-label="Display options">
+<button class="chipbtn" id="lang-en" aria-pressed="true">EN</button>
+<button class="chipbtn" id="lang-fr" aria-pressed="false">FR</button>
+<button class="chipbtn" id="review-toggle" aria-pressed="false" data-i18n="review">Show tender requirements</button>
+</nav>
+</div><div class="progress" id="progress"></div></header>
+<main id="view-home" data-view="home">
+<section class="h-hero" id="h-hero" aria-label="Europe from space between night and day">
+<canvas id="hgl" aria-hidden="true"></canvas>
+<canvas id="hov" aria-label="Map of Europe from space with seven points, one per Ocean Brief. The Marine litter point opens that brief."></canvas>
+<div class="h-scrim"></div>
+<div class="wrap h-copy"><div>
+<p class="eyebrow" data-i18n="h-eye">Seven Ocean Briefs</p>
+<h1><span data-i18n="h-t1">Europe’s ocean,</span> <em data-i18n="h-t2">seen from space.</em></h1>
+<p data-i18n="h-p">Short, visual stories on how European satellites and ocean models help people at sea and on the coast.</p>
+<div class="h-btns"><button class="h-btn pri" id="h-explore" data-i18n="h-b1">Explore the briefs</button><a class="h-btn" href="#marine-litter" data-i18n="h-b2">Read: Marine litter</a></div>
+<div class="reqs"><span class="req">REQ-LOT1-01 platform home</span><span class="req">REQ-LOT1-03 interactive entry point</span></div>
+</div></div>
+<div class="h-tip" id="h-tip"></div>
+<p class="h-cap">City lights: Natural Earth · clouds: generated</p>
+<div class="h-legend"><span><i style="background:#ffb453"></i>City lights at night</span><span><i style="background:#8fe3ff;box-shadow:0 0 0 2px rgba(255,255,255,.8)"></i>Ocean Brief</span></div>
+</section>
+<section class="blk" id="home-briefs"><div class="wrap">
+<div class="blk-head">
+<p class="eyebrow" data-i18n="hb-e">All Ocean Briefs</p>
+<h2 data-i18n="hb-h">Pick a story</h2>
+<p class="small">Working titles. Marine litter is open as a full prototype; the other briefs use the same structure with content from Lot 2.</p>
+</div>
+<div class="lib" id="homelib"></div>
+</div></section>
+<section class="blk"><div class="wrap">
+<div class="blk-head"><p class="eyebrow">How the briefs work</p><h2>One structure, read at your own pace</h2></div>
+<div class="how">
+<div><b>One minute or fifteen</b><p>Every brief opens with three key messages. Choose how much time you have and the page shows more or less detail.</p></div>
+<div><b>From satellite to society</b><p>Each brief follows the same path: what is observed, how it becomes data, which services use it and who benefits.</p></div>
+<div><b>Built to grow</b><p>Editors add new briefs and languages in the content system, without a developer.</p></div>
+</div>
+</div></section>
+</main>
+<main id="top" data-view="brief" hidden>
+<div class="wrap" style="padding-top:18px"><a class="back" href="#home">← All Ocean Briefs</a></div>
+<section class="hero"><div class="wrap">
+<div>
+<p class="eyebrow"><span data-i18n="brief-of">Ocean Brief 04 of 07</span> · <span data-i18n="theme">Pollution</span></p>
+<h1 style="margin-top:12px" data-i18n="title">Marine litter: tracking plastic from space to shore</h1>
+<p class="lede" data-i18n="lede">Satellites, ocean models and beach surveys together show where litter comes from, where it travels and where it lands. That knowledge tells clean-up teams where to go and tells policy makers what is working.</p>
+<div class="meta-row mono">
+<span id="readtime">≈ 5 min read</span><span>Updated Nov 2026</span><span data-i18n="layers">3 depth layers</span>
+</div>
+<div class="reqs" style="margin-top:14px"><span class="req">REQ-LOT1-01 common brief template</span><span class="req">REQ-LOT1-03 layered content</span></div>
+</div>
+<aside class="keys" data-component="KeyMessages" style="position:relative">
+<p class="eyebrow" data-i18n="keys-h">Key messages</p>
+<ol>
+<li data-i18n="k1">Most litter on European beaches is plastic, and a short list of single-use items and fishing gear makes up most of it.</li>
+<li data-i18n="k2">Ocean currents and wind decide where floating litter ends up. Copernicus Marine models make those paths predictable.</li>
+<li data-i18n="k3">Satellite imagery can now spot large floating patches, which helps target clean-ups and check whether policies are working.</li>
+</ol>
+</aside>
+</div></section>
+<div class="path" data-component="PathwayPicker" style="position:relative"><div class="wrap">
+<div>
+<h3 data-i18n="time-q">How much time do you have?</h3>
+<div class="seg" role="group" aria-label="Reading depth">
+<button class="opt" data-depth="1" aria-pressed="false"><b>1 min</b><span data-i18n="d1">Key messages only</span></button>
+<button class="opt" data-depth="2" aria-pressed="true"><b>5 min</b><span data-i18n="d2">Story and interactive map</span></button>
+<button class="opt" data-depth="3" aria-pressed="false"><b>15 min</b><span data-i18n="d3">Full scientific detail</span></button>
+</div>
+</div>
+<div>
+<h3 data-i18n="lens-q">What interests you most?</h3>
+<div class="seg" role="group" aria-label="Interest">
+<button class="opt" data-lens="policy" aria-pressed="false"><b data-i18n="l1">Policy</b><span data-i18n="l1s">Targets and reporting</span></button>
+<button class="opt" data-lens="science" aria-pressed="false"><b data-i18n="l2">Science</b><span data-i18n="l2s">Methods and data</span></button>
+<button class="opt" data-lens="coast" aria-pressed="false"><b data-i18n="l3">Coastal action</b><span data-i18n="l3s">Clean-ups and local use</span></button>
+</div>
+</div>
+<p class="path-note"><span data-i18n="path-note">No sign-up and no profile. Your choices only change what this page shows and are remembered on this device.</span> <span class="req">REQ-LOT1-05 pathways without profiles</span></p>
+</div></div>
+<!-- 1. The problem -->
+<section class="blk" id="problem"><div class="wrap">
+<div class="blk-head">
+<p class="eyebrow" data-i18n="s1e">The problem</p>
+<h2 data-i18n="s1h">Plastic dominates what washes up</h2>
+<p class="prose depth-2">Beach litter surveys count every item found along a fixed 100 m stretch of coastline. They are the backbone of EU monitoring under the Marine Strategy Framework Directive (Descriptor 10) and show a clear pattern: plastic, mostly from a few everyday products.</p>
+</div>
+<div class="stats" data-component="StatTiles" style="position:relative">
+<div class="stat"><div class="num">~80<small>%</small></div><p>of litter items counted on EU beaches are plastic.</p><p class="src">EU beach litter monitoring, JRC / MSFD TG Litter</p></div>
+<div class="stat"><div class="num">~70<small>%</small></div><p>of beach litter items are the ten most common single-use plastics plus fishing gear.</p><p class="src">European Commission, Single-Use Plastics Directive impact assessment</p></div>
+<div class="stat"><div class="num">20</div><p>items per 100 m of coastline: the EU threshold for good environmental status.</p><p class="src">MSFD TG Litter, EU threshold value (2020)</p></div>
+</div>
+<div class="bars depth-2" data-component="BarChart" style="position:relative">
+<p class="eyebrow" style="margin-bottom:10px">Share of items on a surveyed beach · example</p>
+<div id="bars"></div>
+<p class="small" style="margin-top:10px">Example survey composition for demonstration. Lot 2 supplies the validated dataset; the chart component reads it from the CMS.</p>
+</div>
+<div class="lens" data-lens="policy"><span class="eyebrow">For policy</span>The Single-Use Plastics Directive (2019/904) targets exactly the items that top the beach counts. Repeated surveys show whether bans and extended producer responsibility reduce them.</div>
+<div class="lens" data-lens="science"><span class="eyebrow">For science</span>Counts are made with a common protocol so that beaches can be compared across countries. EMODnet Chemistry gathers these surveys into one European database.</div>
+<div class="lens" data-lens="coast"><span class="eyebrow">For coastal action</span>A local survey takes about two hours with volunteers. Results feed the same European database the scientists use.</div>
+<details class="deeper depth-3"><summary>Method detail: how a beach survey works</summary>
+<p class="prose">Surveyors walk a fixed 100 m section from the waterline to the back of the beach, usually four times a year. Every item larger than 2.5 cm is recorded against a joint master list of around 200 categories. Trends are calculated from the median count per survey, which reduces the effect of single storm events.</p>
+</details>
+</div></section>
+<!-- 2. Drift -->
+<section class="blk" id="drift"><div class="wrap">
+<div class="blk-head">
+<p class="eyebrow" data-i18n="s2e">Where does it go?</p>
+<h2 data-i18n="s2h">Follow litter as the currents carry it</h2>
+<p class="prose" data-i18n="s2p">Rivers deliver litter to the sea. From there, currents and wind decide whether it circulates offshore or lands on a beach. Tap the sea to release your own patch.</p>
+</div>
+<div class="sim depth-2" data-component="DriftExplorer" style="position:relative">
+<div class="sim-canvas"><canvas id="sim" width="800" height="600" aria-label="Simulated litter drift in a coastal basin. Tap to release particles."></canvas><span class="sim-hint">Tap the sea to release litter</span></div>
+<div class="sim-side">
+<div class="sim-ctrl">
+<button class="btn" id="play">Pause</button>
+<button class="btn ghost" id="wind" aria-pressed="false">Onshore wind</button>
+<button class="btn ghost" id="reset">Reset</button>
+</div>
+<p class="day">Day <span id="day">0</span> of 60</p>
+<div class="readout">
+<div><b id="r-float">0</b><span>afloat</span></div>
+<div><b id="r-beach">0</b><span>beached</span></div>
+<div><b id="r-out">0</b><span>left basin</span></div>
+</div>
+<div class="legend"><span><i style="background:var(--signal)"></i>Floating</span><span><i style="background:var(--buoy)"></i>Beached</span><span><i style="background:var(--ink)"></i>River mouth</span></div>
+<p class="small">Turn on onshore wind and watch the beached count rise. Floating plastic sits at the surface, so wind pushes it more than the water around it.</p>
+<p class="small">Synthetic currents for demonstration. The production version would draw on Copernicus Marine current forecasts.</p>
+<div><span class="req">REQ-LOT1-03 reusable visualisation</span><span class="req">REQ-LOT1-11 interactive &lt; 2 s</span></div>
+</div>
+</div>
+<div class="lens" data-lens="policy"><span class="eyebrow">For policy</span>Drift modelling shows that litter crosses borders. A beach can be polluted by a river in another country, which is why regional sea conventions coordinate monitoring.</div>
+<div class="lens" data-lens="science"><span class="eyebrow">For science</span>Real drift studies advect virtual particles through modelled surface currents, Stokes drift and windage. Model choices, such as how much wind a floating object feels, change landing sites considerably.</div>
+<div class="lens" data-lens="coast"><span class="eyebrow">For coastal action</span>After storms with onshore wind, beaches downstream of busy river mouths are the first to fill up. A forecast lets teams plan the clean-up before the litter is buried or washed back out.</div>
+<details class="deeper depth-3"><summary>Model detail: from currents to particle tracks</summary>
+<p class="prose">Each particle moves by the sum of the surface current, a share of the wind speed (windage, typically 1–3 % for floating plastic) and a random component that stands in for small eddies the model cannot resolve. A particle that reaches the coast is counted as beached. Operational systems run this with hourly current fields from Copernicus Marine and wind from Copernicus atmospheric products.</p>
+</details>
+</div></section>
+<!-- 3. Value chain -->
+<section class="blk" id="chain"><div class="wrap">
+<div class="blk-head">
+<p class="eyebrow" data-i18n="s3e">From observation to benefit</p>
+<h2 data-i18n="s3h">How European observation turns into action</h2>
+<p class="prose depth-2">The same four steps appear in every Ocean Brief. Select a step to see what it means for marine litter.</p>
+</div>
+<div class="vc" id="vc" data-component="ValueChain" style="position:relative"></div>
+<div class="reqs" style="margin-top:10px"><span class="req">REQ-LOT1-02 shared across all 7 briefs</span><span class="req">REQ-LOT1-03 reusable visualisation</span></div>
+</div></section>
+<!-- 4. Use cases -->
+<section class="blk depth-2" id="cases"><div class="wrap">
+<div class="blk-head">
+<p class="eyebrow">In practice</p>
+<h2>Who uses this knowledge</h2>
+<p class="small">Example use cases for demonstration. Final cases come from the EU4OceanObs network via Lot 2.</p>
+</div>
+<div class="cases" data-component="UseCaseCards" style="position:relative">
+<article class="case" data-lens="coast"><p class="who">Coastal municipality</p><h3>Plan clean-ups before the storm passes</h3><p>A drift forecast shows which beaches will receive litter after three days of onshore wind. Crews go there first.</p><p class="flow">Currents + wind → drift forecast → crew schedule</p></article>
+<article class="case" data-lens="science"><p class="who">Research team</p><h3>Spot floating patches from orbit</h3><p>High-resolution optical imagery picks out windrows of floating material. Field teams check samples to tell plastic from seaweed and wood.</p><p class="flow">Satellite imagery → detection index → validated map</p></article>
+<article class="case" data-lens="policy"><p class="who">National authority</p><h3>Report progress to Brussels</h3><p>Beach counts, seafloor trawls and floating-litter observations feed the six-yearly MSFD assessment of each marine region.</p><p class="flow">Surveys → EMODnet database → MSFD assessment</p></article>
+</div>
+</div></section>
+<!-- 5. Go further -->
+<section class="blk" id="links"><div class="wrap">
+<div class="blk-head">
+<p class="eyebrow">Go further</p>
+<h2>Data and services behind this brief</h2>
+<p class="small">The platform links to these sources rather than copying them. <span class="req">REQ-LOT1-04 external resources</span></p>
+</div>
+<div class="links" data-component="ResourceLinks" style="position:relative">
+<a class="ext" href="https://marine.copernicus.eu/" target="_blank" rel="noopener"><div><b>Copernicus Marine Service</b><span>Ocean currents, waves and forecasts used for drift modelling</span></div><span class="ar" aria-hidden="true">↗</span></a>
+<a class="ext" href="https://emodnet.ec.europa.eu/en/chemistry" target="_blank" rel="noopener"><div><b>EMODnet Chemistry</b><span>European beach, seafloor and floating litter data</span></div><span class="ar" aria-hidden="true">↗</span></a>
+<a class="ext" href="https://environment.ec.europa.eu/topics/marine-environment_en" target="_blank" rel="noopener"><div><b>EU marine environment policy</b><span>Marine Strategy Framework Directive and litter targets</span></div><span class="ar" aria-hidden="true">↗</span></a>
+<a class="ext" href="https://dataspace.copernicus.eu/" target="_blank" rel="noopener"><div><b>Copernicus Data Space</b><span>Sentinel-2 imagery used in floating debris research</span></div><span class="ar" aria-hidden="true">↗</span></a>
+</div>
+</div></section>
+<!-- 6. Library -->
+<section class="blk" id="library"><div class="wrap">
+<div class="blk-head">
+<p class="eyebrow">All Ocean Briefs</p>
+<h2>Seven briefs, one structure</h2>
+<p class="small">Working titles. Editors add a new brief in the CMS from the same building blocks, without a developer. <span class="req">REQ-LOT1-01/02 extensible architecture</span> <span class="req">REQ-LOT1-07 CMS + multilingual</span></p>
+</div>
+<div class="lib" id="lib" data-component="BriefLibrary" style="position:relative"></div>
+</div></section>
+<!-- Reviewer panel -->
+<section class="reqs"><div class="wrap" style="padding-block:10px 40px">
+<div class="reqpanel">
+<p class="eyebrow" style="color:var(--req)">For evaluators · how this prototype maps to the Lot 1 requirements</p>
+<div class="tbl"><table>
+<tr><td>01 / 02</td><td>One brief template (hero, key messages, sections, value chain, links) reused for all seven briefs and new ones.</td></tr>
+<tr><td>03</td><td>Three depth layers, interactive drift explorer, reusable value-chain and chart components. No PDF reproduction.</td></tr>
+<tr><td>04</td><td>Links to Copernicus Marine, EMODnet and EU policy pages; no copied content.</td></tr>
+<tr><td>05</td><td>Pathways by time and interest; no account, no profile selection.</td></tr>
+<tr><td>06</td><td>This page is the clickable prototype stage; wireframes and iterations follow with Mercator Ocean.</td></tr>
+<tr><td>07</td><td>All text is content, not code. EN/FR switch shows the translation layer; detail text stays EN in this demo.</td></tr>
+<tr><td>09–11</td><td>Static pre-rendered pages, no tracking scripts, system fonts as fallback: built to meet the &lt; 600 ms / &lt; 2 s targets.</td></tr>
+<tr><td>WCAG</td><td>Keyboard navigable, visible focus, reduced-motion support, light and dark themes.</td></tr>
+</table></div>
+</div>
+</div></section>
+</main>
+<footer><div class="wrap">
+<p><strong>Prototype by WyvernAI (Wyvern AI Solutions)</strong> for the open tender “Ocean Briefs EU4OceanObs: development of an interactive platform”, ref. 26546-EU4OO, Lot 1.</p>
+<p>This is a design demonstration. It is not affiliated with or endorsed by Mercator Ocean International, EU4OceanObs or the European Commission. Statistics are rounded from public EU sources and shown for illustration; final content is produced and validated under Lot 2.</p>
+</div></footer>
+<script>
+(function(){
+const store = {
+get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
+set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+};
+const B = document.body;
+/* ---------- Pathways ---------- */
+const readTimes = {1:"≈ 1 min read",2:"≈ 5 min read",3:"≈ 15 min read"};
+function setDepth(d){
+B.dataset.depth = d;
+document.querySelectorAll('.opt[data-depth]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.depth===String(d)));
+document.getElementById('readtime').textContent = readTimes[d];
+store.set('ob-depth', d);
+}
+function setLens(l){
+const cur = B.dataset.lens;
+const next = (cur===l) ? "" : l;
+B.dataset.lens = next;
+document.querySelectorAll('.opt[data-lens]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.lens===next));
+document.querySelectorAll('.case').forEach(c=>c.classList.toggle('hl', !!next && c.dataset.lens===next));
+// move matching case first
+const wrap = document.querySelector('.cases');
+const m = next && wrap.querySelector('.case[data-lens="'+next+'"]');
+if(m) wrap.prepend(m);
+store.set('ob-lens', next);
+}
+document.querySelectorAll('.opt[data-depth]').forEach(b=>b.addEventListener('click',()=>{ setDepth(+b.dataset.depth); if(window.__sim) window.__sim.resize(); }));
+document.querySelectorAll('.opt[data-lens]').forEach(b=>b.addEventListener('click',()=>setLens(b.dataset.lens)));
+setDepth(+(store.get('ob-depth')||2));
+const sl = store.get('ob-lens'); if(sl) setLens(sl);
+/* ---------- Reviewer mode ---------- */
+const rt = document.getElementById('review-toggle');
+rt.addEventListener('click',()=>{ const on=!B.classList.contains('review'); B.classList.toggle('review',on); rt.setAttribute('aria-pressed',on); });
+/* ---------- Progress ---------- */
+const pr = document.getElementById('progress');
+function prog(){ const h=document.documentElement; const max=h.scrollHeight-innerHeight; pr.style.width = (max>0? Math.min(100, scrollY/max*100):0)+'%'; }
+addEventListener('scroll',prog,{passive:true}); prog();
+/* ---------- Bars ---------- */
+const barData = [["Plastic & polystyrene pieces",27],["Caps & lids",11],["Cigarette butts",9],["Fishing nets & ropes",8],["Crisp packets & wrappers",7],["Drink bottles",5],["Other (all materials)",33]];
+document.getElementById('bars').innerHTML = barData.map(([l,v])=>`<div class="bar-row"><span>${l}</span><div class="bar-track"><div class="bar-fill" style="width:${v/33*100}%"></div></div><span class="mono">${v} %</span></div>`).join('');
+/* ---------- Value chain (reusable component) ---------- */
+const icons = {
+sat:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M9 12H3M21 12h-6M5 9v6M19 9v6M12 15v3M9 21a3 3 0 0 1 6 0"/></svg>',
+data:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>',
+svc:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 17c3-3 5-3 8 0s5 3 8 0M3 11c3-3 5-3 8 0s5 3 8 0"/><circle cx="19" cy="5" r="2"/></svg>',
+ben:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M7 20v-6l5-4 5 4v6"/><path d="M12 4v3"/></svg>'
+};
+function ValueChain(el, steps){
+let sel = 0;
+function render(){
+const s = steps[sel];
+el.innerHTML = `<ol class="vc-steps" role="tablist">${steps.map((st,i)=>`<li><button class="vc-step" role="tab" id="vc-t${i}" aria-selected="${i===sel}" aria-controls="vc-p" data-i="${i}"><span class="vc-dot">${icons[st.icon]}</span><span class="lbl">${st.label}</span><span class="sub">${st.sub}</span></button></li>`).join('')}</ol>
+<div class="vc-panel" id="vc-p" role="tabpanel" aria-labelledby="vc-t${sel}">
+<div><h3>${s.title}</h3><p style="margin-top:8px">${s.text}</p></div>
+<div><p class="eyebrow">In this brief</p><ul>${s.items.map(x=>`<li>${x}</li>`).join('')}</ul><p style="margin-top:10px">${s.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</p></div>
+</div>`;
+el.querySelectorAll('.vc-step').forEach(b=>{
+b.addEventListener('click',()=>{ sel=+b.dataset.i; render(); el.querySelector('#vc-t'+sel).focus(); });
+b.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ e.preventDefault(); sel=(sel+(e.key==='ArrowRight'?1:steps.length-1))%steps.length; render(); el.querySelector('#vc-t'+sel).focus(); }});
+});
+}
+render();
+}
+ValueChain(document.getElementById('vc'), [
+{icon:'sat',label:'Observe',sub:'Satellites and in-situ',title:'Observe from orbit and on the beach',text:'Optical satellites see large floating aggregations; volunteers and agencies count what lands on beaches and what sits on the seafloor.',items:['Sentinel-2 imagery at 10 m resolution','Standard 100 m beach surveys','Seafloor litter from fisheries trawl surveys'],tags:['Copernicus Sentinel-2','In-situ']},
+{icon:'data',label:'Model & integrate',sub:'Currents, wind, databases',title:'Turn observations into consistent data',text:'Ocean models fill the gaps between observations with surface currents and waves; European databases harmonise national survey data.',items:['Surface currents and Stokes drift from Copernicus Marine','Harmonised litter data in EMODnet Chemistry'],tags:['Copernicus Marine','EMODnet']},
+{icon:'svc',label:'Deliver services',sub:'Forecasts and maps',title:'Services people can act on',text:'Drift forecasts, hotspot maps and indicators package the data for specific users.',items:['Backtracking a patch to its likely source','Forecast of beaches at risk after storms','Trend indicators per marine region'],tags:['Downstream services']},
+{icon:'ben',label:'Benefit society',sub:'Policy and coastal life',title:'Cleaner coasts and better policy',text:'Clean-up teams work where litter actually arrives; authorities can show whether measures reduce litter over time.',items:['Targeted clean-ups save time and cost','Evidence for the MSFD and Single-Use Plastics Directive','Healthier habitats for fish, birds and turtles'],tags:['MSFD D10','SUP Directive']}
+]);
+/* ---------- Library ---------- */
+const briefs = [
+["01","Sargassum","Seaweed influx forecasts for coasts"],
+["02","Sustainable fisheries","Ocean state for stock management"],
+["03","The changing Arctic","Sea ice, shipping and climate"],
+["04","Marine litter","Tracking plastic from space to shore",true],
+["05","Coastal hazards","Storm surge and sea-level rise"],
+["06","Marine heatwaves","Warming events and ecosystems"],
+["07","Water quality","Blooms and coastal pollution"]
+];
+const libHTML = briefs.map(([n,t,s,live])=> live
+? `<a class="card live" href="#marine-litter"><span class="n">Brief ${n}</span><h3>${t}</h3><p class="small">${s}</p><span class="st">● Open prototype →</span></a>`
+: `<article class="card"><span class="n">Brief ${n}</span><h3>${t}</h3><p class="small">${s}</p><span class="st">Content from Lot 2</span></article>`).join('') +
+`<article class="card add"><span class="n">CMS</span><h3>+ New brief</h3><p class="small">Created by Mercator Ocean editors from existing blocks.</p></article>`;
+document.getElementById('lib').innerHTML = libHTML;
+document.getElementById('homelib').innerHTML = libHTML;
+/* ---------- i18n ---------- */
+const fr = {
+notice:"Démonstration conceptuelle de WyvernAI pour l’appel d’offres 26546-EU4OO, lot 1. Site non officiel d’EU4OceanObs ou de Mercator Ocean. Chiffres illustratifs, en attente de validation par des experts.",
+review:"Afficher les exigences", "h-eye":"Sept Ocean Briefs", "h-t1":"L’océan européen,", "h-t2":"vu de l’espace.", "h-p":"De courts récits visuels sur la façon dont les satellites et les modèles océaniques européens aident ceux qui vivent en mer et sur les côtes.", "h-b1":"Explorer les briefs", "h-b2":"Lire : déchets marins", "hb-e":"Tous les Ocean Briefs", "hb-h":"Choisissez un récit", "brief-of":"Ocean Brief 04 sur 07", theme:"Pollution",
+title:"Déchets marins : suivre le plastique de l’espace jusqu’au rivage",
+lede:"Satellites, modèles océaniques et relevés de plage montrent ensemble d’où viennent les déchets, où ils dérivent et où ils échouent. Ces connaissances indiquent aux équipes de nettoyage où intervenir et aux décideurs ce qui fonctionne.",
+layers:"3 niveaux de lecture", "keys-h":"Messages clés",
+k1:"La plupart des déchets sur les plages européennes sont en plastique, et une courte liste d’objets à usage unique et d’engins de pêche en représente l’essentiel.",
+k2:"Les courants et le vent déterminent où finissent les déchets flottants. Les modèles Copernicus Marine rendent ces trajectoires prévisibles.",
+k3:"L’imagerie satellitaire repère désormais les grands amas flottants, ce qui aide à cibler les nettoyages et à vérifier l’efficacité des politiques.",
+"time-q":"De combien de temps disposez-vous ?", d1:"Messages clés uniquement", d2:"Récit et carte interactive", d3:"Détail scientifique complet",
+"lens-q":"Qu’est-ce qui vous intéresse le plus ?", l1:"Politiques", l1s:"Objectifs et rapports", l2:"Science", l2s:"Méthodes et données", l3:"Action côtière", l3s:"Nettoyages et usages locaux",
+"path-note":"Sans inscription ni profil. Vos choix modifient seulement l’affichage de cette page et sont mémorisés sur cet appareil.",
+s1e:"Le problème", s1h:"Le plastique domine ce qui s’échoue",
+s2e:"Où vont-ils ?", s2h:"Suivez les déchets portés par les courants", s2p:"Les rivières apportent les déchets à la mer. Ensuite, courants et vent décident s’ils circulent au large ou s’échouent sur une plage. Touchez la mer pour lâcher votre propre nappe.",
+s3e:"De l’observation au bénéfice", s3h:"Comment l’observation européenne devient action"
+};
+const en = {};
+document.querySelectorAll('[data-i18n]').forEach(el=>{ en[el.dataset.i18n]=el.textContent; });
+function setLang(l){
+const d = l==='fr'?fr:en;
+document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.dataset.i18n; if(d[k]) el.textContent=d[k]; });
+document.documentElement.lang = l;
+document.getElementById('lang-en').setAttribute('aria-pressed', l==='en');
+document.getElementById('lang-fr').setAttribute('aria-pressed', l==='fr');
+store.set('ob-lang', l);
+}
+document.getElementById('lang-en').addEventListener('click',()=>setLang('en'));
+document.getElementById('lang-fr').addEventListener('click',()=>setLang('fr'));
+if(store.get('ob-lang')==='fr') setLang('fr');
+/* ---------- Drift explorer ---------- */
+const cv = document.getElementById('sim'), ctx = cv.getContext('2d');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let W=800,H=600, parts=[], step=0, playing=!reduce, wind=false, colors={};
+const MAXSTEP = 240; // 4 steps per day, 60 days
+const rivers = [{x:.30,y:.80,label:'River A'},{x:.11,y:.42,label:'River B'},{x:.62,y:.86,label:'River C'}];
+// land: west coast and south coast with a headland, in unit coordinates
+function coastS(x){ return .84 + .05*Math.sin(x*7.0) + (x>.42&&x<.55 ? -.12*Math.sin((x-.42)/.13*Math.PI) : 0); }
+function coastW(y){ return .07 + .03*Math.sin(y*9.0+1) ; }
+function isLand(x,y){ return y>coastS(x) || x<coastW(y); }
+// stream function: basin gyre + secondary eddies
+function psi(x,y){ return .9*Math.sin(Math.PI*x)*Math.sin(Math.PI*y) + .25*Math.sin(3*Math.PI*x)*Math.sin(2*Math.PI*y); }
+function vel(x,y){
+const e=1e-3;
+let u =  (psi(x,y+e)-psi(x,y-e))/(2*e);
+let v = -(psi(x+e,y)-psi(x-e,y))/(2*e);
+if(wind){ u += -0.35; v += 0.75; } // onshore toward south-west coasts
+return [u,v];
+}
+function rnd(){ return Math.random()*2-1; }
+function release(x,y,n){ for(let i=0;i<n;i++){ const px=x+rnd()*.015, py=y+rnd()*.015; if(!isLand(px,py)) parts.push({x:px,y:py,s:0,trail:[]}); } }
+function seedRivers(){ rivers.forEach(r=>{ // nudge release point offshore
+let x=r.x,y=r.y; for(let k=0;k<40 && isLand(x,y);k++){ x+= (r.x<.2? .01:0); y-= (r.x<.2? 0:.01);} r.sx=x+(r.x<.2?.02:0); r.sy=y-(r.x<.2?0:.02); }); }
+seedRivers();
+function riverPulse(){ if(step<160 && step%8===0) rivers.forEach(r=>release(r.sx,r.sy,4)); }
+const dt = .0045;
+function advance(){
+riverPulse();
+for(const p of parts){
+if(p.s) continue;
+const [u,v]=vel(p.x,p.y);
+p.trail.push(p.x,p.y); if(p.trail.length>24) p.trail.splice(0,2);
+p.x += u*dt + rnd()*.0022; p.y += v*dt + rnd()*.0022;
+if(isLand(p.x,p.y)) p.s=1;
+else if(p.x>1||p.y<0||p.y>1) p.s=2;
+}
+step++;
+}
+function readColors(){ const cs=getComputedStyle(document.documentElement); ['--sea','--sea-deep','--land','--signal','--buoy','--ink','--line','--muted'].forEach(k=>colors[k]=cs.getPropertyValue(k).trim()); }
+readColors();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{readColors(); draw();});
+new MutationObserver(()=>{readColors(); draw();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+let landPath=null;
+function buildLand(){
+landPath = new Path2D();
+landPath.moveTo(0,H); for(let i=0;i<=200;i++){ const x=i/200; landPath.lineTo(x*W, coastS(x)*H); } landPath.lineTo(W,H); landPath.closePath();
+const w = new Path2D(); w.moveTo(0,0); for(let i=0;i<=200;i++){ const y=i/200; w.lineTo(coastW(y)*W, y*H);} w.lineTo(0,H); w.closePath();
+landPath.addPath(w);
+}
+function draw(){
+if(!landPath) buildLand();
+ctx.clearRect(0,0,W,H);
+const g = ctx.createLinearGradient(W,0,0,H); g.addColorStop(0,colors['--sea-deep']); g.addColorStop(1,colors['--sea']);
+ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+// current arrows
+ctx.strokeStyle=colors['--muted']; ctx.globalAlpha=.28; ctx.lineWidth=1;
+for(let gx=.06;gx<1;gx+=.075) for(let gy=.06;gy<1;gy+=.075){
+if(isLand(gx,gy)) continue; const [u,v]=vel(gx,gy); const m=Math.hypot(u,v)||1; const L=Math.min(14, 6+m*5);
+const x=gx*W,y=gy*H, ex=x+u/m*L, ey=y+v/m*L;
+ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(ex,ey); ctx.stroke();
+const a=Math.atan2(ey-y,ex-x); ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(ex-4*Math.cos(a-.5),ey-4*Math.sin(a-.5)); ctx.moveTo(ex,ey); ctx.lineTo(ex-4*Math.cos(a+.5),ey-4*Math.sin(a+.5)); ctx.stroke();
+}
+ctx.globalAlpha=1;
+// trails
+ctx.strokeStyle=colors['--signal']; ctx.lineWidth=1.4; ctx.globalAlpha=.35;
+for(const p of parts){ if(p.s===2||p.trail.length<4) continue; ctx.beginPath(); ctx.moveTo(p.trail[0]*W,p.trail[1]*H); for(let i=2;i<p.trail.length;i+=2) ctx.lineTo(p.trail[i]*W,p.trail[i+1]*H); ctx.lineTo(p.x*W,p.y*H); ctx.stroke(); }
+ctx.globalAlpha=1;
+// land
+ctx.fillStyle=colors['--land']; ctx.fill(landPath);
+ctx.strokeStyle=colors['--line']; ctx.lineWidth=1.5; ctx.stroke(landPath);
+// particles
+for(const p of parts){
+if(p.s===2) continue;
+ctx.fillStyle = p.s===1? colors['--buoy'] : colors['--signal'];
+ctx.beginPath(); ctx.arc(p.x*W,p.y*H, p.s===1?3.2:2.6, 0, 7); ctx.fill();
+}
+// rivers
+ctx.font = '500 13px "IBM Plex Mono", monospace'; ctx.textBaseline='middle';
+for(const r of rivers){
+const x=r.sx*W,y=r.sy*H; ctx.fillStyle=colors['--ink']; ctx.beginPath(); ctx.arc(x,y,6,0,7); ctx.fill();
+ctx.strokeStyle=colors['--sea']; ctx.lineWidth=2; ctx.stroke();
+const lx = r.x<.2? x+12 : x-30, ly = r.x<.2? y : y-16;
+ctx.fillStyle=colors['--ink']; ctx.fillText(r.label, lx, ly);
+}
+// compass / scale
+ctx.fillStyle=colors['--ink']; ctx.font='500 12px "IBM Plex Mono", monospace';
+ctx.fillText('N ↑', W-40, 22);
+ctx.fillRect(W-130, H-24, 100, 2); ctx.fillText('≈ 50 km', W-112, H-36);
+if(wind){ ctx.fillText('wind ↙', W-120, 46); }
+// readout
+let f=0,b=0,o=0; for(const p of parts){ if(p.s===0)f++; else if(p.s===1)b++; else o++; }
+document.getElementById('r-float').textContent=f; document.getElementById('r-beach').textContent=b; document.getElementById('r-out').textContent=o;
+document.getElementById('day').textContent=Math.floor(step/4);
+}
+function resize(){
+const r = cv.getBoundingClientRect(); if(!r.width) return;
+const dpr = Math.min(2, devicePixelRatio||1);
+cv.width = Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr);
+ctx.setTransform(dpr,0,0,dpr,0,0); W=r.width; H=r.height; buildLand(); draw();
+}
+function reset(){ parts=[]; step=0; for(let i=0;i<60;i++) advance(); draw(); }
+window.__sim = {resize};
+const playBtn=document.getElementById('play');
+function setPlay(p){ playing=p; playBtn.textContent = p?'Pause':'Play'; }
+playBtn.addEventListener('click',()=>{ if(step>=MAXSTEP){ reset(); } setPlay(!playing); });
+document.getElementById('reset').addEventListener('click',()=>{ reset(); setPlay(!reduce); });
+const wb=document.getElementById('wind');
+wb.addEventListener('click',()=>{ wind=!wind; wb.setAttribute('aria-pressed',wind); draw(); });
+cv.addEventListener('click',e=>{ const r=cv.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height; if(isLand(x,y)) return; release(x,y,30); if(step>=MAXSTEP){ step=MAXSTEP-120; } if(!playing) setPlay(true); draw(); });
+let last=0;
+function loop(t){
+if(playing && t-last>33){ last=t; if(step<MAXSTEP){ advance(); advance(); draw(); } else { setPlay(false); draw(); } }
+requestAnimationFrame(loop);
+}
+addEventListener('resize',resize);
+if(window.ResizeObserver) new ResizeObserver(resize).observe(cv);
+setPlay(playing);
+reset(); resize();
+requestAnimationFrame(loop);
+if(document.fonts) document.fonts.ready.then(draw);
+})();
+</script>
+<script>
+/* ---------- Router: #home (default) and #marine-litter ---------- */
+(function(){
+const views={home:document.getElementById('view-home'), brief:document.getElementById('top')};
+function route(){
+const h=location.hash.replace('#','');
+const v = (h==='marine-litter') ? 'brief' : 'home';
+const changed = views[v].hidden;
+for(const k in views) views[k].hidden = (k!==v);
+if(changed) window.scrollTo(0,0);
+document.title = v==='brief' ? 'Marine Litter · Ocean Brief Prototype' : 'Ocean Brief Prototype';
+window.dispatchEvent(new Event('resize'));
+}
+addEventListener('hashchange',route); route();
+document.getElementById('h-explore').addEventListener('click',()=>document.getElementById('home-briefs').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}));
+})();
+/* ---------- Home globe: night in the north-west, day in the south-east ---------- */
+(function(){
+const BW=1600, BH=1000, reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const hero=document.getElementById('h-hero'), glc=document.getElementById('hgl'), cv=document.getElementById('hov'), ctx=cv.getContext('2d'), tip=document.getElementById('h-tip');
+function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function offscreen(w,h){ const c=document.createElement('canvas'); c.width=w; c.height=h; return c; }
+function layout(w,h){ const k=Math.max(w/BW,h/BH), tall=h>w*1.05; const oyc=Math.min(0,Math.max(h-BH*k, h*.5-521*k)); return {k, ox: tall? w/2-1020*k : (w-BW*k)*.75, oy: tall? h-BH*k : oyc}; }
+let visible=true;
+if('IntersectionObserver' in window) new IntersectionObserver(es=>{ visible=es[0].isIntersecting; }).observe(hero);
+fetch('geo.json').then(r=>r.json()).then(start).catch(()=>{});
+function start(g){
+if(typeof g.cities[0]==='number'){ const c=[]; for(let i=0;i<g.cities.length;i+=3) c.push([g.cities[i],g.cities[i+1],g.cities[i+2]]); g.cities=c; }
+const land=new Path2D(g.land), sphere=new Path2D(g.sphere);
+const cx=g.center[0], cy=g.center[1], R0=g.r;
+let sv=[0.55,-0.8,0.06]; { const l=Math.hypot(...sv); sv=sv.map(v=>v/l); }
+const briefs=[
+['sargassum','01','Sargassum','Seaweed influx forecasts'],
+['fisheries','02','Sustainable fisheries','Ocean state for stock management'],
+['arctic','03','The changing Arctic','Sea ice, shipping and climate'],
+['litter','04','Marine litter','Tracking plastic from space to shore'],
+['hazards','05','Coastal hazards','Storm surge and sea-level rise'],
+['heat','06','Marine heatwaves','Warming events and ecosystems'],
+['water','07','Water quality','Blooms and coastal pollution']
+].map(b=>({id:b[0],n:b[1],t:b[2],s:b[3],x:g.pts[b[0]][0],y:g.pts[b[0]][1],ph:Math.random()*6}));
+const spr=offscreen(64,64); { const s=spr.getContext('2d'); const gr=s.createRadialGradient(32,32,0,32,32,32); gr.addColorStop(0,'rgba(255,225,160,1)'); gr.addColorStop(.2,'rgba(255,170,70,.75)'); gr.addColorStop(.55,'rgba(255,130,30,.15)'); gr.addColorStop(1,'rgba(255,120,20,0)'); s.fillStyle=gr; s.fillRect(0,0,64,64); }
+function drawLights(c,T,u){
+c.setTransform(...T); c.globalCompositeOperation='lighter'; const rr=rng(11);
+for(const [px,py,p] of g.cities){
+const pop=Math.max(5,p), rad=(3.5+Math.sqrt(pop)*.5)*u;
+c.globalAlpha=Math.min(.3,.07+Math.sqrt(pop)*.005); c.drawImage(spr,px-rad,py-rad,rad*2,rad*2);
+const m=Math.min(9,1+Math.sqrt(pop)*.1|0);
+for(let j=0;j<m;j++){ const a=rr()*6.28, dd=Math.pow(rr(),.6)*rad*1.4, s2=(.9+rr()*1.4)*u; c.globalAlpha=.14+rr()*.3; c.drawImage(spr,px+Math.cos(a)*dd-s2*2,py+Math.sin(a)*dd-s2*2,s2*4,s2*4); }
+c.globalAlpha=Math.min(.95,.4+Math.sqrt(pop)*.013); const q=(.9+Math.sqrt(pop)*.02)*u; c.drawImage(spr,px-q*2.5,py-q*2.5,q*5,q*5);
+}
+c.globalAlpha=1; c.globalCompositeOperation='source-over'; c.setTransform(1,0,0,1,0,0);
+}
+// ---------- WebGL renderer (falls back to a simple night globe)
+const gl=glc.getContext('webgl',{antialias:false})||glc.getContext('experimental-webgl');
+let render=()=>{}, buildGL=()=>{};
+const FS=`precision highp float;
+uniform vec2 uRes; uniform float uK; uniform vec2 uOff; uniform vec2 uC; uniform float uR; uniform vec3 uSun; uniform float uT; uniform float uPx;
+uniform sampler2D uLand; uniform sampler2D uLights;
+vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
+vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
+vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
+vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
+float snoise(vec3 v){
+const vec2 C=vec2(1.0/6.0,1.0/3.0); const vec4 D=vec4(0.0,0.5,1.0,2.0);
+vec3 i=floor(v+dot(v,C.yyy)); vec3 x0=v-i+dot(i,C.xxx);
+vec3 g=step(x0.yzx,x0.xyz); vec3 l=1.0-g; vec3 i1=min(g.xyz,l.zxy); vec3 i2=max(g.xyz,l.zxy);
+vec3 x1=x0-i1+C.xxx; vec3 x2=x0-i2+C.yyy; vec3 x3=x0-D.yyy;
+i=mod289(i);
+vec4 p=permute(permute(permute(i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))+i.x+vec4(0.0,i1.x,i2.x,1.0));
+float n_=0.142857142857; vec3 ns=n_*D.wyz-D.xzx;
+vec4 j=p-49.0*floor(p*ns.z*ns.z); vec4 x_=floor(j*ns.z); vec4 y_=floor(j-7.0*x_);
+vec4 x=x_*ns.x+ns.yyyy; vec4 y=y_*ns.x+ns.yyyy; vec4 h=1.0-abs(x)-abs(y);
+vec4 b0=vec4(x.xy,y.xy); vec4 b1=vec4(x.zw,y.zw);
+vec4 s0=floor(b0)*2.0+1.0; vec4 s1=floor(b1)*2.0+1.0; vec4 sh=-step(h,vec4(0.0));
+vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy; vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+vec3 p0=vec3(a0.xy,h.x); vec3 p1=vec3(a0.zw,h.y); vec3 p2=vec3(a1.xy,h.z); vec3 p3=vec3(a1.zw,h.w);
+vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;
+vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0); m=m*m;
+return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+}
+float fbm5(vec3 p){float s=0.,a=.5;for(int i=0;i<5;i++){s+=a*snoise(p);p=p*2.03+vec3(1.7,9.2,3.1);a*=.5;}return s;}
+float fbm3(vec3 p){float s=0.,a=.5;for(int i=0;i<3;i++){s+=a*snoise(p);p=p*2.07+vec3(4.1,2.3,7.7);a*=.5;}return s;}
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+void main(){
+vec2 px=vec2(gl_FragCoord.x, uRes.y-gl_FragCoord.y);
+vec2 uv=vec2(gl_FragCoord.x/uRes.x, 1.0-gl_FragCoord.y/uRes.y);
+vec2 b=(px-uOff)/uK;
+vec2 q=vec2((b.x-uC.x)/uR, -(b.y-uC.y)/uR);
+float r=length(q);
+// space
+vec3 col=mix(vec3(.035,.06,.11),vec3(.01,.02,.04),clamp(length(uv-vec2(.62,.5))*1.3,0.,1.));
+vec2 cell=floor(px/(2.0*uPx));
+float hs=hash(cell);
+if(hs>.9975) col+=vec3(.75,.82,1.)*(hs-.9975)/.0025*.9;
+// halo outside the limb, brighter on the sunlit side
+float side=max(dot(normalize(vec3(q,0.0001)),uSun),0.);
+float dist=(r-1.)*uR;
+if(r>1.) col+=vec3(.25,.55,1.)*exp(-dist/14.)*(.18+.85*side);
+float aa=1.5*uPx/(uR*uK);
+float inside=smoothstep(1.0,1.0-aa,r);
+if(inside>0.){
+float nz=sqrt(max(0.,1.-r*r));
+vec3 n=vec3(q,nz);
+// world coordinates (globe rotated to lon 2, lat 50)
+float c0=cos(radians(50.)), s0=sin(radians(50.));
+vec3 w=vec3(n.x, n.y*c0+n.z*s0, -n.y*s0+n.z*c0);
+float lat=degrees(asin(clamp(w.y,-1.,1.)));
+float ang=uT*0.006; float ca=cos(ang), sa=sin(ang);
+vec3 wc=vec3(w.x*ca-w.z*sa, w.y, w.x*sa+w.z*ca);   // clouds drift slowly eastward
+float ndl=dot(n,uSun);
+float dif=max(ndl,0.);
+float day=smoothstep(-0.03,0.13,ndl);
+vec4 lt=texture2D(uLand,uv); float landM=lt.r; float shelf=lt.g;
+// land colour by latitude, mottled
+float ln=fbm3(w*22.);
+float L=lat+ln*7.;
+vec3 desert=vec3(.70,.55,.36), dry=vec3(.46,.40,.26), temp=vec3(.24,.31,.17), boreal=vec3(.17,.22,.16), ice=vec3(.86,.9,.94);
+vec3 lc=mix(desert,dry,smoothstep(25.,33.,L)); lc=mix(lc,temp,smoothstep(37.,46.,L)); lc=mix(lc,boreal,smoothstep(56.,64.,L)); lc=mix(lc,ice,smoothstep(70.,76.,L)*.85);
+lc*=.82+.38*(fbm3(w*70.)*.5+.5);
+// ocean
+float ov=fbm3(w*6.);
+vec3 oc=mix(vec3(.03,.17,.37),vec3(.06,.29,.54),.5+.5*ov);
+oc=mix(oc,vec3(.10,.45,.66),shelf*(1.-landM)*.7);
+vec3 surf=mix(oc,lc,landM);
+vec3 dayc=surf*(.62+.75*dif);
+vec3 h=normalize(uSun+vec3(0.,0.,1.)); float spec=pow(max(dot(n,h),0.),60.)*(1.-landM)*.35;
+dayc+=vec3(1.,.95,.85)*spec;
+vec3 nightc=mix(vec3(.010,.022,.045),vec3(.028,.036,.05),landM);
+// clouds: warped, east-west streaked systems with fine detail
+vec3 cp=wc*vec3(2.4,4.2,2.4);
+float wq=fbm5(cp*.8+vec3(0.,0.,3.));
+float cl=fbm5(cp*1.4+wq*1.35+vec3(5.2,1.3,2.8));
+float det=fbm3(wc*14.+cl*1.5);
+float cov=cl+det*.32+.10*cos(radians(lat-55.)*4.);
+float ca2=smoothstep(-.06,.36,cov);
+ca2*=.55+.45*smoothstep(-.2,.4,det);
+vec3 cday=vec3(.97,.98,1.)*(.62+.5*dif);
+vec3 cnight=vec3(.055,.07,.10);
+vec3 s=mix(nightc,dayc,day);
+vec3 cc=mix(cnight,cday,day);
+s=mix(s,cc,ca2);
+// city lights on the night side, dimmed by cloud
+vec3 li=texture2D(uLights,uv).rgb;
+s+=li*(1.-day)*(1.-ca2*.7)*1.35;
+// twilight warmth
+float tw=exp(-pow((ndl-.03)/.05,2.));
+s+=vec3(1.,.45,.18)*tw*(.05+.18*ca2);
+// atmosphere rim
+float fr=pow(1.-nz,2.6);
+s=s*(.82+.18*nz)+vec3(.30,.62,1.)*fr*(.10+.95*day);
+col=mix(col,s,inside);
+}
+gl_FragColor=vec4(col,1.);
+}`;
+let ok=false;
+if(gl){ try{
+const VS='attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+const sh=(t,src)=>{ const s=gl.createShader(t); gl.shaderSource(s,src); gl.compileShader(s); if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
+const prog=gl.createProgram(); gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS)); gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS)); gl.linkProgram(prog);
+if(!gl.getProgramParameter(prog,gl.LINK_STATUS)) throw new Error('link');
+gl.useProgram(prog);
+const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+const loc=gl.getAttribLocation(prog,'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+const U=n=>gl.getUniformLocation(prog,n);
+gl.uniform1i(U('uLand'),0); gl.uniform1i(U('uLights'),1);
+let texL,texC;
+const tex=(unit,canvas)=>{ const t=gl.createTexture(); gl.activeTexture(gl.TEXTURE0+unit); gl.bindTexture(gl.TEXTURE_2D,t); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,canvas);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE); return t; };
+buildGL=()=>{
+const r=glc.getBoundingClientRect(); if(!r.width) return; const gd=Math.min(1.5,devicePixelRatio||1);
+const w=Math.round(r.width*gd), h=Math.round(r.height*gd); glc.width=w; glc.height=h; gl.viewport(0,0,w,h);
+const L=layout(w,h), T=[L.k,0,0,L.k,L.ox,L.oy], u=gd/L.k;
+const lc=offscreen(w,h), x=lc.getContext('2d'); x.fillStyle='#000'; x.fillRect(0,0,w,h); x.setTransform(...T);
+if('filter' in x){ x.filter=`blur(${Math.round(9*gd)}px)`; x.fillStyle='rgb(0,255,0)'; x.fill(land); x.filter='none'; }
+x.globalCompositeOperation='lighter'; x.fillStyle='rgb(255,0,0)'; x.fill(land);
+const lt=offscreen(w,h), y=lt.getContext('2d'); y.fillStyle='#000'; y.fillRect(0,0,w,h); drawLights(y,T,u);
+if(texL) gl.deleteTexture(texL); if(texC) gl.deleteTexture(texC); texL=tex(0,lc); texC=tex(1,lt);
+gl.uniform2f(U('uRes'),w,h); gl.uniform1f(U('uK'),L.k); gl.uniform2f(U('uOff'),L.ox,L.oy); gl.uniform2f(U('uC'),cx,cy); gl.uniform1f(U('uR'),R0); gl.uniform3f(U('uSun'),...sv); gl.uniform1f(U('uPx'),gd);
+};
+const uT=U('uT');
+render=t=>{ gl.uniform1f(uT,t/1000); gl.drawArrays(gl.TRIANGLE_STRIP,0,4); };
+ok=true;
+}catch(e){ console.warn(e); } }
+if(!ok){ // simple fallback: night globe with lights
+buildGL=()=>{ const r=glc.getBoundingClientRect(); if(!r.width) return; const gd=Math.min(2,devicePixelRatio||1); const w=Math.round(r.width*gd), h=Math.round(r.height*gd); glc.width=w; glc.height=h;
+const c=glc.getContext('2d'); const L=layout(w,h), T=[L.k,0,0,L.k,L.ox,L.oy];
+c.fillStyle='#03060c'; c.fillRect(0,0,w,h); c.setTransform(...T); c.fillStyle='#0a1626'; c.fill(sphere); c.fillStyle='#141d28'; c.fill(land); c.setTransform(1,0,0,1,0,0); drawLights(c,T,gd/L.k); };
+}
+// ---------- overlay: brief markers
+let S={}, hover=null;
+function buildOverlay(){ const r=cv.getBoundingClientRect(); if(!r.width) return; const dpr=Math.min(2,devicePixelRatio||1); cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); S={dpr,w:cv.width,h:cv.height,...layout(cv.width,cv.height)}; }
+function overlay(t){
+if(!S.k) return; const {k,ox,oy,dpr}=S;
+ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,S.w,S.h); ctx.setTransform(k,0,0,k,ox,oy);
+const u=dpr/k;
+for(const b of briefs){
+const on=hover===b, pulse=((t*0.00045+b.ph)%1);
+ctx.strokeStyle=`rgba(170,230,255,${(1-pulse)*.8})`; ctx.lineWidth=1.3*u; ctx.beginPath(); ctx.arc(b.x,b.y,(6+pulse*24)*u,0,7); ctx.stroke();
+ctx.fillStyle='rgba(3,12,24,.45)'; ctx.beginPath(); ctx.arc(b.x,b.y,(on?8:6)*u,0,7); ctx.fill();
+ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineWidth=1.5*u; ctx.stroke();
+ctx.fillStyle=on?'#ffffff':'#8fe3ff'; ctx.beginPath(); ctx.arc(b.x,b.y,(on?4:2.8)*u,0,7); ctx.fill();
+if(S.w/dpr<700 && !on) continue;
+ctx.save(); ctx.shadowColor='rgba(0,0,0,.95)'; ctx.shadowBlur=7*u;
+ctx.font=`500 ${11*u}px "IBM Plex Mono", monospace`; ctx.textBaseline='middle'; ctx.fillStyle='rgba(170,235,255,1)'; ctx.fillText(b.n,b.x+13*u,b.y-1*u);
+ctx.font=`600 ${13.5*u}px "Bricolage Grotesque", sans-serif`; ctx.fillStyle='#ffffff'; ctx.fillText(b.t,b.x+34*u,b.y-1*u);
+ctx.restore();
+}
+}
+function pick(e){
+const r=cv.getBoundingClientRect(); const x=((e.clientX-r.left)*S.dpr-S.ox)/S.k, y=((e.clientY-r.top)*S.dpr-S.oy)/S.k;
+let best=null, bd=1e9; for(const b of briefs){ const d=Math.hypot(b.x-x,b.y-y); if(d<bd){bd=d;best=b;} }
+hover = bd<28*S.dpr/S.k ? best : null; cv.style.cursor = hover? 'pointer':'default';
+if(hover){ tip.innerHTML=`<b>${hover.n} · ${hover.t}</b><span>${hover.s}${hover.id==='litter'?' · open the prototype':' · content from Lot 2'}</span>`; tip.style.left=((hover.x*S.k+S.ox)/S.dpr)+'px'; tip.style.top=((hover.y*S.k+S.oy)/S.dpr)+'px'; tip.style.opacity=1; }
+else tip.style.opacity=0;
+if(reduce) overlay(0);
+}
+cv.addEventListener('mousemove',pick);
+cv.addEventListener('mouseleave',()=>{ hover=null; tip.style.opacity=0; if(reduce) overlay(0); });
+cv.addEventListener('click',e=>{ pick(e); if(hover && hover.id==='litter') location.hash='#marine-litter'; });
+function build(){ buildGL(); buildOverlay(); render(performance.now()); overlay(performance.now()); }
+let rt; new ResizeObserver(()=>{ clearTimeout(rt); rt=setTimeout(build,120); }).observe(hero);
+build();
+if(document.fonts) document.fonts.ready.then(()=>overlay(performance.now()));
+let last=0;
+function loop(t){
+if(visible && !hero.closest('[hidden]')){ if(ok && t-last>60){ last=t; render(t); } overlay(t); }
+requestAnimationFrame(loop);
+}
+if(!reduce) requestAnimationFrame(loop);
+}
+})();
+</script>
+</body>
+</html>
