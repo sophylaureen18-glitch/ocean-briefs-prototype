@@ -14,7 +14,7 @@ Dieser Stand ist die Version, die im Angebot verlinkt wird. Nicht mehr veränder
 
 - Webseite (Demo-Link für das Angebot): https://ocean-briefs-prototype-nine.vercel.app
 - Marine-Litter-Brief direkt: https://ocean-briefs-prototype-nine.vercel.app/#marine-litter
-- Git-Tag dieses Stands: `v1-angebot`
+- Gesicherte Kopie dieses Stands: Branch `angebot-v1`
 - Weiterentwicklung: Branch `entwicklung`
 
 ## Was die Demo zeigt
