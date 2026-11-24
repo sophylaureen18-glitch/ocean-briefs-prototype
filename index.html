@@ -216,7 +216,7 @@ body.home .progress{display:none}
 body.home footer{display:none}
 .h-strip{position:absolute;left:0;right:0;bottom:34px;z-index:3;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:4px var(--gutter-r) 4px var(--gutter-l);justify-content:flex-start}
 .h-strip::-webkit-scrollbar{display:none}
-.h-pill{flex:none;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(6,16,28,.62);border:1px solid rgba(160,210,235,.25);color:#eaf4f8;text-decoration:none;font-size:.85rem;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);cursor:default}
+.h-pill{flex:none;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(6,16,28,.8);border:1px solid rgba(160,210,235,.25);color:#eaf4f8;text-decoration:none;font-size:.85rem;cursor:default}
 .h-pill b{font-family:var(--f-mono);font-weight:500;font-size:.72rem;color:#9fdcf0}
 .h-pill.live{background:#ffd08a;border-color:#ffd08a;color:#1b1003;cursor:pointer;font-weight:600}
 .h-pill.live b{color:#7a4a00}
@@ -247,7 +247,7 @@ body.home footer{display:none}
 .h-btns{justify-content:center}
 .h-copy .eyebrow{letter-spacing:.22em}
 .h-strip{left:auto;right:var(--gutter-r);bottom:9vh;width:min(300px,23vw);flex-direction:column;gap:8px;padding:0;overflow:visible}
-.h-strip::before{content:"All Ocean Briefs";font-family:var(--f-mono);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:#9fdcf0;margin:0 0 4px 4px}
+.h-strip::before{content:attr(data-head);font-family:var(--f-mono);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:#9fdcf0;margin:0 0 4px 4px}
 .h-pill{display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:1px;align-items:baseline;border-radius:14px;padding:10px 14px;font-family:var(--f-display);font-size:.95rem;font-weight:600}
 .h-pill .ps{grid-column:2;font-family:var(--f-body);font-weight:400;font-size:.74rem;color:rgba(234,244,248,.62)}
 .h-pill.live .ps{color:rgba(27,16,3,.7)}
@@ -262,6 +262,7 @@ body.home footer{display:none}
 }
 
 /* hero typography: thin, widely tracked caps, teal sub-line with rules, light condensed statement */
+:lang(de) .h-copy .h-kicker{letter-spacing:.24em;padding-left:.24em}
 .h-copy .h-kicker{max-width:none;font-family:var(--f-hero);font-weight:200;text-transform:uppercase;font-size:clamp(1.05rem,2.35vw,2.35rem);letter-spacing:.38em;padding-left:.38em;line-height:1.2;color:#d6e6f2;text-shadow:0 0 24px rgba(140,200,255,.25)}
 .h-copy .h-sub{max-width:none;display:flex;align-items:center;justify-content:center;gap:18px;font-family:var(--f-hero);font-weight:400;text-transform:uppercase;font-size:clamp(.72rem,1.05vw,.95rem);letter-spacing:.42em;color:#38d6c4;margin-top:-4px}
 .h-sub span{padding-left:.42em}
@@ -285,7 +286,7 @@ body.home footer{display:none}
 .h-scrim{transition:opacity .8s ease}
 .h-pill{font:inherit;font-family:var(--f-hero-c);font-weight:500;font-size:1rem;color:#eaf4f8;text-align:left;cursor:pointer}
 .h-pill.live{color:#1b1003}
-.h-panel{position:absolute;z-index:4;left:var(--gutter-l);top:50%;transform:translateY(-50%);width:min(400px,28vw);display:grid;gap:10px;padding:24px;border-radius:18px;background:rgba(6,16,28,.62);border:1px solid rgba(160,210,235,.22);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#eaf4f8}
+.h-panel{position:absolute;z-index:4;left:var(--gutter-l);top:50%;transform:translateY(-50%);width:min(400px,28vw);display:grid;gap:10px;padding:24px;border-radius:18px;background:rgba(6,16,28,.82);border:1px solid rgba(160,210,235,.22);color:#eaf4f8}
 .h-panel.in{animation:panelIn .8s cubic-bezier(.2,.7,.2,1) .5s both}
 @keyframes panelIn{from{opacity:0;transform:translate(-14px,-50%)}to{opacity:1;transform:translate(0,-50%)}}
 .hp-n{font-family:var(--f-hero);font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;color:#38d6c4}
@@ -312,7 +313,7 @@ body.home footer{display:none}
 .h-ctl{position:absolute;z-index:4;left:var(--gutter-l);bottom:38px;display:flex;gap:10px;align-items:center}
 .h-hint{font-family:var(--f-hero);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(200,225,240,.6);transition:opacity .6s}
 .h-hint.gone{opacity:0}
-.h-reset{font:500 .78rem/1 var(--f-hero);letter-spacing:.12em;text-transform:uppercase;color:#eaf4f8;background:rgba(6,16,28,.6);border:1px solid rgba(160,210,235,.3);border-radius:999px;padding:.8em 1.2em;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.h-reset{font:500 .78rem/1 var(--f-hero);letter-spacing:.12em;text-transform:uppercase;color:#eaf4f8;background:rgba(6,16,28,.6);border:1px solid rgba(160,210,235,.3);border-radius:999px;padding:.8em 1.2em;cursor:pointer;}
 .h-reset:hover{border-color:rgba(160,230,255,.8)}
 @media (max-width:820px){.h-ctl{bottom:92px}.h-hint{font-size:.62rem}}
 @media (prefers-reduced-motion:reduce){#hgl,#hov{transition:none}.h-copy > div > *,.h-strip{animation:none}}
@@ -359,6 +360,7 @@ Ocean Briefs
 <nav aria-label="Display options">
 <button class="chipbtn" id="lang-en" aria-pressed="true">EN</button>
 <button class="chipbtn" id="lang-fr" aria-pressed="false">FR</button>
+<button class="chipbtn" id="lang-de" aria-pressed="false">DE</button>
 <button class="chipbtn" id="review-toggle" aria-pressed="false" data-i18n="review">Show tender requirements</button>
 </nav>
 </div><div class="progress" id="progress"></div></header>
@@ -386,7 +388,7 @@ Ocean Briefs
 <p class="hp-img"></p>
 <div class="hp-b"><a class="h-btn pri" id="hp-open" href="#marine-litter">Open the brief →</a><span class="hp-soon">Content from Lot 2</span><button type="button" class="h-btn" id="hp-back">← Back to Europe</button></div>
 </aside>
-<nav class="h-strip" id="h-strip" aria-label="All Ocean Briefs"></nav>
+<nav class="h-strip" id="h-strip" aria-label="All Ocean Briefs" data-head="All Ocean Briefs"></nav>
 <p class="h-cap">Concept demo by WyvernAI · not an official EU4OceanObs or Mercator Ocean website<span class="h-src"> · imagery: NASA Blue Marble, Black Marble, Worldview/GIBS (VIIRS, GHRSST MUR) · clouds: generated</span></p>
 </section>
 </main>
@@ -544,7 +546,7 @@ Ocean Briefs
 <tr><td>04</td><td>Links to Copernicus Marine, EMODnet and EU policy pages; no copied content.</td></tr>
 <tr><td>05</td><td>Pathways by time and interest; no account, no profile selection.</td></tr>
 <tr><td>06</td><td>This page is the clickable prototype stage; wireframes and iterations follow with Mercator Ocean.</td></tr>
-<tr><td>07</td><td>All text is content, not code. EN/FR switch shows the translation layer; detail text stays EN in this demo.</td></tr>
+<tr><td>07</td><td>All text is content, not code. The EN/FR/DE switch shows the translation layer; long detail text stays EN in this demo.</td></tr>
 <tr><td>09–11</td><td>Static pre-rendered pages, no tracking scripts, system fonts as fallback: built to meet the &lt; 600 ms / &lt; 2 s targets.</td></tr>
 <tr><td>WCAG</td><td>Keyboard navigable, visible focus, reduced-motion support, light and dark themes.</td></tr>
 </table></div>
@@ -567,7 +569,7 @@ const readTimes = {1:"≈ 1 min read",2:"≈ 5 min read",3:"≈ 15 min read"};
 function setDepth(d){
 B.dataset.depth = d;
 document.querySelectorAll('.opt[data-depth]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.depth===String(d)));
-document.getElementById('readtime').textContent = readTimes[d];
+document.getElementById('readtime').textContent = (window.__obRead||Object.values(readTimes))[d-1];
 store.set('ob-depth', d);
 }
 function setLens(l){
@@ -660,19 +662,52 @@ s1e:"Le problème", s1h:"Le plastique domine ce qui s’échoue",
 s2e:"Où vont-ils ?", s2h:"Suivez les déchets portés par les courants", s2p:"Les rivières apportent les déchets à la mer. Ensuite, courants et vent décident s’ils circulent au large ou s’échouent sur une plage. Touchez la mer pour lâcher votre propre nappe.",
 s3e:"De l’observation au bénéfice", s3h:"Comment l’observation européenne devient action"
 };
+const de = {
+review:"Ausschreibungs-Anforderungen zeigen", "h-k":"Europäische Meeresbeobachtung", "h-eye":"Sieben Ocean Briefs", "h-t1":"Europas Ozean,", "h-t2":"aus dem All gesehen.", "h-p":"Kurze, visuelle Geschichten darüber, wie europäische Satelliten und Ozeanmodelle Menschen auf See und an der Küste helfen.", "h-b2":"Lesen: Meeresmüll", "brief-of":"Ocean Brief 04 von 07", theme:"Verschmutzung",
+title:"Meeresmüll: Plastik vom All bis zum Strand verfolgen",
+lede:"Satelliten, Ozeanmodelle und Strandzählungen zeigen gemeinsam, woher Müll kommt, wohin er treibt und wo er landet. Dieses Wissen sagt Aufräumteams, wo sie hin müssen, und der Politik, was wirkt.",
+layers:"3 Detailstufen", "keys-h":"Kernaussagen",
+k1:"Der meiste Müll an Europas Stränden ist Plastik, und eine kurze Liste von Einwegprodukten und Fischereigerät macht den Großteil aus.",
+k2:"Meeresströmungen und Wind entscheiden, wo treibender Müll landet. Die Modelle von Copernicus Marine machen diese Wege vorhersagbar.",
+k3:"Satellitenbilder erkennen heute große treibende Felder. Das hilft, Aufräumaktionen gezielt einzusetzen und zu prüfen, ob Maßnahmen wirken.",
+"time-q":"Wie viel Zeit haben Sie?", d1:"Nur Kernaussagen", d2:"Geschichte und interaktive Karte", d3:"Alle wissenschaftlichen Details",
+"lens-q":"Was interessiert Sie am meisten?", l1:"Politik", l1s:"Ziele und Berichte", l2:"Wissenschaft", l2s:"Methoden und Daten", l3:"Küstenpraxis", l3s:"Aufräumen und lokale Nutzung",
+"path-note":"Ohne Anmeldung und ohne Profil. Ihre Auswahl ändert nur, was diese Seite zeigt, und wird auf diesem Gerät gespeichert.",
+s1e:"Das Problem", s1h:"Plastik dominiert, was angespült wird",
+s2e:"Wohin treibt es?", s2h:"Verfolgen Sie Müll mit der Strömung", s2p:"Flüsse bringen Müll ins Meer. Dann entscheiden Strömung und Wind, ob er draußen kreist oder an einem Strand landet. Tippen Sie aufs Meer, um selbst ein Müllfeld auszusetzen.",
+s3e:"Von der Beobachtung zum Nutzen", s3h:"Wie europäische Beobachtung zu Handeln wird"
+};
+/* brief names and UI strings shared with the globe */
+const OB_BRIEFS = {
+fr:[["Sargasses","Prévoir les arrivées d’algues sur les côtes"],["Pêche durable","L’état de l’océan pour gérer les stocks"],["L’Arctique en mutation","Banquise, navigation et climat"],["Déchets marins","Suivre le plastique de l’espace jusqu’au rivage"],["Risques côtiers","Surcotes et montée du niveau de la mer"],["Vagues de chaleur marines","Épisodes de réchauffement et écosystèmes"],["Qualité de l’eau","Efflorescences et pollution côtière"]],
+de:[["Sargassum","Vorhersagen für Algenanschwemmungen"],["Nachhaltige Fischerei","Meereszustand für das Bestandsmanagement"],["Die Arktis im Wandel","Meereis, Schifffahrt und Klima"],["Meeresmüll","Plastik vom All bis zum Strand verfolgen"],["Küstengefahren","Sturmfluten und Meeresspiegelanstieg"],["Marine Hitzewellen","Wärmeereignisse und Ökosysteme"],["Wasserqualität","Algenblüten und Küstenverschmutzung"]]
+};
+const OB_UI = {
+en:{head:"All Ocean Briefs", soon:"Content from Lot 2", openProto:"● Open prototype →", read:["≈ 1 min read","≈ 5 min read","≈ 15 min read"]},
+fr:{head:"Tous les Ocean Briefs", soon:"Contenu du lot 2", openProto:"● Ouvrir le prototype →", read:["≈ 1 min de lecture","≈ 5 min de lecture","≈ 15 min de lecture"]},
+de:{head:"Alle Ocean Briefs", soon:"Inhalt aus Los 2", openProto:"● Prototyp öffnen →", read:["≈ 1 Min. Lesezeit","≈ 5 Min. Lesezeit","≈ 15 Min. Lesezeit"]}
+};
+window.OB_BRIEFS=OB_BRIEFS;
 const en = {};
 document.querySelectorAll('[data-i18n]').forEach(el=>{ en[el.dataset.i18n]=el.textContent; });
 function setLang(l){
-const d = l==='fr'?fr:en;
-document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.dataset.i18n; if(d[k]) el.textContent=d[k]; });
+if(!OB_UI[l]) l='en';
+const d = l==='fr'?fr:l==='de'?de:en;
+document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.dataset.i18n; el.textContent=d[k]||en[k]; });
 document.documentElement.lang = l;
-document.getElementById('lang-en').setAttribute('aria-pressed', l==='en');
-document.getElementById('lang-fr').setAttribute('aria-pressed', l==='fr');
+['en','fr','de'].forEach(x=>document.getElementById('lang-'+x).setAttribute('aria-pressed', l===x));
+const names = OB_BRIEFS[l] || briefs.map(b=>[b[1],b[2]]);
+document.querySelectorAll('#h-strip .h-pill').forEach((el,i)=>{ el.querySelector('.pt').textContent=names[i][0]; el.querySelector('.ps').textContent=names[i][1]; });
+document.getElementById('h-strip').dataset.head = OB_UI[l].head;
+document.querySelectorAll('#lib .card').forEach((el,i)=>{ if(i>=names.length) return; el.querySelector('h3').textContent=names[i][0]; el.querySelector('.small').textContent=names[i][1]; el.querySelector('.st').textContent = briefs[i][3]?OB_UI[l].openProto:OB_UI[l].soon; });
+window.__obLang = l; window.__obRead = OB_UI[l].read;
+const rt=document.getElementById('readtime'); if(rt) rt.textContent = OB_UI[l].read[(+document.body.dataset.depth||2)-1];
 store.set('ob-lang', l);
+window.dispatchEvent(new CustomEvent('oblang',{detail:l}));
 }
-document.getElementById('lang-en').addEventListener('click',()=>setLang('en'));
-document.getElementById('lang-fr').addEventListener('click',()=>setLang('fr'));
-if(store.get('ob-lang')==='fr') setLang('fr');
+['en','fr','de'].forEach(x=>document.getElementById('lang-'+x).addEventListener('click',()=>setLang(x)));
+window.__obLang='en';
+setLang(store.get('ob-lang') || 'en');
 /* ---------- Drift explorer ---------- */
 const cv = document.getElementById('sim'), ctx = cv.getContext('2d');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -828,6 +863,30 @@ const BRIEFS=[
 {id:'heat',n:'06',t:'Marine heatwaves',s:'Warming events and ecosystems',lon:26,lat:34.5,box:[30,18,39,34],img:'img/heat.png',data:true,cap:'Sea temperature anomaly · GHRSST MUR via NASA GIBS · 20 July 2024',line:'Red and purple show water far warmer than normal across the eastern Mediterranean. A heatwave you cannot see in a photo, only in the data.'},
 {id:'water',n:'07',t:'Water quality',s:'Blooms and coastal pollution',lon:19.5,lat:57.5,box:[54,14,61,26],img:'img/water.jpg',cap:'Real image · NASA VIIRS true colour · 26 July 2018',line:'The great cyanobacteria bloom of July 2018: green swirls spreading across the central Baltic.'}
 ].map(b=>({...b,ph:Math.random()*6,sx:0,sy:0,vis:false}));
+const DATES={sargassum:'2020-06-18',fisheries:'2019-06-05',arctic:'2024-04-25',litter:'2019-07-30',hazards:'2019-02-26',heat:'2024-07-20',water:'2018-07-26'};
+const LINES={
+fr:{sargassum:'De la poussière saharienne dérive au-dessus des Canaries. Les radeaux de sargasses sont trop fins pour être vus à cette échelle ; il faut des indices d’algues dédiés pour les repérer.',
+fisheries:'Une efflorescence de plancton turquoise à l’ouest de l’Écosse : la base de la chaîne alimentaire dont dépendent les stocks de poissons, visible depuis l’espace.',
+arctic:'Le Svalbard et sa banquise au printemps, avec des eaux libres sombres à l’ouest. Les satellites la cartographient chaque jour tandis qu’elle s’amincit et recule.',
+litter:'Une journée d’été claire sur les Baléares, la Sardaigne et la Corse. Les déchets flottants sont trop petits pour être vus ici ; les modèles de dérive montrent où ils vont.',
+hazards:'Des eaux chargées de sédiments au large de l’Angleterre, des Pays-Bas et de la mer des Wadden : des côtes basses, les plus exposées aux surcotes.',
+heat:'Le rouge et le violet montrent une eau bien plus chaude que la normale dans l’est de la Méditerranée. Une vague de chaleur invisible sur une photo, visible seulement dans les données.',
+water:'La grande efflorescence de cyanobactéries de juillet 2018 : des tourbillons verts dans la Baltique centrale.'},
+de:{sargassum:'Saharastaub zieht über die Kanarischen Inseln. Sargassum-Teppiche sind in diesem Maßstab zu dünn; um sie zu finden, braucht es spezielle Algen-Indizes aus Satellitendaten.',
+fisheries:'Eine türkise Planktonblüte westlich von Schottland: die Basis der Nahrungskette, von der die Fischbestände abhängen, sichtbar aus dem All.',
+arctic:'Spitzbergen und das Meereis ringsum im Frühjahr, im Westen dunkles offenes Wasser. Satelliten kartieren das Eis täglich, während es dünner wird und sich zurückzieht.',
+litter:'Ein klarer Sommertag über den Balearen, Sardinien und Korsika. Treibender Müll ist hier zu klein, um ihn zu sehen; Driftmodelle zeigen, wohin er treibt.',
+hazards:'Sedimentreiches Wasser vor England, den Niederlanden und dem Wattenmeer: flache, tief liegende Küsten, die Sturmfluten am härtesten treffen.',
+heat:'Rot und Lila zeigen Wasser, das im östlichen Mittelmeer weit wärmer ist als normal. Eine Hitzewelle, die man auf keinem Foto sieht, nur in den Daten.',
+water:'Die große Blaualgenblüte vom Juli 2018: grüne Wirbel in der zentralen Ostsee.'}};
+const UI={
+en:{of:n=>`Ocean Brief ${n} of 07`, open:'Open the brief →', soon:'Content from Lot 2', back:'← Back to Europe', reset:'⟲ Back to Europe', hint:'Drag to turn the Earth · scroll to zoom', hintT:'Drag to turn · pinch to zoom', fly:'click to fly there', photo:'Real image · NASA VIIRS true colour', data:'Sea temperature anomaly · GHRSST MUR via NASA GIBS'},
+fr:{of:n=>`Ocean Brief ${n} sur 07`, open:'Ouvrir le brief →', soon:'Contenu du lot 2', back:'← Retour à l’Europe', reset:'⟲ Retour à l’Europe', hint:'Faites glisser pour tourner la Terre · molette pour zoomer', hintT:'Glissez pour tourner · pincez pour zoomer', fly:'cliquez pour y aller', photo:'Image réelle · NASA VIIRS couleurs vraies', data:'Anomalie de température de surface · GHRSST MUR via NASA GIBS'},
+de:{of:n=>`Ocean Brief ${n} von 07`, open:'Brief öffnen →', soon:'Inhalt aus Los 2', back:'← Zurück nach Europa', reset:'⟲ Zurück nach Europa', hint:'Ziehen zum Drehen · Mausrad zum Zoomen', hintT:'Ziehen zum Drehen · zwei Finger zum Zoomen', fly:'klicken zum Hinfliegen', photo:'Echtes Bild · NASA VIIRS Echtfarben', data:'Abweichung der Meerestemperatur · GHRSST MUR über NASA GIBS'}};
+BRIEFS.forEach(b=>{ b.en={t:b.t,s:b.s,line:b.line}; });
+let LANG='en';
+const ui=()=>UI[LANG]||UI.en;
+function capFor(b){ const d=new Date(DATES[b.id]+'T12:00:00Z'); return `${b.data?ui().data:ui().photo} · ${d.toLocaleDateString(LANG==='en'?'en-GB':LANG,{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'})}`; }
 
 // ---------- camera maths (orthographic globe) ----------
 function toWorld(v,lon0,lat0){ const c=Math.cos(lat0), s=Math.sin(lat0); const x1=v[0], y1=v[1]*c+v[2]*s, z1=-v[1]*s+v[2]*c; const cl=Math.cos(lon0), sl=Math.sin(lon0); return [x1*cl+z1*sl, y1, -x1*sl+z1*cl]; }
@@ -865,7 +924,7 @@ function lerp(a,b,e){ return a+(b-a)*e; }
 
 // ---------- WebGL ----------
 const gl=glc.getContext('webgl',{antialias:false})||glc.getContext('experimental-webgl');
-let ok=false, U, prog, gd=1, surf, surfHalf, cl, sky, dummy, texL, texC, surfFull=false, pass, bind;
+let ok=false, U, prog, gd=1, surf, surfHalf, cl, sky, dummy, texL, texC, surfFull=false, pass, bind, bake=null;
 const FS0=`precision highp float;
 uniform vec2 uRes; uniform float uPx; uniform vec3 uCam; uniform vec2 uRot; uniform vec3 uSun; uniform vec3 uSunW; uniform float uT;
 uniform int uPass;
@@ -938,6 +997,24 @@ if(uPass==3){
   gl_FragColor=vec4(col,1.);
   return;
 }
+if(uPass==4){
+  // bake once: clouds and ocean/ice texture on an equirectangular world map
+  float latr=(.5-uvG.y)*3.14159265, lonr=(uvG.x-.5)*6.2831853;
+  vec3 w=vec3(cos(latr)*sin(lonr), sin(latr), cos(latr)*cos(lonr)); float lat=degrees(latr);
+  vec3 cp=w*vec3(2.4,4.2,2.4);
+  float wq=fbm5(cp*.8+vec3(0.,0.,3.));
+  float cl=fbm5(cp*1.4+wq*1.35+vec3(5.2,1.3,2.8));
+  float det=fbm3(w*14.+cl*1.5);
+  float cov=cl+det*.32+.10*cos(radians(lat-55.)*4.);
+  float d=smoothstep(-.06,.36,cov);
+  d*=.55+.45*smoothstep(-.2,.4,det);
+  d*=.82+.18*(1.-abs(snoise(w*40.+cl)));
+  float ov=fbm5(w*7.+fbm3(w*3.)*.8);
+  float iceN=fbm3(w*14.+vec3(9.1,2.2,4.4));
+  float cracks=smoothstep(.0,.025,abs(fbm3(w*45.)));
+  gl_FragColor=vec4(d, ov*.5+.5, iceN*.5+.5, cracks);
+  return;
+}
 vec2 q=vec2((px.x-uCam.x)/uCam.z, -(px.y-uCam.y)/uCam.z);
 float r=length(q);
 float aa=1.5*uPx/uCam.z;
@@ -960,46 +1037,6 @@ vec2 uvE=vec2(uA, .5-latr/3.14159265);
 float ndl=dot(n,uSun);
 float dif=max(ndl,0.);
 float day=smoothstep(-0.03,0.13,ndl);
-if(uPass==0){
-  if(r>1.0){ gl_FragColor=vec4(0.); return; }
-  vec4 lt=texture2D(uLand,uvE); float landM=lt.r; float shelf=lt.g;
-  vec3 bm=texture2D(uBM,uvE).rgb;
-  vec3 lc=pow(bm,vec3(.9))*1.1;
-  float ov=fbm5(w*7.+fbm3(w*3.)*.8);
-  vec3 oc=mix(vec3(.015,.085,.21),vec3(.035,.20,.40),.5+.5*ov);
-  oc=mix(oc,vec3(.08,.42,.58),shelf*(1.-landM)*.75);
-  float iceN=fbm3(w*14.+vec3(9.1,2.2,4.4));
-  float ice=smoothstep(74.5,77.5,lat+iceN*3.5)*(1.-landM);
-  float cracks=smoothstep(.0,.025,abs(fbm3(w*45.)));
-  vec3 icec=mix(vec3(.74,.82,.88),vec3(.90,.94,.97),cracks)*(.9+.12*iceN);
-  oc=mix(oc,icec,ice);
-  vec3 surfc=mix(oc,lc,landM);
-  vec3 dayc=surfc*(.55+.8*dif);
-  vec3 hv=normalize(uSun+vec3(0.,0.,1.)); float spec=pow(max(dot(n,hv),0.),45.)*(1.-landM)*.45;
-  dayc+=vec3(1.,.93,.80)*spec;
-  vec3 nightc=mix(vec3(.013,.027,.056),vec3(.034,.042,.056),landM);
-  gl_FragColor=vec4(mix(nightc,dayc,day),1.);
-  return;
-}
-if(uPass==1){
-  if(r>1.02){ gl_FragColor=vec4(0.); return; }
-  float ang=uT*0.006; float ca=cos(ang), sa=sin(ang);
-  vec3 wc=vec3(w.x*ca-w.z*sa, w.y, w.x*sa+w.z*ca);
-  vec3 cp=wc*vec3(2.4,4.2,2.4);
-  float wq=fbm5(cp*.8+vec3(0.,0.,3.));
-  float cl=fbm5(cp*1.4+wq*1.35+vec3(5.2,1.3,2.8));
-  float det=fbm3(wc*14.+cl*1.5);
-  float cov=cl+det*.32+.10*cos(radians(lat-55.)*4.);
-  float d=smoothstep(-.06,.36,cov);
-  d*=.55+.45*smoothstep(-.2,.4,det);
-  d*=.82+.18*(1.-abs(snoise(wc*40.+cl)));
-  vec3 wcs=wc+uSunW*.03; vec3 cps=wcs*vec3(2.4,4.2,2.4);
-  float cls=fbm5(cps*1.4+wq*1.35+vec3(5.2,1.3,2.8));
-  float ds=smoothstep(-.06,.36,cls+det*.32+.10*cos(radians(lat-55.)*4.));
-  float lightT=clamp(1.-(ds-d)*.7,.78,1.);
-  gl_FragColor=vec4(d,lightT,0.,1.);
-  return;
-}
 vec3 col=texture2D(uSpace,uvG).rgb;
 vec2 cell=floor(px/(2.0*uPx));
 float hs=hash(cell);
@@ -1008,15 +1045,30 @@ float side=max(dot(normalize(vec3(q,0.0001)),uSun),0.);
 float dist=(r-1.)*uCam.z/uPx;
 if(r>1.) col+=vec3(.28,.58,1.)*(exp(-dist/10.)*.9+exp(-dist/40.)*.25)*(.12+.9*side);
 if(inside>0.){
-  vec3 s=texture2D(uSurf,uvG).rgb;
-  vec2 cs=texture2D(uCl,uvG).rg; float ca2=cs.r; float lightT=cs.g;
+  vec4 lt=texture2D(uLand,uvE); float landM=lt.r; float shelf=lt.g;
+  vec4 bk=texture2D(uSurf,uvE);
+  float ov=bk.g*2.-1., iceN=bk.b*2.-1., cracks=bk.a;
+  vec3 lc=pow(texture2D(uBM,uvE).rgb,vec3(.9))*1.1;
+  vec3 oc=mix(vec3(.015,.085,.21),vec3(.035,.20,.40),.5+.5*ov);
+  oc=mix(oc,vec3(.08,.42,.58),shelf*(1.-landM)*.75);
+  float ice=smoothstep(74.5,77.5,lat+iceN*3.5)*(1.-landM);
+  oc=mix(oc,mix(vec3(.74,.82,.88),vec3(.90,.94,.97),cracks)*(.9+.12*iceN),ice);
+  vec3 surfc=mix(oc,lc,landM);
+  vec3 dayc=surfc*(.55+.8*dif);
+  vec3 hv=normalize(uSun+vec3(0.,0.,1.)); dayc+=vec3(1.,.93,.80)*pow(max(dot(n,hv),0.),45.)*(1.-landM)*.45;
+  vec3 s=mix(mix(vec3(.013,.027,.056),vec3(.034,.042,.056),landM),dayc,day);
+  // clouds drift east by shifting the baked map
+  vec2 cuv=vec2(uvE.x-uT*0.006/6.2831853, uvE.y);
+  float sl=sin(lonr), cl0=cos(lonr), sla=sin(latr), cla=max(cos(latr),.2);
+  vec2 sOff=vec2(dot(uSunW,vec3(cl0,0.,-sl))/cla/6.2831853, -dot(uSunW,vec3(-sla*sl,cla,-sla*cl0))/3.14159265)*.03;
+  float ca2=texture2D(uSurf,cuv).r; float ds=texture2D(uSurf,cuv+sOff).r;
+  float lightT=clamp(1.-(ds-ca2)*.7,.78,1.);
+  float shd=texture2D(uSurf,cuv-sOff*1.4).r;
   float lonD=mod(degrees(lonr)+180.,360.)-180.;
   vec2 du=vec2((lonD-uDetBox.y)/(uDetBox.w-uDetBox.y),(uDetBox.z-lat)/(uDetBox.z-uDetBox.x));
   float din=smoothstep(0.,.04,du.x)*smoothstep(1.,.96,du.x)*smoothstep(0.,.04,du.y)*smoothstep(1.,.96,du.y);
   float dfade=din*uDetMix;
   ca2*=1.-uDetMix*(uDetData>.5?.85:1.);
-  vec2 shOff=-uSun.xy*vec2(1.,-1.)*(6.*uPx)/uRes;
-  float shd=texture2D(uCl,uvG+shOff).r;
   s*=1.-.38*shd*day*(1.-ca2);
   vec3 cday=vec3(.98,.99,1.)*(.55+.55*dif)*lightT;
   vec3 cnight=vec3(.075,.09,.125)*(.75+.25*lightT);
@@ -1081,6 +1133,13 @@ function buildWorld(g,day,night){
   if('filter' in x){ x.filter='blur(10px)'; x.fillStyle='rgb(0,255,0)'; x.fill(landP); x.filter='none'; }
   x.globalCompositeOperation='lighter'; x.fillStyle='rgb(255,0,0)'; x.fill(landP);
   texL=worldTex(0,lc); texC=worldTex(1,night); worldTex(6,day);
+  // bake clouds and ocean texture into a 2048x1024 world map (once)
+  { const t=gl.createTexture(); bind(2,t); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,2048,1024,0,gl.RGBA,gl.UNSIGNED_BYTE,null); linTex();
+    const f=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,f); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0);
+    bind(2,dummy); gl.viewport(0,0,2048,1024); gl.uniform1i(U('uPass'),4); gl.uniform2f(U('uRes'),2048,1024); gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null); gl.deleteFramebuffer(f);
+    bind(2,t); gl.generateMipmap(gl.TEXTURE_2D); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
+    bake=t; }
   const d=gl.createTexture(); bind(7,d); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,0])); linTex(); detTex=d;
   gl.uniform4f(U('uDetBox'),0,0,1,1); gl.uniform1f(U('uDetMix'),0); gl.uniform1f(U('uDetData'),0);
 }
@@ -1101,16 +1160,15 @@ function resize(){
   W=r.width; H=r.height;
   const base=baseCam(W,H);
   cam = zoomed ? zoomCam(W,H,zoomed) : base; animating=false; sunWorld = zoomed ? zoomSun(zoomed) : sunBase.slice();
-  const dpr=Math.min(2,devicePixelRatio||1); cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); S={dpr,w:cv.width,h:cv.height};
+  const dpr=Math.min(1.5,devicePixelRatio||1); cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); S={dpr,w:cv.width,h:cv.height};
   if(ok){
-    gd=Math.min(1.5,devicePixelRatio||1);
+    gd=Math.min(1.5,devicePixelRatio||1); if(W*H*gd*gd>3.6e6) gd=Math.sqrt(3.6e6/(W*H));
     glc.width=Math.round(W*gd); glc.height=Math.round(H*gd);
-    [surf,surfHalf,cl,sky].forEach(freeTarget);
-    surf=target(glc.width,glc.height); surfHalf=target(Math.ceil(glc.width/2),Math.ceil(glc.height/2)); cl=target(Math.ceil(glc.width/2),Math.ceil(glc.height/2)); sky=target(glc.width,glc.height);
+    freeTarget(sky); sky=target(glc.width,glc.height);
     const tall=H>W*1.05;
     const moon= tall? [W*.87*gd,H*.03*gd,W*.042*gd] : [W*.925*gd,H*.165*gd,H*.04*gd];
     gl.uniform3f(U('uMoon'),...moon); gl.uniform2f(U('uSunP'), (tall?W*1.06:W)*gd, (tall?H*1.03:H*1.05)*gd);
-    const keep=cam, keepS=sunWorld; cam=base; sunWorld=sunBase; bind(2,dummy); bind(3,dummy); bind(5,dummy); runPass(3,sky,1); cam=keep; sunWorld=keepS;
+    const keep=cam, keepS=sunWorld; cam=base; sunWorld=sunBase; bind(5,dummy); runPass(3,sky,1); cam=keep; sunWorld=keepS;
     surfFull=false;
   } else {
     glc.width=Math.round(W*dpr); glc.height=Math.round(H*dpr);
@@ -1125,11 +1183,7 @@ function drawGL(t){
     const gr=c.createRadialGradient(cam.cx*k,cam.cy*k,0,cam.cx*k,cam.cy*k,cam.R*k); gr.addColorStop(0,'#123050'); gr.addColorStop(1,'#071526'); c.fillStyle=gr; c.beginPath(); c.arc(cam.cx*k,cam.cy*k,cam.R*k,0,7); c.fill(); return;
   }
   gl.uniform1f(U('uT'),t/1000);
-  let useSurf;
-  if(animating||interacting){ bind(2,dummy); bind(3,dummy); bind(5,dummy); runPass(0,surfHalf,.5); useSurf=surfHalf; surfFull=false; }
-  else { if(!surfFull){ bind(2,dummy); bind(3,dummy); bind(5,dummy); runPass(0,surf,1); surfFull=true; } useSurf=surf; }
-  bind(3,dummy); bind(5,dummy); runPass(1,cl,.5);
-  bind(2,useSurf.t); bind(3,cl.t); bind(5,sky.t); runPass(2,null,1);
+  bind(2,bake); bind(5,sky.t); runPass(2,null,1);
 }
 let hover=null;
 function overlay(t){
@@ -1190,15 +1244,18 @@ function zoomTo(b){
   if(zoomed===b) return;
   fly(zoomCam(W,H,b),b); zoomed=b; hover=null; tip.style.opacity=0; resetBtn.hidden=true; detFor=null; detMix=0; ok&&gl.uniform1f(U('uDetMix'),0); useDetail(b);
   hero.classList.add('zoomed');
-  panel.querySelector('.hp-n').textContent=`Ocean Brief ${b.n} of 07`;
+  fillPanel(b);
+  panel.hidden=false; panel.classList.remove('in'); void panel.offsetWidth; panel.classList.add('in');
+  syncPills();
+}
+function fillPanel(b){
+  panel.querySelector('.hp-n').textContent=ui().of(b.n);
   panel.querySelector('.hp-t').textContent=b.t;
   panel.querySelector('.hp-s').textContent=b.s;
   panel.querySelector('.hp-l').textContent=b.line;
   panel.querySelector('.hp-coord').textContent=`${Math.abs(b.lat).toFixed(1)}° ${b.lat>=0?'N':'S'} · ${Math.abs(b.lon).toFixed(1)}° ${b.lon>=0?'E':'W'}`;
-  panel.querySelector('.hp-img').textContent=b.cap;
+  panel.querySelector('.hp-img').textContent=capFor(b);
   panel.querySelector('#hp-open').hidden=!b.live; panel.querySelector('.hp-soon').hidden=!!b.live;
-  panel.hidden=false; panel.classList.remove('in'); void panel.offsetWidth; panel.classList.add('in');
-  syncPills();
 }
 function zoomOut(){
   resetBtn.hidden=true; hero.classList.remove('exploring');
@@ -1219,13 +1276,24 @@ function pick(e){
   const hit = bd<28 ? best : null;
   cv.style.cursor = hit? 'pointer':'default';
   if(!zoomed){ hover=hit; syncPills();
-    if(hover){ tip.innerHTML=`<b>${hover.n} · ${hover.t}</b><span>${hover.s} · click to fly there</span>`; tip.style.left=hover.sx+'px'; tip.style.top=hover.sy+'px'; tip.style.opacity=1; }
+    if(hover){ tip.innerHTML=`<b>${hover.n} · ${hover.t}</b><span>${hover.s} · ${ui().fly}</span>`; tip.style.left=hover.sx+'px'; tip.style.top=hover.sy+'px'; tip.style.opacity=1; }
     else tip.style.opacity=0; }
   return hit;
 }
 const clampLat=l=>Math.max(-80,Math.min(85,l));
 const hint=document.getElementById('h-hint'), resetBtn=document.getElementById('h-reset');
-if(matchMedia('(pointer: coarse)').matches) hint.textContent='Drag to turn · pinch to zoom';
+const coarse=matchMedia('(pointer: coarse)').matches;
+function applyLang(l){
+  LANG=UI[l]?l:'en';
+  BRIEFS.forEach((b,i)=>{ const nm=((window.OB_BRIEFS||{})[LANG]||[])[i]; const L=LINES[LANG]&&LINES[LANG][b.id];
+    b.t=nm?nm[0]:b.en.t; b.s=nm?nm[1]:b.en.s; b.line=L||b.en.line; });
+  hint.textContent=coarse?ui().hintT:ui().hint; resetBtn.textContent=ui().reset;
+  panel.querySelector('#hp-open').textContent=ui().open; panel.querySelector('.hp-soon').textContent=ui().soon; panel.querySelector('#hp-back').textContent=ui().back;
+  if(zoomed) fillPanel(zoomed);
+  overlay(performance.now());
+}
+addEventListener('oblang',e=>applyLang(e.detail));
+applyLang(window.__obLang||'en');
 function markMoved(){ if(!userMoved){ userMoved=true; hint.classList.add('gone'); setTimeout(()=>hint.hidden=true,600); } resetBtn.hidden=!!zoomed; if(!zoomed) hero.classList.add('exploring'); }
 resetBtn.addEventListener('click',()=>{ if(zoomed) zoomOut(); else { fly(baseCam(W,H),null); } resetBtn.hidden=true; hero.classList.remove('exploring'); });
 const pointers=new Map(); let dragging=false, down=null, pinch=null, suppressClick=false;
