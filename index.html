@@ -257,7 +257,7 @@ body.home footer{display:none}
 .h-pill{display:flex;border-radius:999px;padding:8px 14px;font-size:.85rem}
 .h-pill .ps{display:none}
 .h-pill.hl{transform:translateY(-2px)}
-.h-copy{padding-top:112px!important}
+.h-copy{padding-top:128px!important}
 }
 
 /* hero typography: thin, widely tracked caps, teal sub-line with rules, light condensed statement */
@@ -325,6 +325,7 @@ body.home footer{display:none}
 .fleet{position:relative;overflow:hidden;background:
  radial-gradient(circle at 100% 5vh, rgba(255,250,238,1) 0, rgba(255,242,220,.85) 1.2vh, rgba(255,232,196,.42) 4vh, rgba(255,220,175,.16) 12vh, rgba(255,205,150,.06) 32vh, rgba(255,200,150,0) 70vh),
  radial-gradient(ellipse 70vw 1.6vh at 100% 5vh, rgba(255,228,190,.42), rgba(255,228,190,0)),
+ var(--stars,none) 0 0/1024px 1024px repeat,
  linear-gradient(180deg,#020409 0%,#040a14 30%,#050c18 60%,#030710 85%,#020409 100%);color:#eaf4f8;padding-block:clamp(220px,28vh,280px) 180px}
 .fleet canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .fleet-in{position:relative;z-index:1;display:grid;gap:48px}
@@ -354,7 +355,7 @@ body.home footer{display:none}
 /* seamless hand-over from the home globe to the satellite section: the globe fades out,
    the same sun sits just below the bottom-right corner and glows into both sections */
 .h-hero{background:#020409}
-.h-hero:not(.zoomed):not(.exploring) #hgl{-webkit-mask-image:linear-gradient(180deg,#000 78%,rgba(0,0,0,.4) 92%,transparent 100%);mask-image:linear-gradient(180deg,#000 78%,rgba(0,0,0,.4) 92%,transparent 100%)}
+
 .h-hero::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;background:
  radial-gradient(circle at 100% calc(100% + 5vh), rgba(255,250,238,1) 0, rgba(255,242,220,.85) 1.2vh, rgba(255,232,196,.42) 4vh, rgba(255,220,175,.16) 12vh, rgba(255,205,150,.06) 32vh, rgba(255,200,150,0) 70vh),
  radial-gradient(ellipse 70vw 1.6vh at 100% calc(100% + 5vh), rgba(255,228,190,.42), rgba(255,228,190,0))}
@@ -372,7 +373,7 @@ a.card.live:hover{outline:2px solid var(--buoy);outline-offset:2px}
 .h-strip{justify-content:flex-start;bottom:40px}
 .h-cap{font-size:.58rem;bottom:10px}
 .h-src{display:none}
-.h-copy{padding-top:84px!important}
+.h-copy{padding-top:128px!important}
 .h-scrim{background:linear-gradient(180deg,rgba(3,6,12,.92) 0%,rgba(3,6,12,.65) 40%,rgba(3,6,12,0) 62%)}
 .h-copy{align-items:flex-start;padding-top:36px}
 .h-copy > div{max-width:none}
@@ -963,11 +964,11 @@ return norm([T[0]*c+E[0]*s2,T[1]*c+E[1]*s2,T[2]*c+E[2]*s2]); }
 function project(b,cam){ const v=toView(lonlatVec(b.lon,b.lat),cam.lon*D2R,cam.lat*D2R); return {x:cam.cx+cam.R*v[0], y:cam.cy-cam.R*v[1], vis:v[2]>0.08}; }
 function listWidth(w,h){ return h>w*1.05?0:Math.min(300,w*.23)+w*.05; }
 function baseCam(w,h){
+// the whole Earth sits in the hero, under the headline, never cut off
 const tall=h>w*1.05, listW=listWidth(w,h);
-const top=h*(tall?.46:.5), bot=h*(tall?.13:.05), avail=h-top-bot;
-const k=Math.min(avail/840,(w-listW-48)/800);
-const ox=(w-listW)/2-1020*k, oy=top-101*k+(avail-840*k)/2;
-return {cx:ox+1008*k, cy:oy+560*k, R:1000*k, lon:2, lat:50};
+if(tall){ const bottom=h-128, R=Math.min(w*.44,(bottom-h*.5)/2); return {cx:w/2, cy:bottom-R, R, lon:2, lat:50}; }
+const top=h*.3, bottom=h*.915, R=Math.min((bottom-top)/2,(w-listW-48)/2);
+return {cx:(w-listW)/2, cy:bottom-R, R, lon:2, lat:50};
 }
 function zoomCam(w,h,b){
 const tall=h>w*1.05, listW=listWidth(w,h);
@@ -1433,6 +1434,10 @@ addEventListener('oblang',e=>render(e.detail)); render(window.__obLang||'en');
 // ---- 3D satellites over the Earth's limb (three.js) ----
 const sec=document.getElementById('fleet'), cv=document.getElementById('fleet-cv'), ctx=cv.getContext('2d');
 const glc=document.getElementById('fleet-gl');
+(function starTile(){ const S=1024, c=document.createElement('canvas'); c.width=S; c.height=S; const x=c.getContext('2d');
+  for(let cy=0;cy<S/2;cy++) for(let cx=0;cx<S/2;cx++){ const h=Math.sin((cx+3.1)*127.1+(cy+7.7)*311.7)*43758.5453, hs=h-Math.floor(h);
+    if(hs>.998){ const b=(hs-.998)/.002*.6; x.fillStyle=`rgba(191,209,255,${b})`; x.fillRect(cx*2,cy*2,2,2); } }
+  sec.style.setProperty('--stars',`url(${c.toDataURL()})`); })();
 const head=sec.querySelector('.fleet-head');
 const SATS={s1:'Sentinel-1',s2:'Sentinel-2',s3:'Sentinel-3',s6:'Sentinel-6'};
 const DESC={en:{s1:'radar · 693 km',s2:'optical 10 m · 786 km',s3:'colour & temperature · 814 km',s6:'sea level · 1,336 km'},fr:{s1:'radar · 693 km',s2:'optique 10 m · 786 km',s3:'couleur et température · 814 km',s6:'niveau de la mer · 1 336 km'},de:{s1:'Radar · 693 km',s2:'Optik 10 m · 786 km',s3:'Farbe & Temperatur · 814 km',s6:'Meeresspiegel · 1.336 km'}};
@@ -1623,7 +1628,7 @@ function build3D(){
   const sg=new T.BufferGeometry(), N=900, pos=new Float32Array(N*3);
   for(let i=0;i<N;i++){ pos[i*3]=(rnd(i)-.5)*600; pos[i*3+1]=(rnd(i+1)-.5)*900; pos[i*3+2]=-400-rnd(i+2)*200; }
   sg.setAttribute('position',new T.BufferAttribute(pos,3));
-  const stars=new T.Points(sg,new T.PointsMaterial({color:0xcfe0ff,size:1.1,sizeAttenuation:false,transparent:true,opacity:.75})); scene.add(stars);
+  const stars=new T.Points(sg,new T.PointsMaterial({color:0xcfe0ff,size:1.1,sizeAttenuation:false,transparent:true,opacity:.75})); stars.visible=false; scene.add(stars);
   // reflections: capture the real Earth, stars and a bright sun into an environment map once the textures are loaded
   const sunBall=new T.Mesh(new T.SphereGeometry(1,24,16),new T.MeshBasicMaterial({color:new T.Color(40,36,30),toneMapped:false})); sunBall.visible=false; scene.add(sunBall);
   function captureEnv(){
