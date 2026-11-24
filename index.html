@@ -325,8 +325,7 @@ body.home footer{display:none}
 .fleet{position:relative;overflow:hidden;background:
  radial-gradient(circle at 100% 5vh, rgba(255,250,238,1) 0, rgba(255,242,220,.85) 1.2vh, rgba(255,232,196,.42) 4vh, rgba(255,220,175,.16) 12vh, rgba(255,205,150,.06) 32vh, rgba(255,200,150,0) 70vh),
  radial-gradient(ellipse 70vw 1.6vh at 100% 5vh, rgba(255,228,190,.42), rgba(255,228,190,0)),
- var(--stars,none) 0 0/1024px 1024px repeat,
- linear-gradient(180deg,#020409 0%,#040a14 30%,#050c18 60%,#030710 85%,#020409 100%);color:#eaf4f8;padding-block:clamp(220px,28vh,280px) 180px}
+ transparent;color:#eaf4f8;padding-block:clamp(220px,28vh,280px) 180px}
 .fleet canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .fleet-in{position:relative;z-index:1;display:grid;gap:48px}
 .fleet-head{display:grid;gap:14px;justify-items:center;text-align:center;margin-bottom:clamp(420px,58vh,560px)}
@@ -354,7 +353,11 @@ body.home footer{display:none}
 
 /* seamless hand-over from the home globe to the satellite section: the globe fades out,
    the same sun sits just below the bottom-right corner and glows into both sections */
-.h-hero{background:#020409}
+#view-home{background:
+ var(--stars,none) 0 0/1024px 1024px repeat,
+ radial-gradient(1400px 900px at 62% 45vh, rgba(12,22,40,.9), rgba(12,22,40,0) 70%),
+ #03060d}
+.h-hero{background:transparent}
 
 .h-hero::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;background:
  radial-gradient(circle at 100% calc(100% + 5vh), rgba(255,250,238,1) 0, rgba(255,242,220,.85) 1.2vh, rgba(255,232,196,.42) 4vh, rgba(255,220,175,.16) 12vh, rgba(255,205,150,.06) 32vh, rgba(255,200,150,0) 70vh),
@@ -984,7 +987,7 @@ const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 function lerp(a,b,e){ return a+(b-a)*e; }
 
 // ---------- WebGL ----------
-const gl=glc.getContext('webgl',{antialias:false})||glc.getContext('experimental-webgl');
+const gl=glc.getContext('webgl',{antialias:false,alpha:true,premultipliedAlpha:true})||glc.getContext('experimental-webgl');
 let ok=false, U, prog, gd=1, surf, surfHalf, cl, sky, dummy, texL, texC, surfFull=false, pass, bind, bake=null;
 const FS0=`precision highp float;
 uniform vec2 uRes; uniform float uPx; uniform vec3 uCam; uniform vec2 uRot; uniform vec3 uSun; uniform vec3 uSunW; uniform float uT;
@@ -1024,20 +1027,18 @@ vec2 uvC=vec2(gl_FragCoord.x/uRes.x, 1.0-gl_FragCoord.y/uRes.y);
 vec2 uvG=gl_FragCoord.xy/uRes;
 if(uPass==3){
   // static sky: Milky Way, sun glare, planets and the Moon
-  vec3 col=mix(vec3(.03,.05,.095),vec3(.008,.015,.03),clamp(length(uvC-vec2(.62,.5))*1.3,0.,1.));
+  vec3 col=vec3(0.); float mA=0.;
   vec2 P=px/uRes.y; float asp=uRes.x/uRes.y;
   vec2 A=vec2(0.,.92), Bv=vec2(asp,.02); vec2 dir=normalize(Bv-A); vec2 rel=P-A;
   float dl=abs(rel.x*dir.y-rel.y*dir.x); float along=dot(rel,dir);
-  float mw=exp(-pow(dl/.17,2.));
+  float mw=exp(-pow(dl/.17,2.))*smoothstep(1.,.55,uvC.y);
   float n=fbm5(vec3(P*3.2,1.7))*.5+.5; float dust=fbm3(vec3(P*8.,4.2))*.5+.5;
-  col+=vec3(.42,.50,.78)*mw*(.05+.09*n);
-  col+=vec3(.95,.82,.66)*exp(-pow(dl/.05,2.))*(.035+.05*n)*smoothstep(.2,1.2,along);
-  col*=1.-.45*mw*smoothstep(.45,.75,dust);
+  float dk=1.-.6*smoothstep(.45,.75,dust);
+  col+=vec3(.42,.50,.78)*mw*(.035+.07*n)*dk;
+  col+=vec3(.95,.82,.66)*exp(-pow(dl/.05,2.))*(.025+.04*n)*smoothstep(.2,1.2,along)*dk*smoothstep(1.,.55,uvC.y);
   float hs2=hash(floor(px/(1.4*uPx))+7.3);
   if(hs2>1.-.035*mw) col+=vec3(.8,.85,1.)*(.25+.5*fract(hs2*91.))*mw;
-  float ds=length(px-uSunP)/uRes.y;
-  col+=vec3(1.,.94,.84)*(exp(-ds*16.)*1.6+exp(-ds*4.5)*.22+exp(-ds*1.6)*.05);
-  col+=vec3(1.,.88,.72)*exp(-abs(px.y-uSunP.y)/uRes.y*110.)*exp(-ds*2.2)*.35;
+  // the sun itself is drawn by the page background, shared with the next section
   vec2 pv=uSunP-vec2(.16,.13)*uRes.y, pj=vec2(.09*uRes.x,.16*uRes.y), pm=vec2(.70*uRes.x,.065*uRes.y);
   float dv=length(px-pv)/uPx, dj=length(px-pj)/uPx, dm=length(px-pm)/uPx;
   col+=vec3(1.,.97,.9)*(exp(-dv*dv/3.)*1.3+exp(-dv/9.)*.12);
@@ -1053,9 +1054,10 @@ if(uPass==3){
     float lit=smoothstep(-.05,.25,dot(mn,normalize(uSun+vec3(0.,0.,1.1))));
     vec3 moonc=mc*lit*1.2+mc*vec3(.09,.11,.15)*(1.-lit);
     moonc*=.7+.3*mn.z;
-    col=mix(col,moonc,smoothstep(1.,1.-1.5*uPx/uMoon.z,mr));
+    float md=smoothstep(1.,1.-1.5*uPx/uMoon.z,mr); col=mix(col,moonc,md); mA=md;
   }
-  gl_FragColor=vec4(col,1.);
+  col=clamp(col,0.,1.);
+  gl_FragColor=vec4(col,max(mA,max(col.r,max(col.g,col.b))));
   return;
 }
 if(uPass==4){
@@ -1098,13 +1100,10 @@ vec2 uvE=vec2(uA, .5-latr/3.14159265);
 float ndl=dot(n,uSun);
 float dif=max(ndl,0.);
 float day=smoothstep(-0.03,0.13,ndl);
-vec3 col=texture2D(uSpace,uvG).rgb;
-vec2 cell=floor(px/(2.0*uPx));
-float hs=hash(cell);
-if(hs>.9975 && length(px-uMoon.xy)>uMoon.z*1.1) col+=vec3(.75,.82,1.)*(hs-.9975)/.0025*.9*(.6+.4*sin(uT*1.6+hs*900.));
+vec4 sk=texture2D(uSpace,uvG); vec3 col=sk.rgb; float al=sk.a;
 float side=max(dot(normalize(vec3(q,0.0001)),uSun),0.);
 float dist=(r-1.)*uCam.z/uPx;
-if(r>1.) col+=vec3(.28,.58,1.)*(exp(-dist/10.)*.9+exp(-dist/40.)*.25)*(.12+.9*side);
+if(r>1.){ vec3 hl=vec3(.28,.58,1.)*(exp(-dist/10.)*.9+exp(-dist/30.)*.2)*(.12+.9*side)*smoothstep(1.,.86,uvC.y); col+=hl; al=max(al,max(hl.r,max(hl.g,hl.b))); }
 if(inside>0.){
   vec4 lt=texture2D(uLand,uvE); float landM=lt.r; float shelf=lt.g;
   vec4 bk=texture2D(uSurf,uvE);
@@ -1150,8 +1149,8 @@ if(inside>0.){
   s=s*(.84+.16*nz)+vec3(.30,.62,1.)*pow(1.-nz,5.)*(.15+.9*day);
   col=mix(col,s,inside);
 }
-col*=1.-.3*smoothstep(.55,1.2,length((uvC-vec2(.55,.5))*vec2(1.3,1.)));
-gl_FragColor=vec4(col,1.);
+al=mix(al,1.,inside); col=clamp(col,0.,1.);
+gl_FragColor=vec4(min(col,vec3(al)),al);
 }`;
 const derivExt=gl&&gl.getExtension('OES_standard_derivatives');
 const FS=(derivExt?'#extension GL_OES_standard_derivatives : enable\n#define HAS_DERIV 1\n':'')+FS0;
@@ -1240,7 +1239,7 @@ function resize(){
 // ---------- drawing ----------
 function drawGL(t){
   if(!ok){ // fallback: plain dark globe
-    const c=glc.getContext('2d'), k=glc.width/W; c.setTransform(1,0,0,1,0,0); c.fillStyle='#03060c'; c.fillRect(0,0,glc.width,glc.height);
+    const c=glc.getContext('2d'), k=glc.width/W; c.setTransform(1,0,0,1,0,0); c.clearRect(0,0,glc.width,glc.height);
     const gr=c.createRadialGradient(cam.cx*k,cam.cy*k,0,cam.cx*k,cam.cy*k,cam.R*k); gr.addColorStop(0,'#123050'); gr.addColorStop(1,'#071526'); c.fillStyle=gr; c.beginPath(); c.arc(cam.cx*k,cam.cy*k,cam.R*k,0,7); c.fill(); return;
   }
   gl.uniform1f(U('uT'),t/1000);
@@ -1436,8 +1435,8 @@ const sec=document.getElementById('fleet'), cv=document.getElementById('fleet-cv
 const glc=document.getElementById('fleet-gl');
 (function starTile(){ const S=1024, c=document.createElement('canvas'); c.width=S; c.height=S; const x=c.getContext('2d');
   for(let cy=0;cy<S/2;cy++) for(let cx=0;cx<S/2;cx++){ const h=Math.sin((cx+3.1)*127.1+(cy+7.7)*311.7)*43758.5453, hs=h-Math.floor(h);
-    if(hs>.998){ const b=(hs-.998)/.002*.6; x.fillStyle=`rgba(191,209,255,${b})`; x.fillRect(cx*2,cy*2,2,2); } }
-  sec.style.setProperty('--stars',`url(${c.toDataURL()})`); })();
+    if(hs>.9975){ const b=.12+(hs-.9975)/.0025*.7; x.fillStyle=`rgba(200,215,255,${b})`; x.fillRect(cx*2,cy*2,hs>.9996?2:1.5,hs>.9996?2:1.5); } }
+  document.getElementById('view-home').style.setProperty('--stars',`url(${c.toDataURL()})`); })();
 const head=sec.querySelector('.fleet-head');
 const SATS={s1:'Sentinel-1',s2:'Sentinel-2',s3:'Sentinel-3',s6:'Sentinel-6'};
 const DESC={en:{s1:'radar · 693 km',s2:'optical 10 m · 786 km',s3:'colour & temperature · 814 km',s6:'sea level · 1,336 km'},fr:{s1:'radar · 693 km',s2:'optique 10 m · 786 km',s3:'couleur et température · 814 km',s6:'niveau de la mer · 1 336 km'},de:{s1:'Radar · 693 km',s2:'Optik 10 m · 786 km',s3:'Farbe & Temperatur · 814 km',s6:'Meeresspiegel · 1.336 km'}};
