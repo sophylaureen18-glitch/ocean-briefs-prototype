@@ -281,6 +281,7 @@ body.home footer{display:none}
 .h-hero.zoomed .h-copy,.h-hero.exploring .h-copy{opacity:0;transform:translateY(-18px);pointer-events:none}
 .h-hero.exploring .h-copy .h-btns,.h-hero.exploring .h-copy .h-btns *,.h-hero.zoomed .h-copy .h-btns,.h-hero.zoomed .h-copy .h-btns *{pointer-events:none}
 .h-hero.zoomed .h-scrim{opacity:.35}
+.h-hero.zoomed .h-hint{opacity:0}
 .h-scrim{transition:opacity .8s ease}
 .h-pill{font:inherit;font-family:var(--f-hero-c);font-weight:500;font-size:1rem;color:#eaf4f8;text-align:left;cursor:pointer}
 .h-pill.live{color:#1b1003}
@@ -292,6 +293,7 @@ body.home footer{display:none}
 .hp-s{font-size:.95rem;color:rgba(234,244,248,.75)}
 .hp-l{font-size:1rem;font-weight:300;line-height:1.55;color:rgba(234,244,248,.9);padding-top:10px;border-top:1px solid rgba(160,210,235,.18)}
 .hp-coord{font-family:var(--f-mono);font-size:.74rem;color:rgba(160,230,255,.75)}
+.hp-img{font-family:var(--f-mono);font-size:.68rem;color:rgba(234,244,248,.55)}
 .hp-b{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
 .hp-soon{font-family:var(--f-mono);font-size:.72rem;color:rgba(234,244,248,.6);padding:0 6px}
 @media (max-width:820px){
@@ -307,7 +309,7 @@ body.home footer{display:none}
 #hov.grabbing{cursor:grabbing}
 .h-copy > div{pointer-events:none}
 .h-copy .h-btns,.h-copy .h-btns *{pointer-events:auto}
-.h-ctl{position:absolute;z-index:4;left:var(--gutter-l);bottom:34px;display:flex;gap:10px;align-items:center}
+.h-ctl{position:absolute;z-index:4;left:var(--gutter-l);bottom:38px;display:flex;gap:10px;align-items:center}
 .h-hint{font-family:var(--f-hero);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(200,225,240,.6);transition:opacity .6s}
 .h-hint.gone{opacity:0}
 .h-reset{font:500 .78rem/1 var(--f-hero);letter-spacing:.12em;text-transform:uppercase;color:#eaf4f8;background:rgba(6,16,28,.6);border:1px solid rgba(160,210,235,.3);border-radius:999px;padding:.8em 1.2em;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
@@ -381,10 +383,11 @@ Ocean Briefs
 <p class="hp-s"></p>
 <p class="hp-l"></p>
 <p class="hp-coord"></p>
+<p class="hp-img"></p>
 <div class="hp-b"><a class="h-btn pri" id="hp-open" href="#marine-litter">Open the brief →</a><span class="hp-soon">Content from Lot 2</span><button type="button" class="h-btn" id="hp-back">← Back to Europe</button></div>
 </aside>
 <nav class="h-strip" id="h-strip" aria-label="All Ocean Briefs"></nav>
-<p class="h-cap">Concept demo by WyvernAI · not an official EU4OceanObs or Mercator Ocean website<span class="h-src"> · city lights: Natural Earth · clouds: generated</span></p>
+<p class="h-cap">Concept demo by WyvernAI · not an official EU4OceanObs or Mercator Ocean website<span class="h-src"> · imagery: NASA Blue Marble, Black Marble, Worldview/GIBS (VIIRS, GHRSST MUR) · clouds: generated</span></p>
 </section>
 </main>
 <main id="top" data-view="brief" hidden>
@@ -817,13 +820,13 @@ const D2R=Math.PI/180;
 function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 function offscreen(w,h){ const c=document.createElement('canvas'); c.width=w; c.height=h; return c; }
 const BRIEFS=[
-{id:'sargassum',n:'01',t:'Sargassum',s:'Seaweed influx forecasts',lon:-18,lat:25,line:'Satellites follow floating seaweed rafts across the tropical Atlantic and warn coasts days before they arrive.'},
-{id:'fisheries',n:'02',t:'Sustainable fisheries',s:'Ocean state for stock management',lon:-14,lat:58,line:'Sea temperature and plankton maps show where fish feed and spawn, and how that is shifting.'},
-{id:'arctic',n:'03',t:'The changing Arctic',s:'Sea ice, shipping and climate',lon:16,lat:77,line:'Satellites map the sea ice every day as it thins, retreats and opens new shipping routes.'},
-{id:'litter',n:'04',t:'Marine litter',s:'Tracking plastic from space to shore',lon:5,lat:40.5,line:'Currents and wind decide where floating plastic ends up on Mediterranean beaches.',live:true},
-{id:'hazards',n:'05',t:'Coastal hazards',s:'Storm surge and sea-level rise',lon:3.5,lat:54.2,line:'Sea level and storm surge forecasts help low-lying North Sea coasts prepare.'},
-{id:'heat',n:'06',t:'Marine heatwaves',s:'Warming events and ecosystems',lon:26,lat:34.5,line:'Daily sea surface temperature reveals marine heatwaves in the eastern Mediterranean as they build.'},
-{id:'water',n:'07',t:'Water quality',s:'Blooms and coastal pollution',lon:19.5,lat:57.5,line:'Ocean colour from space shows algal blooms spreading across the Baltic in summer.'}
+{id:'sargassum',n:'01',t:'Sargassum',s:'Seaweed influx forecasts',lon:-18,lat:25,box:[20,-25,30,-11],img:'img/sargassum.jpg',cap:'Real image · NASA VIIRS true colour · 18 June 2020',line:'Saharan dust drifts over the Canary Islands. Sargassum rafts are too thin to see at this scale; spotting them takes dedicated algae indices from satellites.'},
+{id:'fisheries',n:'02',t:'Sustainable fisheries',s:'Ocean state for stock management',lon:-14,lat:58,box:[54,-22,62,-6],img:'img/fisheries.jpg',cap:'Real image · NASA VIIRS true colour · 5 June 2019',line:'A turquoise plankton bloom west of Scotland: the base of the food web that fish stocks depend on, visible from space.'},
+{id:'arctic',n:'03',t:'The changing Arctic',s:'Sea ice, shipping and climate',lon:16,lat:77,box:[74,5,81,30],img:'img/arctic.jpg',cap:'Real image · NASA VIIRS true colour · 25 April 2024',line:'Svalbard and the sea ice around it in spring, with open dark water to the west. Satellites map it every day as it thins and retreats.'},
+{id:'litter',n:'04',t:'Marine litter',s:'Tracking plastic from space to shore',lon:5,lat:40.5,box:[36.5,-1,44.5,11],img:'img/litter.jpg',cap:'Real image · NASA VIIRS true colour · 30 July 2019',line:'A clear summer day over the Balearic Islands, Sardinia and Corsica. Floating litter is too small to see here; drift models show where it goes.',live:true},
+{id:'hazards',n:'05',t:'Coastal hazards',s:'Storm surge and sea-level rise',lon:3.5,lat:54.2,box:[51,-2,57.5,10],img:'img/hazards.jpg',cap:'Real image · NASA VIIRS true colour · 26 February 2019',line:'Sediment-laden water off England, the Netherlands and the Wadden Sea: shallow, low-lying coasts where storm surges hit hardest.'},
+{id:'heat',n:'06',t:'Marine heatwaves',s:'Warming events and ecosystems',lon:26,lat:34.5,box:[30,18,39,34],img:'img/heat.png',data:true,cap:'Sea temperature anomaly · GHRSST MUR via NASA GIBS · 20 July 2024',line:'Red and purple show water far warmer than normal across the eastern Mediterranean. A heatwave you cannot see in a photo, only in the data.'},
+{id:'water',n:'07',t:'Water quality',s:'Blooms and coastal pollution',lon:19.5,lat:57.5,box:[54,14,61,26],img:'img/water.jpg',cap:'Real image · NASA VIIRS true colour · 26 July 2018',line:'The great cyanobacteria bloom of July 2018: green swirls spreading across the central Baltic.'}
 ].map(b=>({...b,ph:Math.random()*6,sx:0,sy:0,vis:false}));
 
 // ---------- camera maths (orthographic globe) ----------
@@ -848,9 +851,12 @@ const ox=(w-listW)/2-1020*k, oy=top-101*k+(avail-840*k)/2;
 return {cx:ox+1008*k, cy:oy+560*k, R:1000*k, lon:2, lat:50};
 }
 function zoomCam(w,h,b){
-const tall=h>w*1.05, base=baseCam(w,h), listW=listWidth(w,h);
+const tall=h>w*1.05, listW=listWidth(w,h);
 const panelW=tall?0:Math.min(400,w*.28)+w*.04;
-return {cx: tall? w/2 : (panelW+(w-listW))/2, cy: tall? h*.64 : h*.54, R: base.R*(tall?2.4:2.9), lon:b.lon, lat:b.lat};
+const [la0,lo0,la1,lo1]=b.box, latc=(la0+la1)/2, lonc=(lo0+lo1)/2;
+const bw=(lo1-lo0)*Math.cos(latc*D2R)*D2R, bh=(la1-la0)*D2R;
+const R=Math.max(w/bw, h/bh)*1.04;
+return {cx: tall? w/2 : (panelW+(w-listW))/2, cy: h*.5, R, lon:lonc, lat:latc};
 }
 let W=0,H=0,cam=null,from=null,to=null,t0=0,dur=1,animating=false,zoomed=null,dip=false;
 let interacting=false,lastInteract=0,vel={lon:0,lat:0},userMoved=false;
@@ -865,6 +871,7 @@ uniform vec2 uRes; uniform float uPx; uniform vec3 uCam; uniform vec2 uRot; unif
 uniform int uPass;
 uniform sampler2D uLand; uniform sampler2D uLights; uniform sampler2D uSurf; uniform sampler2D uCl; uniform sampler2D uSpace;
 uniform vec3 uMoon; uniform vec2 uSunP;
+uniform sampler2D uBM; uniform sampler2D uDet; uniform vec4 uDetBox; uniform float uDetMix; uniform float uDetData;
 vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
 vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
 vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
@@ -956,30 +963,12 @@ float day=smoothstep(-0.03,0.13,ndl);
 if(uPass==0){
   if(r>1.0){ gl_FragColor=vec4(0.); return; }
   vec4 lt=texture2D(uLand,uvE); float landM=lt.r; float shelf=lt.g;
-  float e0=fbm5(w*8.)*.75+fbm3(w*18.)*.25;
-  vec3 wx=w+vec3(.006,0.,0.), wy=w+vec3(0.,.006,0.);
-  float ex=fbm5(wx*8.)*.75+fbm3(wx*18.)*.25;
-  float ey=fbm5(wy*8.)*.75+fbm3(wy*18.)*.25;
-  float relief=clamp(1.+((e0-ex)*uSun.x+(ey-e0)*uSun.y)*2.2,.8,1.2);
-  float moist=fbm5(w*5.+vec3(3.1,1.2,7.4));
-  float L=lat+moist*8.;
-  vec3 sandA=vec3(.76,.62,.44), sandB=vec3(.68,.50,.34), sandC=vec3(.84,.75,.58), rock=vec3(.45,.38,.31);
-  vec3 desert=mix(mix(sandA,sandB,smoothstep(-.3,.3,moist)),sandC,smoothstep(.1,.7,fbm3(w*6.))*.6);
-  desert=mix(desert,rock,smoothstep(.3,.6,e0)*.5);
-  vec3 steppe=mix(vec3(.52,.47,.31),vec3(.42,.40,.27),.5+.5*moist);
-  vec3 temp=mix(vec3(.20,.28,.14),vec3(.31,.35,.19),.5+.5*fbm3(w*16.));
-  vec3 boreal=mix(vec3(.12,.18,.12),vec3(.20,.24,.17),.5+.5*moist);
-  vec3 lc=mix(desert,steppe,smoothstep(27.,34.,L));
-  lc=mix(lc,temp,smoothstep(37.,45.,L));
-  lc=mix(lc,boreal,smoothstep(55.,63.,L));
-  vec3 mountain=mix(vec3(.36,.33,.29),vec3(.92,.94,.97),smoothstep(.45,.62,e0+(lat-45.)*.006));
-  lc=mix(lc,mountain,smoothstep(.38,.6,e0)*.6);
-  lc=mix(lc,vec3(.88,.92,.96),smoothstep(69.,75.,L)*.9);
-  lc*=relief;
+  vec3 bm=texture2D(uBM,uvE).rgb;
+  vec3 lc=pow(bm,vec3(.9))*1.1;
   float ov=fbm5(w*7.+fbm3(w*3.)*.8);
   vec3 oc=mix(vec3(.015,.085,.21),vec3(.035,.20,.40),.5+.5*ov);
   oc=mix(oc,vec3(.08,.42,.58),shelf*(1.-landM)*.75);
-  float iceN=fbm5(w*14.+vec3(9.1,2.2,4.4));
+  float iceN=fbm3(w*14.+vec3(9.1,2.2,4.4));
   float ice=smoothstep(74.5,77.5,lat+iceN*3.5)*(1.-landM);
   float cracks=smoothstep(.0,.025,abs(fbm3(w*45.)));
   vec3 icec=mix(vec3(.74,.82,.88),vec3(.90,.94,.97),cracks)*(.9+.12*iceN);
@@ -1021,6 +1010,11 @@ if(r>1.) col+=vec3(.28,.58,1.)*(exp(-dist/10.)*.9+exp(-dist/40.)*.25)*(.12+.9*si
 if(inside>0.){
   vec3 s=texture2D(uSurf,uvG).rgb;
   vec2 cs=texture2D(uCl,uvG).rg; float ca2=cs.r; float lightT=cs.g;
+  float lonD=mod(degrees(lonr)+180.,360.)-180.;
+  vec2 du=vec2((lonD-uDetBox.y)/(uDetBox.w-uDetBox.y),(uDetBox.z-lat)/(uDetBox.z-uDetBox.x));
+  float din=smoothstep(0.,.04,du.x)*smoothstep(1.,.96,du.x)*smoothstep(0.,.04,du.y)*smoothstep(1.,.96,du.y);
+  float dfade=din*uDetMix;
+  ca2*=1.-uDetMix*(uDetData>.5?.85:1.);
   vec2 shOff=-uSun.xy*vec2(1.,-1.)*(6.*uPx)/uRes;
   float shd=texture2D(uCl,uvG+shOff).r;
   s*=1.-.38*shd*day*(1.-ca2);
@@ -1030,8 +1024,13 @@ if(inside>0.){
   float tw=exp(-pow((ndl-.02)/.04,2.));
   cc+=vec3(1.,.58,.32)*tw*.12;
   s=mix(s,cc,ca2*.96);
-  vec3 li=texture2D(uLights,uvE).rgb;
-  s+=li*(1.-day)*(1.-ca2*.75)*1.35;
+  float lv=texture2D(uLights,uvE).r, lg=texture2D(uLights,uvE,3.).r;
+  vec3 li=vec3(1.,.8,.5)*lv*1.6+vec3(1.,.62,.28)*lg*1.4;
+  s+=li*(1.-day)*(1.-ca2*.75);
+  if(dfade>0.){ vec4 dc=texture2D(uDet,clamp(du,0.,1.));
+    if(uDetData>.5) s=mix(s,dc.rgb,dc.a*.88*dfade);
+    else s=mix(s,dc.rgb*1.02,dfade); }
+  s*=1.-.6*uDetMix*(1.-din);
   s+=vec3(1.,.5,.25)*tw*.025;
   float fr=pow(1.-nz,2.4);
   s=mix(s,vec3(.50,.70,.98)*(.35+.65*dif),clamp(fr*.75+.05,0.,1.)*day);
@@ -1052,7 +1051,7 @@ if(gl){ try{
   const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
   const loc=gl.getAttribLocation(prog,'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
   const cache={}; U=n=>cache[n]||(cache[n]=gl.getUniformLocation(prog,n));
-  gl.uniform1i(U('uLand'),0); gl.uniform1i(U('uLights'),1); gl.uniform1i(U('uSurf'),2); gl.uniform1i(U('uCl'),3); gl.uniform1i(U('uSpace'),5);
+  gl.uniform1i(U('uLand'),0); gl.uniform1i(U('uLights'),1); gl.uniform1i(U('uSurf'),2); gl.uniform1i(U('uCl'),3); gl.uniform1i(U('uSpace'),5); gl.uniform1i(U('uBM'),6); gl.uniform1i(U('uDet'),7);
   dummy=gl.createTexture(); gl.activeTexture(gl.TEXTURE4); gl.bindTexture(gl.TEXTURE_2D,dummy); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,0]));
   bind=(unit,t)=>{ gl.activeTexture(gl.TEXTURE0+unit); gl.bindTexture(gl.TEXTURE_2D,t); };
   ok=true;
@@ -1074,30 +1073,27 @@ function runPass(p,fbo,scale){
 }
 
 // ---------- world textures (built once) ----------
-function buildWorld(g){
+function buildWorld(g,day,night){
   if(!ok) return;
   const TW=4096, TH=2048;
   const lc=offscreen(TW,TH), x=lc.getContext('2d'); x.fillStyle='#000'; x.fillRect(0,0,TW,TH);
   const landP=new Path2D(g.land);
   if('filter' in x){ x.filter='blur(10px)'; x.fillStyle='rgb(0,255,0)'; x.fill(landP); x.filter='none'; }
   x.globalCompositeOperation='lighter'; x.fillStyle='rgb(255,0,0)'; x.fill(landP);
-  texL=worldTex(0,lc);
-  const spr=offscreen(64,64); { const s=spr.getContext('2d'); const gr=s.createRadialGradient(32,32,0,32,32,32); gr.addColorStop(0,'rgba(255,225,160,1)'); gr.addColorStop(.2,'rgba(255,170,70,.75)'); gr.addColorStop(.55,'rgba(255,130,30,.15)'); gr.addColorStop(1,'rgba(255,120,20,0)'); s.fillStyle=gr; s.fillRect(0,0,64,64); }
-  const lt=offscreen(TW,TH), y=lt.getContext('2d'); y.fillStyle='#000'; y.fillRect(0,0,TW,TH); y.globalCompositeOperation='lighter';
-  const rr=rng(11), C=g.cities;
-  for(let i=0;i<C.length;i+=3){
-    const lon=C[i]/10, lat=C[i+1]/10, pop=Math.max(5,C[i+2]);
-    const px=(lon+180)/360*TW, py=(90-lat)/180*TH, sx=1/Math.max(.25,Math.cos(lat*D2R));
-    y.setTransform(sx,0,0,1,px,py);
-    const rad=3+Math.sqrt(pop)*.45;
-    y.globalAlpha=Math.min(.3,.07+Math.sqrt(pop)*.005); y.drawImage(spr,-rad,-rad,rad*2,rad*2);
-    const m=Math.min(9,1+Math.sqrt(pop)*.1|0);
-    for(let j=0;j<m;j++){ const a=rr()*6.28, dd=Math.pow(rr(),.6)*rad*1.4, s2=.9+rr()*1.3; y.globalAlpha=.14+rr()*.3; y.drawImage(spr,Math.cos(a)*dd-s2*2,Math.sin(a)*dd-s2*2,s2*4,s2*4); }
-    y.globalAlpha=Math.min(.95,.4+Math.sqrt(pop)*.013); const q2=.9+Math.sqrt(pop)*.02; y.drawImage(spr,-q2*2.5,-q2*2.5,q2*5,q2*5);
-  }
-  texC=worldTex(1,lt);
+  texL=worldTex(0,lc); texC=worldTex(1,night); worldTex(6,day);
+  const d=gl.createTexture(); bind(7,d); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,0])); linTex(); detTex=d;
+  gl.uniform4f(U('uDetBox'),0,0,1,1); gl.uniform1f(U('uDetMix'),0); gl.uniform1f(U('uDetData'),0);
 }
-
+// real close-up images, loaded on demand
+let detTex=null, detFor=null, detMix=0, detTarget=0;
+const detCache={};
+function loadImg(src){ return new Promise((res,rej)=>{ const im=new Image(); im.decoding='async'; im.onload=()=>res(im); im.onerror=rej; im.src=src; }); }
+function useDetail(b){
+  if(!ok) return;
+  const p=detCache[b.id]||(detCache[b.id]=loadImg(b.img));
+  p.then(im=>{ if(zoomed!==b) return; bind(7,detTex); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,im); linTex();
+    gl.uniform4f(U('uDetBox'),...b.box); gl.uniform1f(U('uDetData'),b.data?1:0); detFor=b; }).catch(()=>{});
+}
 // ---------- size-dependent targets ----------
 let S={};
 function resize(){
@@ -1166,6 +1162,8 @@ function overlay(t){
 let lastGL=0;
 function draw(t,force){
   if(!cam) return;
+  if(ok){ const want=(zoomed && detFor===zoomed && (!animating || (t-t0)/dur>.72))?1:0; detTarget=want;
+    if(detMix!==detTarget){ detMix+= (detTarget-detMix)*.12; if(Math.abs(detTarget-detMix)<.01) detMix=detTarget; gl.uniform1f(U('uDetMix'),detMix); force=true; } }
   if(animating){
     const x=Math.min(1,(t-t0)/dur), e=ease(x);
     cam={cx:lerp(from.cx,to.cx,e), cy:lerp(from.cy,to.cy,e), R:lerp(from.R,to.R,e)*(dip?1-.32*Math.sin(Math.PI*e):1), lon:lerp(from.lon,to.lon,e), lat:lerp(from.lat,to.lat,e)};
@@ -1186,17 +1184,18 @@ const syncPills=()=>pills.forEach(el=>el.classList.toggle('hl', (!!hover && el.d
 function fly(target,nextZoom){
   from={...cam}; to=target; dip=!!zoomed && !!nextZoom && zoomed!==nextZoom;
   sunFrom=sunWorld.slice(); sunTo=nextZoom?zoomSun(nextZoom):sunBase;
-  t0=performance.now(); dur=reduce?1:(dip?2200:1700); animating=true;
+  t0=performance.now(); dur=reduce?1:(dip?2800:2400); animating=true;
 }
 function zoomTo(b){
   if(zoomed===b) return;
-  fly(zoomCam(W,H,b),b); zoomed=b; hover=null; tip.style.opacity=0; resetBtn.hidden=true;
+  fly(zoomCam(W,H,b),b); zoomed=b; hover=null; tip.style.opacity=0; resetBtn.hidden=true; detFor=null; detMix=0; ok&&gl.uniform1f(U('uDetMix'),0); useDetail(b);
   hero.classList.add('zoomed');
   panel.querySelector('.hp-n').textContent=`Ocean Brief ${b.n} of 07`;
   panel.querySelector('.hp-t').textContent=b.t;
   panel.querySelector('.hp-s').textContent=b.s;
   panel.querySelector('.hp-l').textContent=b.line;
   panel.querySelector('.hp-coord').textContent=`${Math.abs(b.lat).toFixed(1)}° ${b.lat>=0?'N':'S'} · ${Math.abs(b.lon).toFixed(1)}° ${b.lon>=0?'E':'W'}`;
+  panel.querySelector('.hp-img').textContent=b.cap;
   panel.querySelector('#hp-open').hidden=!b.live; panel.querySelector('.hp-soon').hidden=!!b.live;
   panel.hidden=false; panel.classList.remove('in'); void panel.offsetWidth; panel.classList.add('in');
   syncPills();
@@ -1230,7 +1229,7 @@ if(matchMedia('(pointer: coarse)').matches) hint.textContent='Drag to turn · pi
 function markMoved(){ if(!userMoved){ userMoved=true; hint.classList.add('gone'); setTimeout(()=>hint.hidden=true,600); } resetBtn.hidden=!!zoomed; if(!zoomed) hero.classList.add('exploring'); }
 resetBtn.addEventListener('click',()=>{ if(zoomed) zoomOut(); else { fly(baseCam(W,H),null); } resetBtn.hidden=true; hero.classList.remove('exploring'); });
 const pointers=new Map(); let dragging=false, down=null, pinch=null, suppressClick=false;
-function zoomLimits(){ const b=baseCam(W,H); return [b.R*.75,b.R*4.5]; }
+function zoomLimits(){ const b=baseCam(W,H); return [b.R*.75,b.R*40]; }
 cv.addEventListener('pointerdown',e=>{
   cv.setPointerCapture(e.pointerId); pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(pointers.size===1){ down={x:e.clientX,y:e.clientY,t:performance.now(),moved:false}; vel={lon:0,lat:0}; }
@@ -1267,8 +1266,8 @@ cv.addEventListener('click',e=>{ if(suppressClick) return; const b=pick(e); if(b
 // ---------- start ----------
 let visible=true;
 if('IntersectionObserver' in window) new IntersectionObserver(es=>{ visible=es[0].isIntersecting; }).observe(hero);
-fetch('world.json').then(r=>r.json()).then(g=>{
-  buildWorld(g);
+Promise.all([fetch('world.json').then(r=>r.json()),loadImg('img/earth-day.jpg'),loadImg('img/earth-night.jpg')]).then(([g,day,night])=>{
+  buildWorld(g,day,night);
   resize();
   glc.classList.add('on'); cv.classList.add('on');
   let rt; new ResizeObserver(()=>{ clearTimeout(rt); rt=setTimeout(resize,120); }).observe(hero);

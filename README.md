@@ -18,3 +18,10 @@ python3 -m http.server 8000
 ```
 
 Then open http://localhost:8000.
+
+## Imagery (Entwicklungsstand)
+
+- Earth by day: NASA Blue Marble Next Generation (via NASA GIBS), public domain.
+- City lights: NASA Black Marble / VIIRS (via NASA GIBS), public domain.
+- Close-ups per brief (`img/`): NASA Worldview / GIBS snapshots, VIIRS SNPP Corrected Reflectance (true colour); marine heatwave uses GHRSST MUR sea surface temperature anomaly. NASA imagery is free to use with credit.
+- Coastlines: Natural Earth (public domain). Clouds on the globe are generated, not weather data.
