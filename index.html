@@ -11,7 +11,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: a single long-form "brief" read top to bottom, with a sticky reading bar that holds the pathway controls; each section is a reusable component. */
 :root{
@@ -27,8 +27,9 @@
 --buoy-ink:#ffffff;
 --signal:#0f6f7c;     /* data teal */
 --req:#6b3fa0;
---f-display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
---f-body:"Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+--f-display:"Inter Tight", "Inter", "Segoe UI", system-ui, sans-serif;
+--f-hero:"Instrument Serif", "Iowan Old Style", Georgia, serif;
+--f-body:"Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
 --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 --gutter-l:max(clamp(16px, 4vw, 64px), env(safe-area-inset-left, 0px));
 --gutter-r:max(clamp(16px, 4vw, 64px), env(safe-area-inset-right, 0px));
@@ -189,8 +190,8 @@ body.review .reqs{display:block}
 .h-copy{position:absolute;inset:0;display:flex;align-items:center;pointer-events:none}
 .h-copy > div{max-width:min(600px,46vw);display:grid;gap:18px;pointer-events:auto}
 .h-copy .eyebrow{color:#9fdcf0}
-.h-copy h1{font-size:clamp(2.3rem,4.6vw,4rem);line-height:.98;letter-spacing:-.025em}
-.h-copy h1 em{font-style:normal;color:#ffd08a}
+.h-copy h1{font-family:var(--f-hero);font-weight:400;font-size:clamp(2.7rem,5.4vw,5.4rem);line-height:.98;letter-spacing:-.01em}
+.h-copy h1 em{font-style:italic;color:#ffd08a}
 .h-copy p{font-size:1.1rem;color:rgba(234,244,248,.86);max-width:42ch}
 .h-btns{display:flex;flex-wrap:wrap;gap:10px}
 .h-btn{font:600 .95rem/1 var(--f-body);padding:.95em 1.35em;border-radius:999px;border:1.5px solid rgba(234,244,248,.7);color:#eaf4f8;background:transparent;text-decoration:none;cursor:pointer}
@@ -234,6 +235,28 @@ body.home footer{display:none}
 .h-pill{transition:border-color .2s,background .2s,transform .2s}
 .h-pill.hl{transform:translateY(-2px);background:rgba(14,40,60,.8)}
 .h-pill.live.hl{background:#ffd08a}
+
+/* centred headline, briefs listed on the right */
+.h-scrim{background:radial-gradient(ellipse 75% 60% at 50% 14%,rgba(3,6,12,.85) 0%,rgba(3,6,12,.5) 50%,rgba(3,6,12,0) 100%)}
+.h-copy{align-items:flex-start;justify-content:center;padding-top:calc(72px + 5vh)}
+.h-copy > div{max-width:min(900px,92vw);text-align:center;justify-items:center;gap:16px}
+.h-copy p{margin:0 auto;max-width:48ch}
+.h-btns{justify-content:center}
+.h-copy .eyebrow{letter-spacing:.22em}
+.h-strip{left:auto;right:var(--gutter-r);bottom:9vh;width:min(300px,23vw);flex-direction:column;gap:8px;padding:0;overflow:visible}
+.h-strip::before{content:"All Ocean Briefs";font-family:var(--f-mono);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:#9fdcf0;margin:0 0 4px 4px}
+.h-pill{display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:1px;align-items:baseline;border-radius:14px;padding:10px 14px;font-family:var(--f-display);font-size:.95rem;font-weight:600}
+.h-pill .ps{grid-column:2;font-family:var(--f-body);font-weight:400;font-size:.74rem;color:rgba(234,244,248,.62)}
+.h-pill.live .ps{color:rgba(27,16,3,.7)}
+.h-pill.hl{transform:translateX(-4px)}
+@media (max-width:820px){
+.h-strip{left:0;right:0;width:auto;bottom:40px;flex-direction:row;overflow-x:auto;padding:4px var(--gutter-r) 4px var(--gutter-l)}
+.h-strip::before{display:none}
+.h-pill{display:flex;border-radius:999px;padding:8px 14px;font-size:.85rem}
+.h-pill .ps{display:none}
+.h-pill.hl{transform:translateY(-2px)}
+.h-copy{padding-top:84px!important}
+}
 @media (prefers-reduced-motion:reduce){#hgl,#hov{transition:none}.h-copy > div > *,.h-strip{animation:none}}
 .how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
 .how div{display:grid;gap:6px;align-content:start}
@@ -549,8 +572,8 @@ const libHTML = briefs.map(([n,t,s,live])=> live
 `<article class="card add"><span class="n">CMS</span><h3>+ New brief</h3><p class="small">Created by Mercator Ocean editors from existing blocks.</p></article>`;
 document.getElementById('lib').innerHTML = libHTML;
 document.getElementById('h-strip').innerHTML = briefs.map(([n,t,s,live])=> live
-? `<a class="h-pill live" href="#marine-litter" data-n="${n}"><b>${n}</b>${t} →</a>`
-: `<span class="h-pill" data-n="${n}" title="${s} · content from Lot 2"><b>${n}</b>${t}</span>`).join('');
+? `<a class="h-pill live" href="#marine-litter" data-n="${n}"><b>${n}</b><span class="pt">${t} →</span><span class="ps">${s}</span></a>`
+: `<span class="h-pill" data-n="${n}" title="${s} · content from Lot 2"><b>${n}</b><span class="pt">${t}</span><span class="ps">${s}</span></span>`).join('');
 /* ---------- i18n ---------- */
 const fr = {
 notice:"Démonstration conceptuelle de WyvernAI pour l’appel d’offres 26546-EU4OO, lot 1. Site non officiel d’EU4OceanObs ou de Mercator Ocean. Chiffres illustratifs, en attente de validation par des experts.",
@@ -727,10 +750,10 @@ function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Ma
 function offscreen(w,h){ const c=document.createElement('canvas'); c.width=w; c.height=h; return c; }
 function layout(w,h){
 const tall=h>w*1.05;
-if(tall){ const k=Math.max(w/BW,h/BH); return {k, ox:w/2-1020*k, oy:h-BH*k-h*.06}; }
-const top=h*.09, bot=h*.15, avail=h-top-bot;
-const k=Math.min(Math.max(w/BW,h/BH), avail/840);
-return {k, ox:(w-BW*k)*.75, oy: top-101*k+(avail-840*k)/2};
+const listW=tall?0:Math.min(300,w*.23)+w*.05;
+const top=h*(tall?.46:.5), bot=h*(tall?.13:.05), avail=h-top-bot;
+const k=Math.min(avail/840,(w-listW-48)/800);
+return {k, ox:(w-listW)/2-1020*k, oy: top-101*k+(avail-840*k)/2};
 }
 let visible=true;
 if('IntersectionObserver' in window) new IntersectionObserver(es=>{ visible=es[0].isIntersecting; }).observe(hero);
@@ -964,14 +987,14 @@ ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineWidth=1.5*u; ctx.stroke();
 ctx.fillStyle=on?'#ffffff':'#8fe3ff'; ctx.beginPath(); ctx.arc(b.x,b.y,(on?4:2.8)*u,0,7); ctx.fill();
 if(on){ const gl2=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,34*u); gl2.addColorStop(0,'rgba(140,225,255,.35)'); gl2.addColorStop(1,'rgba(140,225,255,0)'); ctx.fillStyle=gl2; ctx.beginPath(); ctx.arc(b.x,b.y,34*u,0,7); ctx.fill(); }
 if(S.w/dpr<700 && !on) continue;
-ctx.font=`600 ${13*u}px "Bricolage Grotesque", sans-serif`; const tw2=ctx.measureText(b.t).width;
-const lx=b.x+14*u, ly=b.y-12*u, lw=tw2+40*u, lh=24*u, rr2=12*u;
+ctx.font=`600 ${13*u}px "Inter Tight", sans-serif`; const tw2=ctx.measureText(b.t).width;
+const lw=tw2+40*u, lh=24*u, rr2=12*u, lx=b.id==='fisheries'? b.x-14*u-lw : b.x+14*u, ly=b.y-12*u;
 ctx.beginPath(); ctx.moveTo(lx+rr2,ly); ctx.arcTo(lx+lw,ly,lx+lw,ly+lh,rr2); ctx.arcTo(lx+lw,ly+lh,lx,ly+lh,rr2); ctx.arcTo(lx,ly+lh,lx,ly,rr2); ctx.arcTo(lx,ly,lx+lw,ly,rr2); ctx.closePath();
 ctx.fillStyle=on?'rgba(255,208,138,.95)':'rgba(6,16,28,.58)'; ctx.fill();
 ctx.strokeStyle=on?'rgba(255,208,138,1)':'rgba(170,220,245,.28)'; ctx.lineWidth=1*u; ctx.stroke();
 ctx.textBaseline='middle';
 ctx.font=`500 ${10.5*u}px "IBM Plex Mono", monospace`; ctx.fillStyle=on?'#6b4300':'rgba(160,230,255,1)'; ctx.fillText(b.n,lx+10*u,b.y);
-ctx.font=`600 ${13*u}px "Bricolage Grotesque", sans-serif`; ctx.fillStyle=on?'#1b1003':'#ffffff'; ctx.fillText(b.t,lx+30*u,b.y+.5*u);
+ctx.font=`600 ${13*u}px "Inter Tight", sans-serif`; ctx.fillStyle=on?'#1b1003':'#ffffff'; ctx.fillText(b.t,lx+30*u,b.y+.5*u);
 }
 }
 function pick(e){
