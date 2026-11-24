@@ -25,3 +25,4 @@ Then open http://localhost:8000.
 - City lights: NASA Black Marble / VIIRS (via NASA GIBS), public domain.
 - Close-ups per brief (`img/`): NASA Worldview / GIBS snapshots, VIIRS SNPP Corrected Reflectance (true colour); marine heatwave uses GHRSST MUR sea surface temperature anomaly. NASA imagery is free to use with credit.
 - Coastlines: Natural Earth (public domain). Clouds on the globe are generated, not weather data.
+- 3D satellites in the satellite section are rendered with three.js r149 (MIT licence, `vendor/three-LICENSE.txt`). Models are simplified illustrations, not engineering models.
