@@ -220,6 +220,21 @@ body.home footer{display:none}
 .h-pill.live b{color:#7a4a00}
 .h-pill:not(.live):hover,.h-pill.hl{border-color:rgba(160,230,255,.8)}
 .h-cap{bottom:10px;font-size:.66rem;left:var(--gutter-l);right:var(--gutter-r);text-align:left}
+
+#hgl,#hov{opacity:0;transition:opacity 1.8s ease}
+#hgl.on,#hov.on{opacity:1}
+#hov{transition-delay:.6s}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.h-copy > div > *{animation:rise 1s cubic-bezier(.2,.7,.2,1) both}
+.h-copy > div > :nth-child(1){animation-delay:.25s}
+.h-copy > div > :nth-child(2){animation-delay:.4s}
+.h-copy > div > :nth-child(3){animation-delay:.55s}
+.h-copy > div > :nth-child(4){animation-delay:.7s}
+.h-strip{animation:rise 1s cubic-bezier(.2,.7,.2,1) .9s both}
+.h-pill{transition:border-color .2s,background .2s,transform .2s}
+.h-pill.hl{transform:translateY(-2px);background:rgba(14,40,60,.8)}
+.h-pill.live.hl{background:#ffd08a}
+@media (prefers-reduced-motion:reduce){#hgl,#hov{transition:none}.h-copy > div > *,.h-strip{animation:none}}
 .how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
 .how div{display:grid;gap:6px;align-content:start}
 .how b{font-family:var(--f-display);font-size:1.15rem}
@@ -831,7 +846,7 @@ if(uPass==0){
   vec3 dayc=surf*(.55+.8*dif);
   vec3 hv=normalize(uSun+vec3(0.,0.,1.)); float spec=pow(max(dot(n,hv),0.),45.)*(1.-landM)*.45;
   dayc+=vec3(1.,.93,.80)*spec;
-  vec3 nightc=mix(vec3(.008,.018,.04),vec3(.025,.032,.045),landM);
+  vec3 nightc=mix(vec3(.013,.027,.056),vec3(.034,.042,.056),landM);
   gl_FragColor=vec4(mix(nightc,dayc,day),1.);
   return;
 }
@@ -860,7 +875,7 @@ if(uPass==1){
 vec3 col=mix(vec3(.03,.05,.095),vec3(.008,.015,.03),clamp(length(uvC-vec2(.62,.5))*1.3,0.,1.));
 vec2 cell=floor(px/(2.0*uPx));
 float hs=hash(cell);
-if(hs>.9975) col+=vec3(.75,.82,1.)*(hs-.9975)/.0025*.9;
+if(hs>.9975) col+=vec3(.75,.82,1.)*(hs-.9975)/.0025*.9*(.6+.4*sin(uT*1.6+hs*900.));
 float side=max(dot(normalize(vec3(q,0.0001)),uSun),0.);
 float dist=(r-1.)*uR;
 if(r>1.) col+=vec3(.28,.58,1.)*(exp(-dist/10.)*.9+exp(-dist/40.)*.25)*(.12+.9*side);
@@ -872,20 +887,21 @@ if(inside>0.){
   float shd=texture2D(uCl,uvG+shOff).r;
   s*=1.-.38*shd*day*(1.-ca2);
   vec3 cday=vec3(.99,.995,1.)*(.62+.5*dif)*lightT;
-  vec3 cnight=vec3(.05,.065,.095)*(.7+.3*lightT);
+  vec3 cnight=vec3(.075,.09,.125)*(.75+.25*lightT);
   vec3 cc=mix(cnight,cday,day);
-  float tw=exp(-pow((ndl-.03)/.05,2.));
-  cc+=vec3(1.,.5,.22)*tw*.22;
+  float tw=exp(-pow((ndl-.02)/.04,2.));
+  cc+=vec3(1.,.58,.32)*tw*.12;
   s=mix(s,cc,ca2*.96);
   vec3 li=texture2D(uLights,uvC).rgb;
   s+=li*(1.-day)*(1.-ca2*.75)*1.35;
-  s+=vec3(1.,.45,.18)*tw*.04;
+  s+=vec3(1.,.5,.25)*tw*.025;
   // atmosphere: thin blue haze that thickens towards the limb on the day side
   float fr=pow(1.-nz,2.4);
   s=mix(s,vec3(.50,.70,.98)*(.35+.65*dif),clamp(fr*.75+.05,0.,1.)*day);
   s=s*(.84+.16*nz)+vec3(.30,.62,1.)*pow(1.-nz,5.)*(.15+.9*day);
   col=mix(col,s,inside);
 }
+col*=1.-.3*smoothstep(.55,1.2,length((uvC-vec2(.55,.5))*vec2(1.3,1.)));
 gl_FragColor=vec4(col,1.);
 }`;
 let ok=false;
@@ -946,25 +962,33 @@ ctx.strokeStyle=`rgba(170,230,255,${(1-pulse)*.8})`; ctx.lineWidth=1.3*u; ctx.be
 ctx.fillStyle='rgba(3,12,24,.45)'; ctx.beginPath(); ctx.arc(b.x,b.y,(on?8:6)*u,0,7); ctx.fill();
 ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineWidth=1.5*u; ctx.stroke();
 ctx.fillStyle=on?'#ffffff':'#8fe3ff'; ctx.beginPath(); ctx.arc(b.x,b.y,(on?4:2.8)*u,0,7); ctx.fill();
+if(on){ const gl2=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,34*u); gl2.addColorStop(0,'rgba(140,225,255,.35)'); gl2.addColorStop(1,'rgba(140,225,255,0)'); ctx.fillStyle=gl2; ctx.beginPath(); ctx.arc(b.x,b.y,34*u,0,7); ctx.fill(); }
 if(S.w/dpr<700 && !on) continue;
-ctx.save(); ctx.shadowColor='rgba(0,0,0,.95)'; ctx.shadowBlur=7*u;
-ctx.font=`500 ${11*u}px "IBM Plex Mono", monospace`; ctx.textBaseline='middle'; ctx.fillStyle='rgba(170,235,255,1)'; ctx.fillText(b.n,b.x+13*u,b.y-1*u);
-ctx.font=`600 ${13.5*u}px "Bricolage Grotesque", sans-serif`; ctx.fillStyle='#ffffff'; ctx.fillText(b.t,b.x+34*u,b.y-1*u);
-ctx.restore();
+ctx.font=`600 ${13*u}px "Bricolage Grotesque", sans-serif`; const tw2=ctx.measureText(b.t).width;
+const lx=b.x+14*u, ly=b.y-12*u, lw=tw2+40*u, lh=24*u, rr2=12*u;
+ctx.beginPath(); ctx.moveTo(lx+rr2,ly); ctx.arcTo(lx+lw,ly,lx+lw,ly+lh,rr2); ctx.arcTo(lx+lw,ly+lh,lx,ly+lh,rr2); ctx.arcTo(lx,ly+lh,lx,ly,rr2); ctx.arcTo(lx,ly,lx+lw,ly,rr2); ctx.closePath();
+ctx.fillStyle=on?'rgba(255,208,138,.95)':'rgba(6,16,28,.58)'; ctx.fill();
+ctx.strokeStyle=on?'rgba(255,208,138,1)':'rgba(170,220,245,.28)'; ctx.lineWidth=1*u; ctx.stroke();
+ctx.textBaseline='middle';
+ctx.font=`500 ${10.5*u}px "IBM Plex Mono", monospace`; ctx.fillStyle=on?'#6b4300':'rgba(160,230,255,1)'; ctx.fillText(b.n,lx+10*u,b.y);
+ctx.font=`600 ${13*u}px "Bricolage Grotesque", sans-serif`; ctx.fillStyle=on?'#1b1003':'#ffffff'; ctx.fillText(b.t,lx+30*u,b.y+.5*u);
 }
 }
 function pick(e){
 const r=cv.getBoundingClientRect(); const x=((e.clientX-r.left)*S.dpr-S.ox)/S.k, y=((e.clientY-r.top)*S.dpr-S.oy)/S.k;
 let best=null, bd=1e9; for(const b of briefs){ const d=Math.hypot(b.x-x,b.y-y); if(d<bd){bd=d;best=b;} }
-hover = bd<28*S.dpr/S.k ? best : null; cv.style.cursor = hover? 'pointer':'default';
+hover = bd<28*S.dpr/S.k ? best : null; cv.style.cursor = hover? 'pointer':'default'; syncPills();
 if(hover){ tip.innerHTML=`<b>${hover.n} · ${hover.t}</b><span>${hover.s}${hover.id==='litter'?' · open the prototype':' · content from Lot 2'}</span>`; tip.style.left=((hover.x*S.k+S.ox)/S.dpr)+'px'; tip.style.top=((hover.y*S.k+S.oy)/S.dpr)+'px'; tip.style.opacity=1; }
 else tip.style.opacity=0;
 if(reduce) overlay(0);
 }
 cv.addEventListener('mousemove',pick);
-cv.addEventListener('mouseleave',()=>{ hover=null; tip.style.opacity=0; if(reduce) overlay(0); });
+const pills=[...document.querySelectorAll('#h-strip .h-pill')];
+const syncPills=()=>pills.forEach(el=>el.classList.toggle('hl', !!hover && el.dataset.n===hover.n));
+pills.forEach(el=>{ el.addEventListener('mouseenter',()=>{ hover=briefs.find(b=>b.n===el.dataset.n)||null; if(reduce) overlay(0); }); el.addEventListener('mouseleave',()=>{ hover=null; if(reduce) overlay(0); }); });
+cv.addEventListener('mouseleave',()=>{ hover=null; tip.style.opacity=0; syncPills(); if(reduce) overlay(0); });
 cv.addEventListener('click',e=>{ pick(e); if(hover && hover.id==='litter') location.hash='#marine-litter'; });
-function build(){ buildGL(); buildOverlay(); render(performance.now()); overlay(performance.now()); }
+function build(){ buildGL(); buildOverlay(); render(performance.now()); overlay(performance.now()); glc.classList.add('on'); cv.classList.add('on'); }
 let rt; new ResizeObserver(()=>{ clearTimeout(rt); rt=setTimeout(build,120); }).observe(hero);
 build();
 if(document.fonts) document.fonts.ready.then(()=>overlay(performance.now()));
