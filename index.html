@@ -278,7 +278,8 @@ body.home footer{display:none}
 
 /* fly-to: headline steps aside, a glass panel describes the place */
 .h-copy{transition:opacity .6s ease,transform .6s ease}
-.h-hero.zoomed .h-copy{opacity:0;transform:translateY(-18px);pointer-events:none}
+.h-hero.zoomed .h-copy,.h-hero.exploring .h-copy{opacity:0;transform:translateY(-18px);pointer-events:none}
+.h-hero.exploring .h-copy .h-btns,.h-hero.exploring .h-copy .h-btns *,.h-hero.zoomed .h-copy .h-btns,.h-hero.zoomed .h-copy .h-btns *{pointer-events:none}
 .h-hero.zoomed .h-scrim{opacity:.35}
 .h-scrim{transition:opacity .8s ease}
 .h-pill{font:inherit;font-family:var(--f-hero-c);font-weight:500;font-size:1rem;color:#eaf4f8;text-align:left;cursor:pointer}
@@ -300,6 +301,18 @@ body.home footer{display:none}
 .hp-t{font-size:1.7rem}
 }
 @media (prefers-reduced-motion:reduce){.h-panel.in{animation:none}.h-copy{transition:none}}
+
+/* interactive globe */
+#hov{cursor:grab;touch-action:none}
+#hov.grabbing{cursor:grabbing}
+.h-copy > div{pointer-events:none}
+.h-copy .h-btns,.h-copy .h-btns *{pointer-events:auto}
+.h-ctl{position:absolute;z-index:4;left:var(--gutter-l);bottom:34px;display:flex;gap:10px;align-items:center}
+.h-hint{font-family:var(--f-hero);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(200,225,240,.6);transition:opacity .6s}
+.h-hint.gone{opacity:0}
+.h-reset{font:500 .78rem/1 var(--f-hero);letter-spacing:.12em;text-transform:uppercase;color:#eaf4f8;background:rgba(6,16,28,.6);border:1px solid rgba(160,210,235,.3);border-radius:999px;padding:.8em 1.2em;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.h-reset:hover{border-color:rgba(160,230,255,.8)}
+@media (max-width:820px){.h-ctl{bottom:92px}.h-hint{font-size:.62rem}}
 @media (prefers-reduced-motion:reduce){#hgl,#hov{transition:none}.h-copy > div > *,.h-strip{animation:none}}
 .how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
 .how div{display:grid;gap:6px;align-content:start}
@@ -361,6 +374,7 @@ Ocean Briefs
 <div class="reqs"><span class="req">REQ-LOT1-01 platform home</span><span class="req">REQ-LOT1-03 interactive entry point</span></div>
 </div></div>
 <div class="h-tip" id="h-tip"></div>
+<div class="h-ctl"><span class="h-hint" id="h-hint">Drag to turn the Earth · scroll to zoom</span><button type="button" class="h-reset" id="h-reset" hidden>⟲ Back to Europe</button></div>
 <aside class="h-panel" id="h-panel" hidden aria-live="polite">
 <p class="hp-n"></p>
 <h2 class="hp-t"></h2>
@@ -839,6 +853,7 @@ const panelW=tall?0:Math.min(400,w*.28)+w*.04;
 return {cx: tall? w/2 : (panelW+(w-listW))/2, cy: tall? h*.64 : h*.54, R: base.R*(tall?2.4:2.9), lon:b.lon, lat:b.lat};
 }
 let W=0,H=0,cam=null,from=null,to=null,t0=0,dur=1,animating=false,zoomed=null,dip=false;
+let interacting=false,lastInteract=0,vel={lon:0,lat:0},userMoved=false;
 const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 function lerp(a,b,e){ return a+(b-a)*e; }
 
@@ -1115,7 +1130,7 @@ function drawGL(t){
   }
   gl.uniform1f(U('uT'),t/1000);
   let useSurf;
-  if(animating){ bind(2,dummy); bind(3,dummy); bind(5,dummy); runPass(0,surfHalf,.5); useSurf=surfHalf; surfFull=false; }
+  if(animating||interacting){ bind(2,dummy); bind(3,dummy); bind(5,dummy); runPass(0,surfHalf,.5); useSurf=surfHalf; surfFull=false; }
   else { if(!surfFull){ bind(2,dummy); bind(3,dummy); bind(5,dummy); runPass(0,surf,1); surfFull=true; } useSurf=surf; }
   bind(3,dummy); bind(5,dummy); runPass(1,cl,.5);
   bind(2,useSurf.t); bind(3,cl.t); bind(5,sky.t); runPass(2,null,1);
@@ -1157,6 +1172,10 @@ function draw(t,force){
     sunWorld=norm([lerp(sunFrom[0],sunTo[0],e),lerp(sunFrom[1],sunTo[1],e),lerp(sunFrom[2],sunTo[2],e)]);
     if(x>=1){ animating=false; cam=to; sunWorld=sunTo.slice(); }
     drawGL(t); lastGL=t;
+  } else if(interacting){
+    if(!dragging && (Math.abs(vel.lon)>.002 || Math.abs(vel.lat)>.002)){ cam={...cam, lon:cam.lon+vel.lon, lat:clampLat(cam.lat+vel.lat)}; vel.lon*=.92; vel.lat*=.92; lastInteract=t; }
+    if(!dragging && t-lastInteract>200){ interacting=false; }
+    drawGL(t); lastGL=t;
   } else if(force || (!reduce && t-lastGL>30)){ drawGL(t); lastGL=t; }
   overlay(t);
 }
@@ -1171,7 +1190,7 @@ function fly(target,nextZoom){
 }
 function zoomTo(b){
   if(zoomed===b) return;
-  fly(zoomCam(W,H,b),b); zoomed=b; hover=null; tip.style.opacity=0;
+  fly(zoomCam(W,H,b),b); zoomed=b; hover=null; tip.style.opacity=0; resetBtn.hidden=true;
   hero.classList.add('zoomed');
   panel.querySelector('.hp-n').textContent=`Ocean Brief ${b.n} of 07`;
   panel.querySelector('.hp-t').textContent=b.t;
@@ -1183,6 +1202,7 @@ function zoomTo(b){
   syncPills();
 }
 function zoomOut(){
+  resetBtn.hidden=true; hero.classList.remove('exploring');
   if(!zoomed) return;
   fly(baseCam(W,H),null); zoomed=null; hero.classList.remove('zoomed'); panel.hidden=true; syncPills();
 }
@@ -1204,9 +1224,45 @@ function pick(e){
     else tip.style.opacity=0; }
   return hit;
 }
-cv.addEventListener('mousemove',pick);
+const clampLat=l=>Math.max(-80,Math.min(85,l));
+const hint=document.getElementById('h-hint'), resetBtn=document.getElementById('h-reset');
+if(matchMedia('(pointer: coarse)').matches) hint.textContent='Drag to turn · pinch to zoom';
+function markMoved(){ if(!userMoved){ userMoved=true; hint.classList.add('gone'); setTimeout(()=>hint.hidden=true,600); } resetBtn.hidden=!!zoomed; if(!zoomed) hero.classList.add('exploring'); }
+resetBtn.addEventListener('click',()=>{ if(zoomed) zoomOut(); else { fly(baseCam(W,H),null); } resetBtn.hidden=true; hero.classList.remove('exploring'); });
+const pointers=new Map(); let dragging=false, down=null, pinch=null, suppressClick=false;
+function zoomLimits(){ const b=baseCam(W,H); return [b.R*.75,b.R*4.5]; }
+cv.addEventListener('pointerdown',e=>{
+  cv.setPointerCapture(e.pointerId); pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===1){ down={x:e.clientX,y:e.clientY,t:performance.now(),moved:false}; vel={lon:0,lat:0}; }
+  if(pointers.size===2){ const [a,b]=[...pointers.values()]; pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,R:cam.R}; down&&(down.moved=true); }
+});
+cv.addEventListener('pointermove',e=>{
+  if(!pointers.has(e.pointerId)){ pick(e); return; }
+  const prev=pointers.get(e.pointerId); pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===2 && pinch){ const [a,b]=[...pointers.values()]; const d=Math.hypot(a.x-b.x,a.y-b.y)||1; const [lo,hi]=zoomLimits(); animating=false; cam={...cam,R:Math.max(lo,Math.min(hi,pinch.R*d/pinch.d))}; interacting=true; lastInteract=performance.now(); markMoved(); return; }
+  if(!down) return;
+  const dx=e.clientX-prev.x, dy=e.clientY-prev.y;
+  if(!down.moved && Math.hypot(e.clientX-down.x,e.clientY-down.y)>5){ down.moved=true; dragging=true; cv.classList.add('grabbing'); tip.style.opacity=0; hover=null; syncPills(); }
+  if(!down.moved) return;
+  animating=false;
+  const dl=-dx/cam.R/D2R, dt=dy/cam.R/D2R;
+  cam={...cam, lon:cam.lon+dl, lat:clampLat(cam.lat+dt)};
+  vel={lon:dl*.9, lat:dt*.9};
+  interacting=true; lastInteract=performance.now(); markMoved();
+});
+function endPointer(e){
+  pointers.delete(e.pointerId);
+  if(pointers.size<2) pinch=null;
+  if(pointers.size===0){
+    if(down && down.moved){ suppressClick=true; setTimeout(()=>suppressClick=false,0); }
+    if(down && performance.now()-lastInteract>80) vel={lon:0,lat:0};
+    down=null; dragging=false; cv.classList.remove('grabbing');
+  }
+}
+cv.addEventListener('pointerup',endPointer); cv.addEventListener('pointercancel',endPointer);
+cv.addEventListener('wheel',e=>{ e.preventDefault(); const [lo,hi]=zoomLimits(); animating=false; cam={...cam,R:Math.max(lo,Math.min(hi,cam.R*Math.exp(-e.deltaY*.0012)))}; interacting=true; lastInteract=performance.now(); markMoved(); },{passive:false});
 cv.addEventListener('mouseleave',()=>{ hover=null; tip.style.opacity=0; syncPills(); });
-cv.addEventListener('click',e=>{ const b=pick(e); if(b) zoomTo(b); else if(zoomed) zoomOut(); });
+cv.addEventListener('click',e=>{ if(suppressClick) return; const b=pick(e); if(b) zoomTo(b); });
 
 // ---------- start ----------
 let visible=true;
