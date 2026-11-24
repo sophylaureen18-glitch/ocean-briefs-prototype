@@ -1437,7 +1437,7 @@ const head=sec.querySelector('.fleet-head');
 const SATS={s1:'Sentinel-1',s2:'Sentinel-2',s3:'Sentinel-3',s6:'Sentinel-6'};
 const DESC={en:{s1:'radar · 693 km',s2:'optical 10 m · 786 km',s3:'colour & temperature · 814 km',s6:'sea level · 1,336 km'},fr:{s1:'radar · 693 km',s2:'optique 10 m · 786 km',s3:'couleur et température · 814 km',s6:'niveau de la mer · 1 336 km'},de:{s1:'Radar · 693 km',s2:'Optik 10 m · 786 km',s3:'Farbe & Temperatur · 814 km',s6:'Meeresspiegel · 1.336 km'}};
 // lanes: 0 above the heading, 1-2 in the gap, 3 below the cards; size in px of the model's width
-const FLEET=[{id:'s1',lane:0,dy:-20,v:-9,px:380,x0:.72,yaw:-.35},{id:'s2',lane:0,dy:30,v:7,px:200,x0:.12,yaw:.6},{id:'s3',lane:1,dy:0,v:4,px:560,x0:.42,yaw:.8,roll:-.32,pitch:.3,hero:true},{id:'s6',lane:3,dy:0,v:-10,px:280,x0:.55,yaw:-.6}];
+const FLEET=[{id:'s1',lane:0,dy:-20,v:-9,px:380,x0:.72,yaw:-.35},{id:'s2',lane:0,dy:30,v:7,px:200,x0:.12,yaw:.6},{id:'s3',lane:1,dy:0,v:4,px:640,x0:.42,yaw:.5,roll:-.38,pitch:.35,hero:true},{id:'s6',lane:3,dy:0,v:-10,px:280,x0:.55,yaw:-.6}];
 let W=0,H=0,dpr=1,vis=false,LANES=[0,0,0,0],t0=performance.now();
 const T=window.THREE;
 let R3=null;
@@ -1467,19 +1467,19 @@ function build3D(){
       od.data[i]=(-dx/l*.5+.5)*255; od.data[i+1]=(dy/l*.5+.5)*255; od.data[i+2]=(1/l*.5+.5)*255; od.data[i+3]=255; }
     oc.putImageData(od,0,0); const t=new T.CanvasTexture(out); t.wrapS=t.wrapT=T.RepeatWrapping; return t; }
   function crinkle(w,h,seed,n){ const c=document.createElement('canvas'); c.width=w; c.height=h; const x=c.getContext('2d'); x.fillStyle='#808080'; x.fillRect(0,0,w,h);
-    for(let i=0;i<n;i++){ const px=rnd(seed+i)*w, py=rnd(seed+i+.5)*h, r=(rnd(seed+i+.2)<.35?14:4)+rnd(seed+i+.7)*(rnd(seed+i+.2)<.35?46:16), a=rnd(seed+i+.9)*6.28, v=Math.floor(60+rnd(seed+i+.3)*140);
-      x.fillStyle=`rgba(${v},${v},${v},.75)`; x.beginPath(); x.moveTo(px+Math.cos(a)*r,py+Math.sin(a)*r); x.lineTo(px+Math.cos(a+2)*r*.6,py+Math.sin(a+2)*r*.6); x.lineTo(px+Math.cos(a+4.1)*r,py+Math.sin(a+4.1)*r); x.fill(); }
+    for(let i=0;i<n;i++){ const px=rnd(seed+i)*w, py=rnd(seed+i+.5)*h, r=24+rnd(seed+i+.7)*70, a=rnd(seed+i+.9)*6.28, v=Math.floor(60+rnd(seed+i+.3)*140);
+      x.fillStyle=`rgba(${v},${v},${v},.4)`; x.beginPath(); x.moveTo(px+Math.cos(a)*r,py+Math.sin(a)*r); x.lineTo(px+Math.cos(a+2)*r*.6,py+Math.sin(a+2)*r*.6); x.lineTo(px+Math.cos(a+4.1)*r,py+Math.sin(a+4.1)*r); x.fill(); }
     return c; }
-  const foilH=crinkle(1024,1024,11,5000);
-  const foilN=normalFromHeight(foilH,7);
-  const foil=canvasTex(1024,1024,(c,w,h)=>{ c.fillStyle='#c08d30'; c.fillRect(0,0,w,h); c.globalCompositeOperation='overlay'; c.globalAlpha=1; c.drawImage(foilH,0,0); c.drawImage(foilH,0,0); c.globalAlpha=1; c.globalCompositeOperation='source-over';
+  const foilH=crinkle(1024,1024,11,1600);
+  const foilN=normalFromHeight(foilH,4);
+  const foil=canvasTex(1024,1024,(c,w,h)=>{ c.fillStyle='#c08d30'; c.fillRect(0,0,w,h); c.globalCompositeOperation='overlay'; c.globalAlpha=.8; c.drawImage(foilH,0,0); c.globalAlpha=1; c.globalCompositeOperation='source-over';
     for(let i=0;i<260;i++){ const x=rnd(i+70)*w, y=rnd(i+71)*h, r=4+rnd(i+72)*18; c.fillStyle=`rgba(255,225,150,${.08+.22*rnd(i+73)})`; c.beginPath(); c.ellipse(x,y,r,r*.35,rnd(i+74)*3,0,7); c.fill(); } });
   foil.wrapS=foil.wrapT=T.RepeatWrapping;
   const silverFoil=canvasTex(1024,1024,(c,w,h)=>{ c.fillStyle='#cfd5dc'; c.fillRect(0,0,w,h); c.globalCompositeOperation='overlay'; c.globalAlpha=.8; c.drawImage(foilH,0,0); });
-  const solar=canvasTex(1024,512,(c,w,h)=>{ c.fillStyle='#8e959e'; c.fillRect(0,0,w,h); const cols=16, rows=8, m=10;
+  const solar=canvasTex(1024,512,(c,w,h)=>{ c.fillStyle='#b8bec6'; c.fillRect(0,0,w,h); const cols=16, rows=8, m=10;
     for(let i=0;i<cols;i++) for(let j=0;j<rows;j++){ const x=m+i*(w-2*m)/cols, y=m+j*(h-2*m)/rows, cw=(w-2*m)/cols-4, ch=(h-2*m)/rows-4;
-      const g=c.createLinearGradient(x,y,x+cw,y+ch); g.addColorStop(0,'#13295a'); g.addColorStop(.55,'#081634'); g.addColorStop(1,'#10234d'); c.fillStyle=g; c.fillRect(x,y,cw,ch);
-      c.fillStyle='rgba(150,170,205,.28)'; c.fillRect(x,y+ch/2-.5,cw,1); c.fillRect(x+cw/2-.5,y,1,ch);
+      const g=c.createLinearGradient(x,y,x+cw,y+ch); g.addColorStop(0,'#141c30'); g.addColorStop(.55,'#070b16'); g.addColorStop(1,'#111a2e'); c.fillStyle=g; c.fillRect(x,y,cw,ch);
+      c.fillStyle='rgba(160,175,200,.22)'; c.fillRect(x,y+ch/2-.5,cw,1); c.fillRect(x+cw/2-.5,y,1,ch);
       c.fillStyle='rgba(120,150,210,.05)'; c.fillRect(x+2,y+2,cw*.45,ch*.45); } });
   const solarN=normalFromHeight((()=>{ const c=document.createElement('canvas'); c.width=1024; c.height=512; const x=c.getContext('2d'); x.fillStyle='#9a9a9a'; x.fillRect(0,0,1024,512); x.fillStyle='#6a6a6a';
     for(let i=0;i<16;i++) for(let j=0;j<8;j++){ const px=10+i*63.4, py=10+j*61.5; x.fillRect(px,py,59,57); } return c; })(),2);
@@ -1490,10 +1490,11 @@ function build3D(){
   const M={
     solar:new T.MeshPhysicalMaterial({map:solar,normalMap:solarN,normalScale:new T.Vector2(.4,.4),metalness:.55,roughness:.3,clearcoat:1,clearcoatRoughness:.03,iridescence:.6,iridescenceIOR:1.8,iridescenceThicknessRange:[200,600],envMapIntensity:2.2}),
     back:new T.MeshStandardMaterial({color:0xcfd2d6,metalness:.4,roughness:.55}),
-    foil:new T.MeshPhysicalMaterial({map:foil,normalMap:foilN,normalScale:new T.Vector2(1.3,1.3),metalness:.72,roughness:.3,envMapIntensity:2,clearcoat:.5,clearcoatRoughness:.12}),
+    foil:new T.MeshPhysicalMaterial({map:foil,normalMap:foilN,normalScale:new T.Vector2(.8,.8),metalness:.85,roughness:.22,envMapIntensity:2,clearcoat:.5,clearcoatRoughness:.12}),
     sfoil:new T.MeshPhysicalMaterial({map:silverFoil,normalMap:foilN,normalScale:new T.Vector2(1,1),metalness:.75,roughness:.24,envMapIntensity:2,clearcoat:.4,clearcoatRoughness:.12}),
     rad:new T.MeshStandardMaterial({map:radiator,metalness:.75,roughness:.28,envMapIntensity:1.6}),
     silver:new T.MeshStandardMaterial({color:0xe8ecf0,metalness:1,roughness:.1,envMapIntensity:1.8}),
+    brushed:new T.MeshPhysicalMaterial({color:0xd9dee5,metalness:.85,roughness:.34,clearcoat:.6,clearcoatRoughness:.08,envMapIntensity:1.6}),
     dark:new T.MeshStandardMaterial({color:0x2a3038,metalness:.7,roughness:.4}),
     white:new T.MeshStandardMaterial({color:0xf3f3ef,metalness:.1,roughness:.45}),
     sar:new T.MeshStandardMaterial({map:sarT,metalness:.6,roughness:.38}),
@@ -1544,20 +1545,19 @@ function build3D(){
       const tr=tracker(); tr.position.set(-.45,1.2,.3); tr.rotation.z=.5; g.add(tr);
       const d=dish(.3,.1); d.position.set(-.3,-1.85,-.35); d.rotation.x=Math.PI; g.add(d);
       const a=antenna(2.0,true); a.position.set(-.5,1.1,-.2); a.rotation.z=.45; g.add(a);
-    } else if(id==='s3'){ // hero: like the reference, radiator bus, gold module, big wing on each side, dish below
-      g.add(bus(1.7,1.9,1.6,M.white,M.rad));
-      const mod=box(1.5,1.0,1.4,M.foil); mod.position.y=-1.45; g.add(mod);
-      const ring=cyl(.5,.6,.25,M.silver,28); ring.position.y=-2.05; g.add(ring);
-      const fan=new T.Group(); for(let i=0;i<5;i++){ const c=lensCam(.12,.32); c.position.set(-.3+i*.15,-.15,.86); c.rotation.x=Math.PI/2; c.rotation.z=(i-2)*.18; fan.add(c);} fan.position.y=-1.45; g.add(fan);
-      const scan=cyl(.18,.38,.4,M.sfoil,20); scan.position.set(.55,1.15,.35); g.add(scan);
-      const d1=dish(.55,.18); d1.rotation.x=Math.PI; d1.position.set(-.2,-2.45,0); g.add(d1);
-      const st=cyl(.04,.04,.4,M.silver,8); st.position.set(-.2,-2.25,0); g.add(st);
-      const d2=dish(.32,.12); d2.position.set(-.45,1.2,-.3); d2.rotation.set(-.4,0,.3); g.add(d2);
-      const wl=wing(2,2.0,1.7,-1); wl.position.x=-.85; g.add(wl);
-      const wr=wing(2,2.0,1.7,1); wr.position.x=.85; g.add(wr);
-      const tr=tracker(); tr.position.set(.6,.95,-.6); tr.rotation.x=-.5; g.add(tr);
-      const a=antenna(2.4,true); a.position.set(.3,.95,.4); a.rotation.z=-.35; g.add(a);
-      for(const p of [[.75,-1.95,.6],[-.75,-1.95,.6],[.75,-1.95,-.6],[-.75,-1.95,-.6]]){ const th=thruster(); th.position.set(...p); th.rotation.x=Math.PI; g.add(th); }
+    } else if(id==='s3'){ // hero in the classic style: silver cylinder, gold band, long dark wings, dish
+      const body=cyl(.8,.8,3.0,M.brushed,48); g.add(body);
+      for(const y of [-1.2,-.3,.6]){ const r=cyl(.83,.83,.06,M.dark,40); r.position.y=y; g.add(r); }
+      const band=cyl(.84,.84,.75,M.foil,40); band.position.y=1.05; g.add(band);
+      const cap=cyl(.55,.8,.35,M.brushed,48); cap.position.y=1.67; g.add(cap);
+      const bot=cyl(.8,.62,.3,M.sfoil,40); bot.position.y=-1.65; g.add(bot);
+      const lens=cyl(.42,.42,.05,M.glass,32); lens.position.y=-1.82; g.add(lens);
+      const d=dish(.75,.25); d.position.set(0,2.2,0); g.add(d); const st=cyl(.06,.06,.4,M.silver,8); st.position.y=1.95; g.add(st);
+      for(const [x,z] of [[.8,.0],[-.8,.0],[0,.8]]){ const box_=box(.3,.45,.3,M.sfoil); box_.position.set(x*1.05,.1,z*1.05); g.add(box_); }
+      const tr=tracker(); tr.position.set(.55,1.75,.4); tr.rotation.x=-.5; g.add(tr);
+      for(const sgn of [-1,1]){ const w=wing(4,1.25,1.1,sgn); w.position.set(sgn*.8,.15,0); g.add(w); }
+      const a=antenna(2.6,true); a.position.set(.35,1.8,-.3); a.rotation.z=-.35; g.add(a);
+      for(const sgn of [-1,1]){ const b=antenna(2.0,true); b.position.set(sgn*.4,-1.7,.3); b.rotation.z=Math.PI+sgn*.45; g.add(b); }
     } else { // Sentinel-6 style: white bus, tilted wings, big altimeter dish, GNSS mast
       g.add(bus(1.7,1.3,1.7,M.white,M.rad));
       const base=box(1.5,.35,1.5,M.foil); base.position.y=-.82; g.add(base);
