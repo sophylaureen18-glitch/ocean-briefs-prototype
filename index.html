@@ -994,7 +994,7 @@ uniform vec2 uRes; uniform float uPx; uniform vec3 uCam; uniform vec2 uRot; unif
 uniform int uPass;
 uniform sampler2D uLand; uniform sampler2D uLights; uniform sampler2D uSurf; uniform sampler2D uCl; uniform sampler2D uSpace;
 uniform vec3 uMoon; uniform vec2 uSunP;
-uniform sampler2D uBM; uniform sampler2D uDet; uniform vec4 uDetBox; uniform float uDetMix; uniform float uDetData;
+uniform sampler2D uBM; uniform sampler2D uDet; uniform vec4 uDetBox; uniform float uDetMix; uniform float uDetData; uniform float uZoom;
 vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
 vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
 vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
@@ -1121,9 +1121,10 @@ if(inside>0.){
   vec2 cuv=vec2(uvE.x-uT*0.006/6.2831853, uvE.y);
   float sl=sin(lonr), cl0=cos(lonr), sla=sin(latr), cla=max(cos(latr),.2);
   vec2 sOff=vec2(dot(uSunW,vec3(cl0,0.,-sl))/cla/6.2831853, -dot(uSunW,vec3(-sla*sl,cla,-sla*cl0))/3.14159265)*.03;
-  float ca2=texture2D(uSurf,cuv).r; float ds=texture2D(uSurf,cuv+sOff).r;
+  float cz=(1.-smoothstep(2.2,4.5,uZoom))*(1.-smoothstep(76.,86.,abs(lat)));
+  float ca2=texture2D(uSurf,cuv).r*cz; float ds=texture2D(uSurf,cuv+sOff).r*cz;
   float lightT=clamp(1.-(ds-ca2)*.7,.78,1.);
-  float shd=texture2D(uSurf,cuv-sOff*1.4).r;
+  float shd=texture2D(uSurf,cuv-sOff*1.4).r*cz;
   float lonD=mod(degrees(lonr)+180.,360.)-180.;
   vec2 du=vec2((lonD-uDetBox.y)/(uDetBox.w-uDetBox.y),(uDetBox.z-lat)/(uDetBox.z-uDetBox.x));
   float din=smoothstep(0.,.04,du.x)*smoothstep(1.,.96,du.x)*smoothstep(0.,.04,du.y)*smoothstep(1.,.96,du.y);
@@ -1180,7 +1181,7 @@ function runPass(p,fbo,scale){
   const k=gd*scale;
   gl.uniform1i(U('uPass'),p); gl.uniform2f(U('uRes'),w,h); gl.uniform1f(U('uPx'),k);
   gl.uniform3f(U('uCam'),cam.cx*k,cam.cy*k,cam.R*k); gl.uniform2f(U('uRot'),cam.lon*D2R,cam.lat*D2R);
-  gl.uniform3f(U('uSun'),...toView(sunWorld,cam.lon*D2R,cam.lat*D2R)); gl.uniform3f(U('uSunW'),...sunWorld);
+  gl.uniform3f(U('uSun'),...toView(sunWorld,cam.lon*D2R,cam.lat*D2R)); gl.uniform3f(U('uSunW'),...sunWorld); gl.uniform1f(U('uZoom'),cam.R/baseCam(W,H).R);
   gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
 }
 
@@ -1207,11 +1208,30 @@ function buildWorld(g,day,night){
 let detTex=null, detFor=null, detMix=0, detTarget=0;
 const detCache={};
 function loadImg(src){ return new Promise((res,rej)=>{ const im=new Image(); im.decoding='async'; im.onload=()=>res(im); im.onerror=rej; im.src=src; }); }
+// every close-up is decoded off the main thread and uploaded to its own GPU texture ahead of time
+const detTexs={};
+const DET_W=(Math.min(screen.width,screen.height)<700)?1024:1600;
+const decoded={};
+function decodeDet(b){ return decoded[b.id]||(decoded[b.id]=('createImageBitmap' in window)
+    ? fetch(b.img).then(r=>r.blob()).then(bl=>createImageBitmap(bl,{resizeWidth:DET_W,resizeQuality:'high'}))
+    : loadImg(b.img)); }
+function loadDet(b){
+  if(!ok) return Promise.resolve(null);
+  if(detTexs[b.id]) return detTexs[b.id];
+  detTexs[b.id]=decodeDet(b).then(src=>{ const t=gl.createTexture(); bind(4,t); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,src); linTex(); if(src.close) src.close(); return t; }).catch(()=>null);
+  return detTexs[b.id];
+}
+function prefetchDetails(){
+  // download and decode all close-ups in parallel (off the main thread), then upload one per frame
+  BRIEFS.forEach(decodeDet);
+  const queue=BRIEFS.slice();
+  const next=()=>{ const b=queue.shift(); if(!b) return; decodeDet(b).then(()=>requestAnimationFrame(()=>loadDet(b).then(()=>requestAnimationFrame(next)))); };
+  setTimeout(next,600);
+}
 function useDetail(b){
   if(!ok) return;
-  const p=detCache[b.id]||(detCache[b.id]=loadImg(b.img));
-  p.then(im=>{ if(zoomed!==b) return; bind(7,detTex); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,im); linTex();
-    gl.uniform4f(U('uDetBox'),...b.box); gl.uniform1f(U('uDetData'),b.data?1:0); detFor=b; }).catch(()=>{});
+  loadDet(b).then(t=>{ if(!t||zoomed!==b) return; bind(7,t);
+    gl.uniform4f(U('uDetBox'),...b.box); gl.uniform1f(U('uDetData'),b.data?1:0); detFor=b; });
 }
 // ---------- size-dependent targets ----------
 let S={};
@@ -1222,7 +1242,7 @@ function resize(){
   cam = zoomed ? zoomCam(W,H,zoomed) : base; animating=false; sunWorld = zoomed ? zoomSun(zoomed) : sunBase.slice();
   const dpr=Math.min(1.5,devicePixelRatio||1); cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); S={dpr,w:cv.width,h:cv.height};
   if(ok){
-    gd=Math.min(1.5,devicePixelRatio||1); if(W*H*gd*gd>3.6e6) gd=Math.sqrt(3.6e6/(W*H));
+    gd=Math.min(1.5,devicePixelRatio||1); if(W*H*gd*gd>2.6e6) gd=Math.sqrt(2.6e6/(W*H));
     glc.width=Math.round(W*gd); glc.height=Math.round(H*gd);
     freeTarget(sky); sky=target(glc.width,glc.height);
     const tall=H>W*1.05;
@@ -1276,11 +1296,15 @@ function overlay(t){
 let lastGL=0;
 function draw(t,force){
   if(!cam) return;
-  if(ok){ const want=(zoomed && detFor===zoomed && (!animating || (t-t0)/dur>.72))?1:0; detTarget=want;
-    if(detMix!==detTarget){ detMix+= (detTarget-detMix)*.12; if(Math.abs(detTarget-detMix)<.01) detMix=detTarget; gl.uniform1f(U('uDetMix'),detMix); force=true; } }
+  if(ok){ const want=(zoomed && detFor===zoomed && (!animating || (t-t0)/dur>.38))?1:0; detTarget=want;
+    if(detMix!==detTarget){ detMix+= (detTarget-detMix)*.16; if(Math.abs(detTarget-detMix)<.01) detMix=detTarget; gl.uniform1f(U('uDetMix'),detMix); force=true; } }
   if(animating){
     const x=Math.min(1,(t-t0)/dur), e=ease(x);
-    cam={cx:lerp(from.cx,to.cx,e), cy:lerp(from.cy,to.cy,e), R:lerp(from.R,to.R,e)*(dip?1-.32*Math.sin(Math.PI*e):1), lon:lerp(from.lon,to.lon,e), lat:lerp(from.lat,to.lat,e)};
+    // zoom in log space (constant perceived speed); when hopping between close-ups, pull back to a regional view mid-way
+    const lf=Math.log(from.R), lt=Math.log(to.R), mid=Math.log(baseCam(W,H).R*1.8);
+    const d=dip?Math.max(0,(lf+lt)/2-mid):0;
+    const eL=dip?ease(Math.min(1,Math.max(0,(x-.18)/.64))):e;
+    cam={cx:lerp(from.cx,to.cx,e), cy:lerp(from.cy,to.cy,e), R:Math.exp(lerp(lf,lt,e)-d*Math.sin(Math.PI*e)), lon:lerp(from.lon,to.lon,eL), lat:lerp(from.lat,to.lat,eL)};
     sunWorld=norm([lerp(sunFrom[0],sunTo[0],e),lerp(sunFrom[1],sunTo[1],e),lerp(sunFrom[2],sunTo[2],e)]);
     if(x>=1){ animating=false; cam=to; sunWorld=sunTo.slice(); }
     drawGL(t); lastGL=t;
@@ -1298,7 +1322,7 @@ const syncPills=()=>pills.forEach(el=>el.classList.toggle('hl', (!!hover && el.d
 function fly(target,nextZoom){
   from={...cam}; to=target; dip=!!zoomed && !!nextZoom && zoomed!==nextZoom;
   sunFrom=sunWorld.slice(); sunTo=nextZoom?zoomSun(nextZoom):sunBase;
-  t0=performance.now(); dur=reduce?1:(dip?2800:2400); animating=true;
+  t0=performance.now(); dur=reduce?1:(dip?2000:1700); animating=true;
 }
 addEventListener('obzoom',e=>{ const b=BRIEFS.find(x=>x.n===e.detail); if(!b) return; window.scrollTo({top:0,behavior:reduce?'auto':'smooth'}); setTimeout(()=>zoomTo(b), reduce?0:450); });
 function zoomTo(b){
@@ -1327,7 +1351,7 @@ document.getElementById('hp-back').addEventListener('click',zoomOut);
 addEventListener('keydown',e=>{ if(e.key==='Escape') zoomOut(); });
 pills.forEach(el=>{
   const b=BRIEFS.find(x=>x.n===el.dataset.n);
-  el.addEventListener('mouseenter',()=>{ if(!zoomed){ hover=b; syncPills(); } });
+  el.addEventListener('mouseenter',()=>{ loadDet(b); if(!zoomed){ hover=b; syncPills(); } });
   el.addEventListener('mouseleave',()=>{ hover=null; syncPills(); });
   el.addEventListener('click',e=>{ e.preventDefault(); zoomTo(b); });
 });
@@ -1398,6 +1422,7 @@ if('IntersectionObserver' in window) new IntersectionObserver(es=>{ visible=es[0
 Promise.all([fetch('world.json').then(r=>r.json()),loadImg('img/earth-day.jpg'),loadImg('img/earth-night.jpg')]).then(([g,day,night])=>{
   buildWorld(g,day,night);
   resize();
+  prefetchDetails();
   glc.classList.add('on'); cv.classList.add('on');
   let rt; new ResizeObserver(()=>{ clearTimeout(rt); rt=setTimeout(resize,120); }).observe(hero);
   if(document.fonts) document.fonts.ready.then(()=>overlay(performance.now()));
