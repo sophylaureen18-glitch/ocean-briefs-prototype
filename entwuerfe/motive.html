@@ -1,0 +1,817 @@
+<title>Ocean Briefs Startmotive</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Public+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: three full-width hero mock-ups stacked like a pitch board; each with a short German rationale beside/below it. Mock-ups are fixed artwork, the page chrome follows the viewer theme. */
+:root{
+  --paper:#eef2f3; --surface:#ffffff; --ink:#0d1f2b; --muted:#536772; --line:#cfdadd;
+  --buoy:#e2571c; --signal:#0f6f7c;
+  --f-display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --f-body:"Public Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--paper:#081620;--surface:#0e2230;--ink:#e2ecef;--muted:#93a9b2;--line:#21394a;--buoy:#ff7a3d;--signal:#5cc4d1;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#081620;--surface:#0e2230;--ink:#e2ecef;--muted:#93a9b2;--line:#21394a;--buoy:#ff7a3d;--signal:#5cc4d1;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:1rem;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+h1,h2{font-family:var(--f-display);margin:0;line-height:1.08;text-wrap:balance}
+h1{font-size:clamp(2rem,4.6vw,3.2rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(1.4rem,2.6vw,1.9rem);font-weight:800;letter-spacing:-.01em}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:.76rem;letter-spacing:.09em;text-transform:uppercase;color:var(--signal)}
+.intro{padding-block:44px 28px;display:grid;gap:14px}
+.intro p{max-width:64ch;color:var(--muted);font-size:1.05rem}
+.variant{padding-block:34px 46px;border-top:1px solid var(--line);display:grid;gap:20px}
+.vhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+.pill{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;background:var(--buoy);color:#fff;padding:3px 9px;border-radius:999px}
+.why{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.why div{display:grid;gap:4px;align-content:start}
+.why b{font-family:var(--f-display);font-size:1.02rem}
+.why p{color:var(--muted);font-size:.95rem}
+.verdict{padding-block:34px 70px;border-top:1px solid var(--line);display:grid;gap:14px}
+.verdict ol{margin:0;padding-left:1.2em;display:grid;gap:6px;max-width:70ch}
+.note{font-size:.85rem;color:var(--muted)}
+:focus-visible{outline:3px solid var(--buoy);outline-offset:2px}
+
+/* ---------- Mock-up frame ---------- */
+.mock{position:relative;container-type:inline-size;border-radius:14px;overflow:hidden;aspect-ratio:16/10;max-width:100%;box-shadow:0 1px 0 var(--line),0 24px 60px -30px rgba(5,20,30,.55)}
+.mock canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.mnav{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:2.2cqw;padding:2.2cqw 3.4cqw;font-size:clamp(9px,1.25cqw,15px);z-index:3}
+.mnav .wm{font-family:var(--f-display);font-weight:800;font-size:clamp(11px,1.6cqw,19px);display:flex;align-items:center;gap:.6em;margin-right:auto;letter-spacing:-.01em}
+.mnav span{opacity:.8}
+.mtext{position:absolute;z-index:3;left:5cqw;top:50%;transform:translateY(-46%);width:38cqw;display:grid;gap:1.6cqw}
+.mtext .k{font-family:var(--f-mono);font-size:clamp(8px,1.05cqw,13px);letter-spacing:.12em;text-transform:uppercase}
+.mtext h3{font-family:var(--f-display);font-weight:800;font-size:clamp(20px,4.9cqw,62px);line-height:.98;letter-spacing:-.025em;margin:0;text-wrap:balance}
+.mtext p{font-size:clamp(10px,1.45cqw,18px);line-height:1.5;max-width:34cqw}
+.mbtns{display:flex;flex-wrap:wrap;gap:1cqw}
+.mbtn{font:600 clamp(9px,1.25cqw,15px)/1 var(--f-body);padding:.9em 1.3em;border-radius:999px;text-decoration:none;border:1.5px solid currentColor;cursor:pointer;background:none;color:inherit}
+.mcap{position:absolute;z-index:3;left:5cqw;bottom:2.6cqw;font-family:var(--f-mono);font-size:clamp(8px,1cqw,12px);letter-spacing:.06em;opacity:.7}
+
+/* A: night currents */
+.mA{background:#040b14;color:#eaf4f8}
+.mA .mtext h3 em{font-style:normal;color:#ffd08a}
+.mA .mbtn.pri{background:#ffd08a;border-color:#ffd08a;color:#1b1003}
+.mA::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,11,20,.88) 0%,rgba(4,11,20,.55) 32%,rgba(4,11,20,0) 52%);z-index:2;pointer-events:none}
+.tip{position:absolute;z-index:4;pointer-events:none;background:rgba(6,18,30,.92);border:1px solid rgba(160,210,235,.3);color:#eaf4f8;border-radius:8px;padding:.6em .8em;font-size:clamp(10px,1.2cqw,14px);max-width:24cqw;transform:translate(-50%,calc(-100% - 14px));opacity:0;transition:opacity .15s}
+.tip b{display:block;font-family:var(--f-display)}
+.tip span{opacity:.75}
+
+/* B: satellite day */
+.mB{background:#f2f5f4;color:#10232e}
+.mB::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(242,245,244,.95) 0%,rgba(242,245,244,.7) 33%,rgba(242,245,244,0) 52%);z-index:2;pointer-events:none}
+.mB .k{color:#0f6f7c}
+.mB .mbtn.pri{background:#10232e;border-color:#10232e;color:#f2f5f4}
+.cbar{position:absolute;z-index:3;right:3.4cqw;bottom:3cqw;display:grid;gap:.4em;font-family:var(--f-mono);font-size:clamp(8px,1cqw,12px);color:#10232e;width:22cqw}
+.cbar i{display:block;height:.7em;border-radius:2px;background:linear-gradient(90deg,#2c4f8c,#2b9aa0,#9fd08a,#f2d16b,#e8743b,#b8323a)}
+.cbar div{display:flex;justify-content:space-between}
+
+/* C: seven stories */
+.mC{background:#f4f1ec;color:#14212a;display:grid;grid-template-rows:auto 1fr}
+.mC .chead{padding:9cqw 5cqw 2.6cqw;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:4cqw;align-items:end}
+.mC .chead h3{font-family:var(--f-display);font-weight:800;font-size:clamp(18px,4.4cqw,56px);line-height:.98;letter-spacing:-.025em;margin:0}
+.mC .chead p{font-size:clamp(9px,1.4cqw,17px);color:#4a5b64}
+.mC .mnav{color:#14212a}
+.strips{display:flex;gap:.5cqw;padding:0 5cqw 4cqw;min-height:0}
+.strip{position:relative;flex:1 1 0;min-width:0;border-radius:1cqw;overflow:hidden;transition:flex-grow .45s cubic-bezier(.2,.7,.2,1);color:#fff;text-decoration:none;border:0;padding:0;cursor:pointer;background:#123}
+.strip:hover,.strip:focus-visible,.strip.on{flex-grow:2.6}
+.strip canvas{position:absolute;inset:0;width:100%;height:100%}
+.strip .lab{position:absolute;left:0;right:0;bottom:0;padding:1.2cqw;display:flex;flex-direction:column;align-items:flex-start;gap:.5cqw;background:linear-gradient(0deg,rgba(0,10,20,.8),rgba(0,10,20,0));text-align:left}
+.strip .n{font-family:var(--f-mono);font-size:clamp(8px,1cqw,12px);opacity:.85}
+.strip .lab{text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 10px rgba(0,0,0,.6)}
+.strip .t{font-family:var(--f-display);font-weight:800;font-size:clamp(10px,1.7cqw,21px);writing-mode:vertical-rl;transform:rotate(180deg);line-height:1;letter-spacing:-.01em;white-space:nowrap}
+
+@media (max-width:760px){
+  .why{grid-template-columns:minmax(0,1fr)}
+  .mock{aspect-ratio:4/5}
+  .mA::after{background:linear-gradient(180deg,rgba(4,11,20,.9) 0%,rgba(4,11,20,.6) 38%,rgba(4,11,20,0) 60%)}
+  .mB::after{background:linear-gradient(180deg,rgba(242,245,244,.96) 0%,rgba(242,245,244,.75) 38%,rgba(242,245,244,0) 60%)}
+  .mtext{top:13cqw;transform:none;width:auto;right:5cqw}
+  .mtext h3{font-size:9cqw}
+  .mtext p{max-width:none;font-size:3.4cqw}
+  .mbtn{font-size:3.2cqw}
+  .mtext .k{font-size:2.6cqw}
+  .mnav{font-size:3cqw}.mnav .wm{font-size:3.8cqw}.mnav span{display:none}
+  .mA .mcap{display:none}
+  .mcap,.cbar{font-size:2.5cqw}.cbar{width:40cqw}
+  .tip{font-size:3cqw;max-width:50cqw}
+  .mC .chead{grid-template-columns:minmax(0,1fr);padding-top:16cqw;gap:2cqw}
+  .mC .chead h3{font-size:9cqw}.mC .chead p{font-size:3.4cqw}
+  .strip .t{font-size:4cqw}.strip .n{font-size:2.6cqw}
+}
+@media (prefers-reduced-motion:reduce){.strip{transition:none}}
+</style>
+
+<header class="wrap intro">
+  <p class="eyebrow">Ocean Briefs · Startseite · Entwurf 1</p>
+  <h1>Drei Motive für die Startseite</h1>
+  <p>Jedes Motiv ist ein echter, bewegter Entwurf, kein Stockfoto. Fahrt mit der Maus über die Bilder: Die Punkte in Motiv A und die Streifen in Motiv C reagieren. Die Texte auf den Motiven sind auf Englisch, so wie die spätere Plattform.</p>
+</header>
+
+<main>
+<!-- ================= A ================= -->
+<section class="wrap variant" id="a">
+  <div class="vhead"><p class="eyebrow">Motiv A</p><h2>Europa zwischen Tag und Nacht</h2><span class="pill">Empfehlung</span></div>
+  <div class="mock mA" id="mockA">
+    <canvas id="cAgl" aria-hidden="true"></canvas>
+    <canvas id="cA" aria-label="Europe from space: night with glowing city lights in the north-west, daylight with blue ocean and white clouds in the south-east, seven points, one per Ocean Brief"></canvas>
+    <div class="mnav"><div class="wm"><svg width="1.3em" height="1.3em" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 15c3-3 5-3 8 0s5 3 8 0 4-2 4-2" fill="none" stroke="#ff7a3d" stroke-width="2.2" stroke-linecap="round"/></svg>Ocean Briefs</div><span>Briefs</span><span>How it works</span><span>EN</span></div>
+    <div class="mtext">
+      <p class="k">Seven Ocean Briefs</p>
+      <h3>Europe’s ocean, <em>seen from space.</em></h3>
+      <p>Short, visual stories on how European satellites and ocean models help people at sea and on the coast.</p>
+      <div class="mbtns"><a class="mbtn pri" href="https://claude.ai/artifact/3czfDgsVZRhrqKpSSjMJ5h" target="_blank" rel="noopener">Explore the briefs</a><span class="mbtn">How observation works</span></div>
+    </div>
+    <p class="mcap">Lights: Natural Earth · clouds: generated</p>
+    <div class="tip" id="tipA"></div>
+  </div>
+  <div class="why">
+    <div><b>Tag und Nacht in einem Bild</b><p>Im Nordwesten ist schon Nacht und die Städte leuchten orange. Im Südosten liegt das Meer noch tiefblau unter weißen Wolken im Tageslicht. Die Lichter sind echte Stadtpositionen.</p></div>
+    <div><b>Menschen und Meer in einem Bild</b><p>Die Lichter zeigen, wie viele Menschen an Europas Küsten leben. Genau für sie sind die Briefs da. Die Wolken ziehen langsam, das Bild lebt, ohne zu stören.</p></div>
+    <div><b>Ein Bild für alle sieben Briefs</b><p>Jeder Brief sitzt als hellblauer Punkt dort, wo sein Thema spielt. Die Karte ist gleichzeitig Menü. Später können echte Satellitenbilder die Demo-Wolken ersetzen.</p></div>
+  </div>
+</section>
+
+<!-- ================= B ================= -->
+<section class="wrap variant" id="b">
+  <div class="vhead"><p class="eyebrow">Motiv B</p><h2>Der Satellit bei der Arbeit</h2></div>
+  <div class="mock mB" id="mockB">
+    <canvas id="cB" aria-label="Light globe view of Europe; a satellite sweeps across and reveals a sea temperature map strip by strip"></canvas>
+    <div class="mnav"><div class="wm"><svg width="1.3em" height="1.3em" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 15c3-3 5-3 8 0s5 3 8 0 4-2 4-2" fill="none" stroke="#e2571c" stroke-width="2.2" stroke-linecap="round"/></svg>Ocean Briefs</div><span>Briefs</span><span>How it works</span><span>EN</span></div>
+    <div class="mtext">
+      <p class="k">Seven Ocean Briefs</p>
+      <h3>Every day, satellites map Europe’s seas.</h3>
+      <p>See what they measure, and how it helps fishers, coastal towns and policy makers.</p>
+      <div class="mbtns"><span class="mbtn pri">Explore the briefs</span><span class="mbtn">Follow a satellite</span></div>
+    </div>
+    <div class="cbar"><span>Sea surface temperature · demo data</span><i></i><div><span>6 °C</span><span>16 °C</span><span>26 °C</span></div></div>
+  </div>
+  <div class="why">
+    <div><b>Zeigt Beobachtung live</b><p>Streifen für Streifen entsteht die Karte, so wie ein Satellit Europa wirklich überfliegt.</p></div>
+    <div><b>Hell, freundlich, wissenschaftlich</b><p>Wirkt offen und zugänglich, gut für Schulen, Presse und Politik.</p></div>
+    <div><b>Erklärt den Mehrwert</b><p>Aus „Satellit“ wird sichtbar „Daten“. Passt auch gut als Motiv für die Seite „How it works“.</p></div>
+  </div>
+</section>
+
+<!-- ================= C ================= -->
+<section class="wrap variant" id="c">
+  <div class="vhead"><p class="eyebrow">Motiv C</p><h2>Sieben Geschichten, sieben Bildwelten</h2></div>
+  <div class="mock mC" id="mockC">
+    <div class="mnav"><div class="wm"><svg width="1.3em" height="1.3em" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 15c3-3 5-3 8 0s5 3 8 0 4-2 4-2" fill="none" stroke="#e2571c" stroke-width="2.2" stroke-linecap="round"/></svg>Ocean Briefs</div><span>Briefs</span><span>How it works</span><span>EN</span></div>
+    <div class="chead">
+      <h3>Seven stories from Europe’s seas.</h3>
+      <p>Pick one. Each brief takes one minute to grasp and as long as you like to explore.</p>
+    </div>
+    <div class="strips" id="strips"></div>
+  </div>
+  <div class="why">
+    <div><b>Wie ein Magazin-Cover</b><p>Jedes Thema hat seine eigene, lebendige Textur: Algenteppiche, Fischschwärme, Eisschollen, Plastik, Sturmwellen, Wärmestreifen, Algenblüte.</p></div>
+    <div><b>Neugier auf einen Blick</b><p>Über einen Streifen fahren, er öffnet sich. Sehr direkt, kein Scrollen nötig.</p></div>
+    <div><b>Wächst mit</b><p>Ein neuer Brief bekommt einfach einen achten Streifen. Ideal auch als Übersichtsseite aller Briefs.</p></div>
+  </div>
+</section>
+
+<section class="wrap verdict">
+  <p class="eyebrow">Meine Empfehlung</p>
+  <h2>A als Startseite, B und C weiterverwenden</h2>
+  <ol>
+    <li><b>Motiv A</b> als Startseite: Es ist das stärkste Bild und erzählt die ganze Plattform in einem Blick.</li>
+    <li><b>Motiv B</b> für die Seite „How it works“, die den Weg vom Satelliten zum Nutzen erklärt.</li>
+    <li><b>Motiv C</b> als Übersicht aller Briefs. So bekommt die Plattform eine einheitliche Bildsprache.</li>
+  </ol>
+  <p class="note">Entwurf von WyvernAI. Strömungen, Temperaturen und Texturen sind Demo-Animationen, keine Messdaten. Karte und Städte: Natural Earth (gemeinfrei); Wolken und Tag-Nacht-Grenze sind gestaltet, keine Wetter- oder Zeitdaten. Nicht verbunden mit Mercator Ocean, EU4OceanObs oder der Europäischen Kommission.</p>
+</section>
+</main>
+
+<script>
+(function(){
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const BW=1600, BH=1000;
+function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+/* Scenes register here; one RAF drives visible ones */
+const scenes=[];
+const io = 'IntersectionObserver' in window ? new IntersectionObserver(es=>es.forEach(e=>{ const s=scenes.find(s=>s.el===e.target); if(s) s.visible=e.isIntersecting; }),{rootMargin:'100px'}) : null;
+function addScene(s){ s.visible=true; scenes.push(s); if(io) io.observe(s.el); }
+let last=0;
+function frame(t){
+  const dt=Math.min(50, t-last||16); last=t;
+  for(const s of scenes){ if(s.visible && s.ready) s.tick(t,dt); }
+  if(!reduce) requestAnimationFrame(frame);
+}
+
+/* Size a canvas to its box; returns scale from base coords (cover-fit) */
+function fit(cv, ctx, cover){
+  const r=cv.getBoundingClientRect(); const dpr=Math.min(2,devicePixelRatio||1);
+  cv.width=Math.max(1,Math.round(r.width*dpr)); cv.height=Math.max(1,Math.round(r.height*dpr));
+  const sx=cv.width/BW, sy=cv.height/BH;
+  const k = (cover ? Math.max(sx,sy) : Math.min(sx,sy));
+  // anchor right/bottom-ish so Europe stays in view on tall phone frames
+  const tall = cv.height>cv.width;
+  const ox = tall ? cv.width/2-1020*k : (cv.width-BW*k)*0.75, oy = tall ? cv.height-BH*k : (cv.height-BH*k)*0.55;
+  return {k,ox,oy,w:cv.width,h:cv.height,dpr};
+}
+function offscreen(w,h){ const c=document.createElement('canvas'); c.width=w; c.height=h; return c; }
+
+fetch('geo.json').then(r=>r.json()).then(g=>{
+  const land=new Path2D(g.land), sphere=new Path2D(g.sphere), grat=new Path2D(g.grat);
+  // sea mask at quarter resolution in base coords
+  const MW=400, MH=250, mk=offscreen(MW,MH), mc=mk.getContext('2d');
+  mc.scale(MW/BW,MH/BH); mc.fillStyle='#fff'; mc.fill(sphere); mc.fillStyle='#000'; mc.fill(land);
+  const md=mc.getImageData(0,0,MW,MH).data;
+  const isSea=(x,y)=>{ const i=((y*MH/BH|0)*MW+(x*MW/BW|0))*4; return x>=0&&y>=0&&x<BW&&y<BH&&md[i]>128; };
+  sceneA(g,land,sphere,grat,isSea);
+  sceneB(g,land,sphere,grat,isSea,md,MW,MH);
+}).catch(()=>{});
+sceneC();
+if(!reduce) requestAnimationFrame(frame);
+
+/* ===================== A: day and night, clouds, city lights ===================== */
+function sceneA2D(g,land,sphere,grat,isSea){
+  const el=document.getElementById('mockA'), cv=document.getElementById('cA'), ctx=cv.getContext('2d');
+  const tip=document.getElementById('tipA');
+  const briefs=[
+    ['sargassum','01','Sargassum','Seaweed influx forecasts'],
+    ['fisheries','02','Sustainable fisheries','Ocean state for stock management'],
+    ['arctic','03','The changing Arctic','Sea ice, shipping and climate'],
+    ['litter','04','Marine litter','Tracking plastic from space to shore'],
+    ['hazards','05','Coastal hazards','Storm surge and sea-level rise'],
+    ['heat','06','Marine heatwaves','Warming events and ecosystems'],
+    ['water','07','Water quality','Blooms and coastal pollution']
+  ].map(b=>({id:b[0],n:b[1],t:b[2],s:b[3],x:g.pts[b[0]][0],y:g.pts[b[0]][1],ph:Math.random()*6}));
+  const cx=g.center[0], cy=g.center[1], R0=g.r;
+  // sun from the south-east: north-west lies in night, south-east in daylight
+  let sv=[0.55,-0.8,0.06]; { const l=Math.hypot(...sv); sv=sv.map(v=>v/l); }
+  function sunDot(bx,by){ const nx=(bx-cx)/R0, ny=-(by-cy)/R0, q=1-nx*nx-ny*ny; if(q<0) return null; return sv[0]*nx+sv[1]*ny+sv[2]*Math.sqrt(q); }
+  const smooth=(a,b,x)=>{ const t=Math.max(0,Math.min(1,(x-a)/(b-a))); return t*t*(3-2*t); };
+  // 3D value noise
+  const P=new Uint8Array(512); { const r=rng(42); const p=[...Array(256).keys()]; for(let i=255;i>0;i--){ const j=r()*(i+1)|0; [p[i],p[j]]=[p[j],p[i]]; } for(let i=0;i<512;i++) P[i]=p[i&255]; }
+  const fd=t=>t*t*(3-2*t);
+  function vn(x,y,z){
+    const X=Math.floor(x),Y=Math.floor(y),Z=Math.floor(z), u=fd(x-X),v=fd(y-Y),w=fd(z-Z), xi=X&255, yi=Y&255, zi=Z&255;
+    const h=(a,b,c)=>P[P[P[a]+b]+c]/255, l=(a,b,t)=>a+(b-a)*t;
+    return l(l(l(h(xi,yi,zi),h(xi+1,yi,zi),u),l(h(xi,yi+1,zi),h(xi+1,yi+1,zi),u),v),
+             l(l(h(xi,yi,zi+1),h(xi+1,yi,zi+1),u),l(h(xi,yi+1,zi+1),h(xi+1,yi+1,zi+1),u),v),w);
+  }
+  function fbm(x,y,z,o){ let s=0,a=.5,f=1; for(let i=0;i<o;i++){ s+=a*vn(x*f,y*f,z*f); f*=2.03; a*=.5; } return s/(1-Math.pow(.5,o)); }
+  const spr=offscreen(64,64); { const s=spr.getContext('2d'); const gr=s.createRadialGradient(32,32,0,32,32,32); gr.addColorStop(0,'rgba(255,230,170,1)'); gr.addColorStop(.2,'rgba(255,180,80,.75)'); gr.addColorStop(.55,'rgba(255,140,40,.16)'); gr.addColorStop(1,'rgba(255,130,30,0)'); s.fillStyle=gr; s.fillRect(0,0,64,64); }
+
+  // clouds are generated once in base coordinates (independent of screen size), wider than the view so they can drift
+  const CQ=0.8, CWb=Math.ceil(BW*1.12*CQ), CHb=Math.ceil(BH*CQ);
+  const clouds=offscreen(CWb,CHb);
+  (function(){
+    const c2=clouds.getContext('2d'), ci=c2.createImageData(CWb,CHb);
+    for(let py=0;py<CHb;py++) for(let px=0;px<CWb;px++){
+      const bx=px/CQ-BW*.12, by=py/CQ;
+      const nx=(bx-cx)/R0, ny=-(by-cy)/R0, qq=1-nx*nx-ny*ny; if(qq<=0) continue;
+      const nz=Math.sqrt(qq), X=nx*3.4, Y=ny*3.4*1.3, Z=nz*3.4;
+      const wq=fbm(X*1.2+7,Y*1.2,Z*1.2,2);
+      let n=fbm(X*1.35+wq*1.9,Y*.85+wq*1.3,Z-wq*.9,4);        // swirling, east-west streaked systems
+      const fine=fbm(X*9+wq*2,Y*9,Z*9,2);                    // small puffy cells
+      n = n*.78 + fine*.26;
+      const a=Math.max(0,Math.min(1,(n-.45)/.13));
+      const i=(py*CWb+px)*4, br=225+Math.round(fine*30);
+      ci.data[i]=br; ci.data[i+1]=br+4; ci.data[i+2]=Math.min(255,br+14); ci.data[i+3]=Math.round(Math.pow(a,1.05)*235);
+    }
+    c2.putImageData(ci,0,0);
+  })();
+
+  let S, under, over, hover=null;
+  function build(){
+    S=fit(cv,ctx,true);
+    const {w,h,k,ox,oy,dpr}=S, T=[k,0,0,k,ox,oy], u=dpr/k;
+    // ---------- under: space + lit globe (below clouds)
+    under=offscreen(w,h); const b=under.getContext('2d');
+    const sg=b.createRadialGradient(w*.62,h*.5,0,w*.62,h*.5,Math.max(w,h)*.8); sg.addColorStop(0,'#0a1424'); sg.addColorStop(1,'#03060c');
+    b.fillStyle=sg; b.fillRect(0,0,w,h);
+    const r=rng(3);
+    for(let i=0;i<320;i++){ b.fillStyle=r()<.2?'#ffe6c8':'#e2ecff'; b.globalAlpha=.12+r()*.6; const s=r()*1.3*dpr+.3; b.fillRect(r()*w,r()*h,s,s); }
+    b.globalAlpha=1;
+    // day globe
+    const day=offscreen(w,h), d=day.getContext('2d'); d.setTransform(...T);
+    const dg=d.createRadialGradient(cx+R0*.45,cy+R0*.55,10,cx,cy,R0*1.1); dg.addColorStop(0,'#2272b0'); dg.addColorStop(.45,'#124f86'); dg.addColorStop(1,'#08284d');
+    d.fillStyle=dg; d.fill(sphere);
+    d.save(); d.clip(land); d.setTransform(1,0,0,1,0,0);
+    { // per-pixel land colour at half resolution: vegetation in the north, desert in the south, mottled with noise
+      const lw=Math.ceil(w/2), lh=Math.ceil(h/2), lt=offscreen(lw,lh), lx=lt.getContext('2d');
+      lx.setTransform(k/2,0,0,k/2,ox/2,oy/2); lx.fillStyle='#fff'; lx.fill(land);
+      const id=lx.getImageData(0,0,lw,lh), D=id.data;
+      const veg=[62,78,46], dry=[112,104,66], sand=[184,150,100], rock=[120,96,70];
+      for(let y=0;y<lh;y++) for(let x=0;x<lw;x++){
+        const i=(y*lw+x)*4; if(D[i+3]<10) continue;
+        const bx=(x*2-ox)/k, by=(y*2-oy)/k;
+        const n1=fbm(bx*.012,by*.012,1.7,4), n2=fbm(bx*.05,by*.05,3.1,3);
+        const lat=(by-80)/880 + (n1-.5)*.35;            // 0 north .. 1 south
+        let c;
+        if(lat<.5){ const f=smooth(.25,.5,lat); c=veg.map((v,j)=>v+(dry[j]-v)*f); }
+        else { const f=smooth(.58,.72,lat); c=dry.map((v,j)=>v+(sand[j]-v)*f); }
+        const rk=smooth(.62,.8,n2)*.5; c=c.map((v,j)=>v+(rock[j]-v)*rk);
+        const sh=.78+n2*.42;
+        D[i]=Math.min(255,c[0]*sh); D[i+1]=Math.min(255,c[1]*sh); D[i+2]=Math.min(255,c[2]*sh); D[i+3]=255;
+      }
+      lx.putImageData(id,0,0); d.imageSmoothingEnabled=true; d.drawImage(lt,0,0,w,h);
+    }
+    d.restore();
+    // night globe
+    const night=offscreen(w,h), n=night.getContext('2d'); n.setTransform(...T);
+    const ng=n.createRadialGradient(cx-R0*.3,cy-R0*.4,10,cx,cy,R0); ng.addColorStop(0,'#0b1626'); ng.addColorStop(1,'#050b14');
+    n.fillStyle=ng; n.fill(sphere); n.fillStyle='#111a25'; n.fill(land);
+    n.strokeStyle='rgba(120,150,185,.14)'; n.lineWidth=.8*u; n.stroke(land);
+    // masks at half resolution
+    const mw=Math.ceil(w/2), mh=Math.ceil(h/2);
+    const dm=offscreen(mw,mh), dmc=dm.getContext('2d'), dmi=dmc.createImageData(mw,mh);
+    const nm=offscreen(mw,mh), nmc=nm.getContext('2d'), nmi=nmc.createImageData(mw,mh);
+    const tw=offscreen(mw,mh), twc=tw.getContext('2d'), twi=twc.createImageData(mw,mh);
+    for(let py=0;py<mh;py++) for(let px=0;px<mw;px++){
+      const dd=sunDot((px*2-ox)/k,(py*2-oy)/k); if(dd==null) continue;
+      const i=(py*mw+px)*4, dayf=smooth(-0.03,0.09,dd);
+      dmi.data[i+3]=Math.round(255*dayf);
+      nmi.data[i]=4; nmi.data[i+1]=9; nmi.data[i+2]=18; nmi.data[i+3]=Math.round(255*(1-dayf)*.74);
+      const gl=Math.exp(-Math.pow((dd-0.02)/0.035,2));
+      twi.data[i]=255; twi.data[i+1]=140; twi.data[i+2]=80; twi.data[i+3]=Math.round(255*gl*.1);
+    }
+    dmc.putImageData(dmi,0,0); nmc.putImageData(nmi,0,0); twc.putImageData(twi,0,0);
+    const dc=day.getContext('2d'); dc.setTransform(1,0,0,1,0,0); dc.globalCompositeOperation='destination-in'; dc.drawImage(dm,0,0,w,h);
+    b.setTransform(...T);
+    b.save(); b.shadowColor='rgba(70,160,255,.6)'; b.shadowBlur=70*k*dpr; b.fillStyle='#071426'; b.fill(sphere); b.restore();
+    b.setTransform(1,0,0,1,0,0); b.drawImage(night,0,0); b.drawImage(day,0,0);
+
+    // ---------- over: night darkening + city lights + twilight + atmosphere (above clouds)
+    over=offscreen(w,h); const o=over.getContext('2d');
+    o.drawImage(nm,0,0,w,h);
+    const lights=offscreen(w,h), lc=lights.getContext('2d'); lc.setTransform(...T); lc.globalCompositeOperation='lighter';
+    const rr=rng(11);
+    for(const [x,y,p] of g.cities){
+      const pop=Math.max(5,p), rad=(3.5+Math.sqrt(pop)*.5)*u;
+      lc.globalAlpha=Math.min(.28,.06+Math.sqrt(pop)*.0045); lc.drawImage(spr,x-rad,y-rad,rad*2,rad*2);
+      const m=Math.min(9,1+Math.sqrt(pop)*.1|0);
+      for(let j=0;j<m;j++){ const a=rr()*6.28, dd=Math.pow(rr(),.6)*rad*1.4, s2=(.9+rr()*1.4)*u; lc.globalAlpha=.1+rr()*.22; lc.drawImage(spr,x+Math.cos(a)*dd-s2*2,y+Math.sin(a)*dd-s2*2,s2*4,s2*4); }
+      lc.globalAlpha=Math.min(.95,.4+Math.sqrt(pop)*.013); const c=(.9+Math.sqrt(pop)*.02)*u; lc.drawImage(spr,x-c*2.5,y-c*2.5,c*5,c*5);
+    }
+    lc.setTransform(1,0,0,1,0,0); lc.globalAlpha=1; lc.globalCompositeOperation='destination-out'; lc.drawImage(dm,0,0,w,h);
+    o.globalCompositeOperation='lighter'; o.drawImage(lights,0,0); o.drawImage(tw,0,0,w,h); o.globalCompositeOperation='source-over';
+    o.setTransform(...T);
+    // limb darkening and bright blue atmosphere on the sunlit limb
+    const ld=o.createRadialGradient(cx,cy,R0*.6,cx,cy,R0); ld.addColorStop(0,'rgba(0,0,0,0)'); ld.addColorStop(1,'rgba(0,10,25,.35)');
+    o.fillStyle=ld; o.fill(sphere);
+    const ag=o.createLinearGradient(cx+R0*.6,cy+R0*.7,cx-R0*.4,cy-R0*.5); ag.addColorStop(0,'rgba(120,200,255,.95)'); ag.addColorStop(.5,'rgba(80,160,240,.45)'); ag.addColorStop(1,'rgba(60,110,180,.1)');
+    o.strokeStyle=ag; o.lineWidth=3*u; o.stroke(sphere);
+    o.setTransform(1,0,0,1,0,0);
+    draw(0);
+  }
+  function draw(t){
+    const {k,ox,oy,dpr,w}=S;
+    ctx.setTransform(1,0,0,1,0,0); ctx.drawImage(under,0,0);
+    const drift=(reduce?0.5:(0.5+0.5*Math.sin(t*2*Math.PI/90000)))*BW*.1;
+    ctx.save(); ctx.setTransform(k,0,0,k,ox,oy); ctx.clip(sphere);
+    ctx.imageSmoothingEnabled=true; ctx.drawImage(clouds,-BW*.12+drift,0,CWb/CQ,CHb/CQ);
+    ctx.restore();
+    ctx.drawImage(over,0,0);
+    ctx.setTransform(k,0,0,k,ox,oy);
+    const u=1/k*dpr;
+    for(const b of briefs){
+      const on=hover===b, pulse=((t*0.00045+b.ph)%1);
+      ctx.strokeStyle=`rgba(170,230,255,${(1-pulse)*.8})`; ctx.lineWidth=1.3*u;
+      ctx.beginPath(); ctx.arc(b.x,b.y,(6+pulse*24)*u,0,7); ctx.stroke();
+      ctx.fillStyle='rgba(3,12,24,.45)'; ctx.beginPath(); ctx.arc(b.x,b.y,(on?8:6)*u,0,7); ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineWidth=1.5*u; ctx.stroke();
+      ctx.fillStyle=on?'#ffffff':'#8fe3ff'; ctx.beginPath(); ctx.arc(b.x,b.y,(on?4:2.8)*u,0,7); ctx.fill();
+      if(S.w/S.dpr<600 && !on) continue;
+      ctx.save(); ctx.shadowColor='rgba(0,0,0,.95)'; ctx.shadowBlur=7*u;
+      ctx.font=`500 ${11*u}px "IBM Plex Mono", monospace`; ctx.textBaseline='middle';
+      ctx.fillStyle='rgba(170,235,255,1)'; ctx.fillText(b.n, b.x+13*u, b.y-1*u);
+      ctx.font=`600 ${13.5*u}px "Bricolage Grotesque", sans-serif`; ctx.fillStyle='#ffffff'; ctx.fillText(b.t, b.x+34*u, b.y-1*u);
+      ctx.fillText(b.t, b.x+34*u, b.y-1*u);
+      ctx.restore();
+    }
+  }
+  function onMove(e){
+    const r=cv.getBoundingClientRect(); const px=(e.clientX-r.left)*S.dpr, py=(e.clientY-r.top)*S.dpr;
+    const x=(px-S.ox)/S.k, y=(py-S.oy)/S.k; let best=null, bd=1e9;
+    for(const b of briefs){ const dd=Math.hypot(b.x-x,b.y-y); if(dd<bd){bd=dd;best=b;} }
+    hover = bd<26*S.dpr/S.k? best:null;
+    cv.style.cursor = hover? 'pointer':'default';
+    if(hover){ tip.innerHTML=`<b>${hover.n} · ${hover.t}</b><span>${hover.s}${hover.id==='litter'?' · prototype ready':''}</span>`; tip.style.left=((hover.x*S.k+S.ox)/S.dpr)+'px'; tip.style.top=((hover.y*S.k+S.oy)/S.dpr)+'px'; tip.style.opacity=1; }
+    else tip.style.opacity=0;
+    if(reduce) draw(0);
+  }
+  cv.addEventListener('mousemove',onMove); cv.addEventListener('click',e=>{ onMove(e); if(hover && hover.id==='litter') window.open('https://claude.ai/artifact/3czfDgsVZRhrqKpSSjMJ5h','_blank'); });
+  cv.addEventListener('mouseleave',()=>{hover=null;tip.style.opacity=0; if(reduce) draw(0);});
+  const sc={el,ready:false,tick(t){ draw(t); }};
+  addScene(sc);
+  build(); sc.ready=true;
+  let rt; new ResizeObserver(()=>{ clearTimeout(rt); rt=setTimeout(build,150); }).observe(cv);
+  if(document.fonts) document.fonts.ready.then(()=>draw(performance.now()));
+}
+
+/* ===================== A (GPU): realistic day/night globe ===================== */
+function sceneA(g,land,sphere,grat,isSea){
+  const glc=document.getElementById('cAgl');
+  const gl=glc && (glc.getContext('webgl',{premultipliedAlpha:false,antialias:false})||glc.getContext('experimental-webgl'));
+  if(!gl){ if(glc) glc.hidden=true; return sceneA2D(g,land,sphere,grat,isSea); }
+  const el=document.getElementById('mockA'), cv=document.getElementById('cA'), ctx=cv.getContext('2d');
+  const tip=document.getElementById('tipA');
+  const briefs=[
+    ['sargassum','01','Sargassum','Seaweed influx forecasts'],
+    ['fisheries','02','Sustainable fisheries','Ocean state for stock management'],
+    ['arctic','03','The changing Arctic','Sea ice, shipping and climate'],
+    ['litter','04','Marine litter','Tracking plastic from space to shore'],
+    ['hazards','05','Coastal hazards','Storm surge and sea-level rise'],
+    ['heat','06','Marine heatwaves','Warming events and ecosystems'],
+    ['water','07','Water quality','Blooms and coastal pollution']
+  ].map(b=>({id:b[0],n:b[1],t:b[2],s:b[3],x:g.pts[b[0]][0],y:g.pts[b[0]][1],ph:Math.random()*6}));
+  const cx=g.center[0], cy=g.center[1], R0=g.r;
+  let sv=[0.55,-0.8,0.06]; { const l=Math.hypot(...sv); sv=sv.map(v=>v/l); }
+
+  const VS='attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+  const FS=`precision highp float;
+uniform vec2 uRes; uniform float uK; uniform vec2 uOff; uniform vec2 uC; uniform float uR; uniform vec3 uSun; uniform float uT; uniform float uPx;
+uniform sampler2D uLand; uniform sampler2D uLights;
+vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
+vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
+vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
+vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
+float snoise(vec3 v){
+  const vec2 C=vec2(1.0/6.0,1.0/3.0); const vec4 D=vec4(0.0,0.5,1.0,2.0);
+  vec3 i=floor(v+dot(v,C.yyy)); vec3 x0=v-i+dot(i,C.xxx);
+  vec3 g=step(x0.yzx,x0.xyz); vec3 l=1.0-g; vec3 i1=min(g.xyz,l.zxy); vec3 i2=max(g.xyz,l.zxy);
+  vec3 x1=x0-i1+C.xxx; vec3 x2=x0-i2+C.yyy; vec3 x3=x0-D.yyy;
+  i=mod289(i);
+  vec4 p=permute(permute(permute(i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))+i.x+vec4(0.0,i1.x,i2.x,1.0));
+  float n_=0.142857142857; vec3 ns=n_*D.wyz-D.xzx;
+  vec4 j=p-49.0*floor(p*ns.z*ns.z); vec4 x_=floor(j*ns.z); vec4 y_=floor(j-7.0*x_);
+  vec4 x=x_*ns.x+ns.yyyy; vec4 y=y_*ns.x+ns.yyyy; vec4 h=1.0-abs(x)-abs(y);
+  vec4 b0=vec4(x.xy,y.xy); vec4 b1=vec4(x.zw,y.zw);
+  vec4 s0=floor(b0)*2.0+1.0; vec4 s1=floor(b1)*2.0+1.0; vec4 sh=-step(h,vec4(0.0));
+  vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy; vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+  vec3 p0=vec3(a0.xy,h.x); vec3 p1=vec3(a0.zw,h.y); vec3 p2=vec3(a1.xy,h.z); vec3 p3=vec3(a1.zw,h.w);
+  vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+  p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;
+  vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0); m=m*m;
+  return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+}
+float fbm5(vec3 p){float s=0.,a=.5;for(int i=0;i<5;i++){s+=a*snoise(p);p=p*2.03+vec3(1.7,9.2,3.1);a*=.5;}return s;}
+float fbm3(vec3 p){float s=0.,a=.5;for(int i=0;i<3;i++){s+=a*snoise(p);p=p*2.07+vec3(4.1,2.3,7.7);a*=.5;}return s;}
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+void main(){
+  vec2 px=vec2(gl_FragCoord.x, uRes.y-gl_FragCoord.y);
+  vec2 uv=vec2(gl_FragCoord.x/uRes.x, 1.0-gl_FragCoord.y/uRes.y);
+  vec2 b=(px-uOff)/uK;
+  vec2 q=vec2((b.x-uC.x)/uR, -(b.y-uC.y)/uR);
+  float r=length(q);
+  // space
+  vec3 col=mix(vec3(.035,.06,.11),vec3(.01,.02,.04),clamp(length(uv-vec2(.62,.5))*1.3,0.,1.));
+  vec2 cell=floor(px/(2.0*uPx));
+  float hs=hash(cell);
+  if(hs>.9975) col+=vec3(.75,.82,1.)*(hs-.9975)/.0025*.9;
+  // halo outside the limb, brighter on the sunlit side
+  float side=max(dot(normalize(vec3(q,0.0001)),uSun),0.);
+  float dist=(r-1.)*uR;
+  if(r>1.) col+=vec3(.25,.55,1.)*exp(-dist/14.)*(.18+.85*side);
+  float aa=1.5*uPx/(uR*uK);
+  float inside=smoothstep(1.0,1.0-aa,r);
+  if(inside>0.){
+    float nz=sqrt(max(0.,1.-r*r));
+    vec3 n=vec3(q,nz);
+    // world coordinates (globe rotated to lon 2, lat 50)
+    float c0=cos(radians(50.)), s0=sin(radians(50.));
+    vec3 w=vec3(n.x, n.y*c0+n.z*s0, -n.y*s0+n.z*c0);
+    float lat=degrees(asin(clamp(w.y,-1.,1.)));
+    float ang=uT*0.006; float ca=cos(ang), sa=sin(ang);
+    vec3 wc=vec3(w.x*ca-w.z*sa, w.y, w.x*sa+w.z*ca);   // clouds drift slowly eastward
+    float ndl=dot(n,uSun);
+    float dif=max(ndl,0.);
+    float day=smoothstep(-0.03,0.13,ndl);
+    vec4 lt=texture2D(uLand,uv); float landM=lt.r; float shelf=lt.g;
+    // land colour by latitude, mottled
+    float ln=fbm3(w*22.);
+    float L=lat+ln*7.;
+    vec3 desert=vec3(.70,.55,.36), dry=vec3(.46,.40,.26), temp=vec3(.24,.31,.17), boreal=vec3(.17,.22,.16), ice=vec3(.86,.9,.94);
+    vec3 lc=mix(desert,dry,smoothstep(25.,33.,L)); lc=mix(lc,temp,smoothstep(37.,46.,L)); lc=mix(lc,boreal,smoothstep(56.,64.,L)); lc=mix(lc,ice,smoothstep(70.,76.,L)*.85);
+    lc*=.82+.38*(fbm3(w*70.)*.5+.5);
+    // ocean
+    float ov=fbm3(w*6.);
+    vec3 oc=mix(vec3(.03,.17,.37),vec3(.06,.29,.54),.5+.5*ov);
+    oc=mix(oc,vec3(.10,.45,.66),shelf*(1.-landM)*.7);
+    vec3 surf=mix(oc,lc,landM);
+    vec3 dayc=surf*(.62+.75*dif);
+    vec3 h=normalize(uSun+vec3(0.,0.,1.)); float spec=pow(max(dot(n,h),0.),60.)*(1.-landM)*.35;
+    dayc+=vec3(1.,.95,.85)*spec;
+    vec3 nightc=mix(vec3(.010,.022,.045),vec3(.028,.036,.05),landM);
+    // clouds: warped, east-west streaked systems with fine detail
+    vec3 cp=wc*vec3(2.4,4.2,2.4);
+    float wq=fbm5(cp*.8+vec3(0.,0.,3.));
+    float cl=fbm5(cp*1.4+wq*1.35+vec3(5.2,1.3,2.8));
+    float det=fbm3(wc*14.+cl*1.5);
+    float cov=cl+det*.32+.10*cos(radians(lat-55.)*4.);
+    float ca2=smoothstep(-.06,.36,cov);
+    ca2*=.55+.45*smoothstep(-.2,.4,det);
+    vec3 cday=vec3(.97,.98,1.)*(.62+.5*dif);
+    vec3 cnight=vec3(.055,.07,.10);
+    vec3 s=mix(nightc,dayc,day);
+    vec3 cc=mix(cnight,cday,day);
+    s=mix(s,cc,ca2);
+    // city lights on the night side, dimmed by cloud
+    vec3 li=texture2D(uLights,uv).rgb;
+    s+=li*(1.-day)*(1.-ca2*.7)*1.35;
+    // twilight warmth
+    float tw=exp(-pow((ndl-.03)/.05,2.));
+    s+=vec3(1.,.45,.18)*tw*(.05+.18*ca2);
+    // atmosphere rim
+    float fr=pow(1.-nz,2.6);
+    s=s*(.82+.18*nz)+vec3(.30,.62,1.)*fr*(.10+.95*day);
+    col=mix(col,s,inside);
+  }
+  gl_FragColor=vec4(col,1.);
+}`;
+  function sh(t,src){ const s=gl.createShader(t); gl.shaderSource(s,src); gl.compileShader(s); if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; }
+  let prog;
+  try{ prog=gl.createProgram(); gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS)); gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS)); gl.linkProgram(prog); if(!gl.getProgramParameter(prog,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog)); }
+  catch(e){ console.warn(e); glc.hidden=true; return sceneA2D(g,land,sphere,grat,isSea); }
+  gl.useProgram(prog);
+  const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  const loc=gl.getAttribLocation(prog,'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  const U=n=>gl.getUniformLocation(prog,n);
+  const uRes=U('uRes'),uK=U('uK'),uOff=U('uOff'),uC=U('uC'),uR=U('uR'),uSun=U('uSun'),uT=U('uT'),uPx=U('uPx');
+  gl.uniform1i(U('uLand'),0); gl.uniform1i(U('uLights'),1);
+  function tex(unit,canvas){ const t=gl.createTexture(); gl.activeTexture(gl.TEXTURE0+unit); gl.bindTexture(gl.TEXTURE_2D,t);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,canvas);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE); return t; }
+  const spr=offscreen(64,64); { const s=spr.getContext('2d'); const gr=s.createRadialGradient(32,32,0,32,32,32); gr.addColorStop(0,'rgba(255,225,160,1)'); gr.addColorStop(.2,'rgba(255,170,70,.75)'); gr.addColorStop(.55,'rgba(255,130,30,.15)'); gr.addColorStop(1,'rgba(255,120,20,0)'); s.fillStyle=gr; s.fillRect(0,0,64,64); }
+  let G={}, S, hover=null, texL, texC;
+  function layout(w,h){ const sx=w/BW, sy=h/BH, k=Math.max(sx,sy), tall=h>w; return {k, ox: tall? w/2-1020*k : (w-BW*k)*.75, oy: tall? h-BH*k : (h-BH*k)*.55}; }
+  function build(){
+    S=fit(cv,ctx,true);
+    const r=glc.getBoundingClientRect(); const gd=Math.min(1.5,devicePixelRatio||1);
+    const w=Math.max(1,Math.round(r.width*gd)), h=Math.max(1,Math.round(r.height*gd));
+    glc.width=w; glc.height=h; gl.viewport(0,0,w,h);
+    const L=layout(w,h); G={w,h,gd,...L};
+    const T=[L.k,0,0,L.k,L.ox,L.oy], u=gd/L.k;
+    // land texture: R crisp, G blurred (continental shelf)
+    const lc=offscreen(w,h), x=lc.getContext('2d'); x.fillStyle='#000'; x.fillRect(0,0,w,h); x.setTransform(...T);
+    if('filter' in x){ x.filter=`blur(${Math.round(9*gd)}px)`; x.fillStyle='rgb(0,255,0)'; x.fill(land); x.filter='none'; }
+    x.globalCompositeOperation='lighter'; x.fillStyle='rgb(255,0,0)'; x.fill(land);
+    // lights texture
+    const lt=offscreen(w,h), y=lt.getContext('2d'); y.fillStyle='#000'; y.fillRect(0,0,w,h); y.setTransform(...T); y.globalCompositeOperation='lighter';
+    const rr=rng(11);
+    for(const [px,py,p] of g.cities){
+      const pop=Math.max(5,p), rad=(3.5+Math.sqrt(pop)*.5)*u;
+      y.globalAlpha=Math.min(.3,.07+Math.sqrt(pop)*.005); y.drawImage(spr,px-rad,py-rad,rad*2,rad*2);
+      const m=Math.min(9,1+Math.sqrt(pop)*.1|0);
+      for(let j=0;j<m;j++){ const a=rr()*6.28, dd=Math.pow(rr(),.6)*rad*1.4, s2=(.9+rr()*1.4)*u; y.globalAlpha=.14+rr()*.3; y.drawImage(spr,px+Math.cos(a)*dd-s2*2,py+Math.sin(a)*dd-s2*2,s2*4,s2*4); }
+      y.globalAlpha=Math.min(.95,.4+Math.sqrt(pop)*.013); const c=(.9+Math.sqrt(pop)*.02)*u; y.drawImage(spr,px-c*2.5,py-c*2.5,c*5,c*5);
+    }
+    if(texL) gl.deleteTexture(texL); if(texC) gl.deleteTexture(texC);
+    texL=tex(0,lc); texC=tex(1,lt);
+    gl.uniform2f(uRes,w,h); gl.uniform1f(uK,L.k); gl.uniform2f(uOff,L.ox,L.oy); gl.uniform2f(uC,cx,cy); gl.uniform1f(uR,R0); gl.uniform3f(uSun,...sv); gl.uniform1f(uPx,gd);
+    render(0); drawOverlay(0);
+  }
+  function render(t){ gl.uniform1f(uT,t/1000); gl.drawArrays(gl.TRIANGLE_STRIP,0,4); }
+  function drawOverlay(t){
+    const {k,ox,oy,dpr}=S;
+    ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,S.w,S.h); ctx.setTransform(k,0,0,k,ox,oy);
+    const u=1/k*dpr;
+    for(const b of briefs){
+      const on=hover===b, pulse=((t*0.00045+b.ph)%1);
+      ctx.strokeStyle=`rgba(170,230,255,${(1-pulse)*.8})`; ctx.lineWidth=1.3*u;
+      ctx.beginPath(); ctx.arc(b.x,b.y,(6+pulse*24)*u,0,7); ctx.stroke();
+      ctx.fillStyle='rgba(3,12,24,.45)'; ctx.beginPath(); ctx.arc(b.x,b.y,(on?8:6)*u,0,7); ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineWidth=1.5*u; ctx.stroke();
+      ctx.fillStyle=on?'#ffffff':'#8fe3ff'; ctx.beginPath(); ctx.arc(b.x,b.y,(on?4:2.8)*u,0,7); ctx.fill();
+      if(S.w/S.dpr<600 && !on) continue;
+      ctx.save(); ctx.shadowColor='rgba(0,0,0,.95)'; ctx.shadowBlur=7*u;
+      ctx.font=`500 ${11*u}px "IBM Plex Mono", monospace`; ctx.textBaseline='middle';
+      ctx.fillStyle='rgba(170,235,255,1)'; ctx.fillText(b.n, b.x+13*u, b.y-1*u);
+      ctx.font=`600 ${13.5*u}px "Bricolage Grotesque", sans-serif`; ctx.fillStyle='#ffffff'; ctx.fillText(b.t, b.x+34*u, b.y-1*u);
+      ctx.restore();
+    }
+  }
+  function onMove(e){
+    const r=cv.getBoundingClientRect(); const px=(e.clientX-r.left)*S.dpr, py=(e.clientY-r.top)*S.dpr;
+    const x=(px-S.ox)/S.k, y=(py-S.oy)/S.k; let best=null, bd=1e9;
+    for(const b of briefs){ const dd=Math.hypot(b.x-x,b.y-y); if(dd<bd){bd=dd;best=b;} }
+    hover = bd<26*S.dpr/S.k? best:null;
+    cv.style.cursor = hover? 'pointer':'default';
+    if(hover){ tip.innerHTML=`<b>${hover.n} · ${hover.t}</b><span>${hover.s}${hover.id==='litter'?' · prototype ready':''}</span>`; tip.style.left=((hover.x*S.k+S.ox)/S.dpr)+'px'; tip.style.top=((hover.y*S.k+S.oy)/S.dpr)+'px'; tip.style.opacity=1; }
+    else tip.style.opacity=0;
+    if(reduce) drawOverlay(0);
+  }
+  cv.addEventListener('mousemove',onMove); cv.addEventListener('click',e=>{ onMove(e); if(hover && hover.id==='litter') window.open('https://claude.ai/artifact/3czfDgsVZRhrqKpSSjMJ5h','_blank'); });
+  cv.addEventListener('mouseleave',()=>{hover=null;tip.style.opacity=0; if(reduce) drawOverlay(0);});
+  let lastGL=0;
+  const sc={el,ready:false,tick(t){ if(t-lastGL>60){ lastGL=t; render(t); } drawOverlay(t); }};
+  addScene(sc);
+  build(); sc.ready=true;
+  let rt; new ResizeObserver(()=>{ clearTimeout(rt); rt=setTimeout(build,150); }).observe(cv);
+  if(document.fonts) document.fonts.ready.then(()=>drawOverlay(performance.now()));
+}
+
+/* ===================== B: satellite sweep ===================== */
+function sceneB(g,land,sphere,grat,isSea,md,MW,MH){
+  const el=document.getElementById('mockB'), cv=document.getElementById('cB'), ctx=cv.getContext('2d');
+  // SST field at mask resolution
+  const sst=offscreen(MW,MH), sc2=sst.getContext('2d'), img=sc2.createImageData(MW,MH);
+  const stops=[[0,[44,79,140]],[.22,[43,154,160]],[.45,[159,208,138]],[.62,[242,209,107]],[.8,[232,116,59]],[1,[184,50,58]]];
+  function ramp(v){ v=Math.max(0,Math.min(1,v)); for(let i=1;i<stops.length;i++){ if(v<=stops[i][0]){ const a=stops[i-1],b=stops[i],f=(v-a[0])/(b[0]-a[0]); return a[1].map((c,j)=>c+(b[1][j]-c)*f);} } return stops[stops.length-1][1]; }
+  for(let y=0;y<MH;y++) for(let x=0;x<MW;x++){
+    const i=(y*MW+x)*4; if(md[i]<=128) continue;
+    const X=x*BW/MW, Y=y*BH/MH;
+    let v = -0.08 + Y/BH*0.98 + 0.07*Math.sin(X*0.011)*Math.cos(Y*0.014) + 0.05*Math.sin((X+2*Y)*0.019) + 0.03*Math.sin(X*0.05+Y*0.03);
+    if(Y>620 && X>840) v+=0.12; // warmer enclosed sea in the south-east
+    const c=ramp(v); img.data[i]=c[0]; img.data[i+1]=c[1]; img.data[i+2]=c[2]; img.data[i+3]=255;
+  }
+  sc2.putImageData(img,0,0);
+  const reveal=offscreen(MW,MH), rc=reveal.getContext('2d'); rc.scale(MW/BW,MH/BH);
+  const comp=offscreen(MW,MH), cc=comp.getContext('2d');
+  let S,bg,fg;
+  const SW=210, SLOPE=-0.24, PASS_MS=3600;
+  let pass=0, passStart=0, fade=0;
+  const passes=[]; for(let x=1640;x>360;x-=170) passes.push(x);
+  function trackX(x0,y){ return x0+SLOPE*y; }
+  function build(){
+    S=fit(cv,ctx,true); const {w,h,k,ox,oy}=S;
+    bg=offscreen(w,h); const b=bg.getContext('2d');
+    b.fillStyle='#f2f5f4'; b.fillRect(0,0,w,h);
+    b.setTransform(k,0,0,k,ox,oy);
+    b.save(); b.shadowColor='rgba(40,90,110,.18)'; b.shadowBlur=50*k*S.dpr; b.fillStyle='#dbe8ec'; b.fill(sphere); b.restore();
+    const og=b.createRadialGradient(g.center[0]-g.r*.3,g.center[1]-g.r*.5,10,g.center[0],g.center[1],g.r); og.addColorStop(0,'#e7f0f2'); og.addColorStop(1,'#c9dde3');
+    b.fillStyle=og; b.fill(sphere);
+    b.strokeStyle='rgba(30,70,90,.09)'; b.lineWidth=1/k*S.dpr; b.stroke(grat);
+    fg=offscreen(w,h); const f=fg.getContext('2d'); f.setTransform(k,0,0,k,ox,oy);
+    f.fillStyle='#f6f1e8'; f.fill(land); f.strokeStyle='rgba(60,90,100,.45)'; f.lineWidth=.8/k*S.dpr; f.stroke(land);
+    f.strokeStyle='rgba(60,100,120,.35)'; f.lineWidth=1.5/k*S.dpr; f.stroke(sphere);
+    if(reduce){ rc.fillStyle='#fff'; rc.fillRect(0,0,BW,BH); draw(1600,0.55); }
+  }
+  function paint(x0,y0,y1){
+    rc.fillStyle='#fff'; rc.beginPath();
+    rc.moveTo(trackX(x0,y0)-SW/2,y0); rc.lineTo(trackX(x0,y0)+SW/2,y0); rc.lineTo(trackX(x0,y1)+SW/2,y1); rc.lineTo(trackX(x0,y1)-SW/2,y1); rc.closePath(); rc.fill();
+  }
+  let lastY=0;
+  function draw(t,progress){
+    const {k,ox,oy,dpr}=S; const u=dpr/k;
+    cc.globalCompositeOperation='source-over'; cc.clearRect(0,0,MW,MH); cc.drawImage(sst,0,0);
+    cc.globalCompositeOperation='destination-in'; cc.drawImage(reveal,0,0);
+    ctx.setTransform(1,0,0,1,0,0); ctx.drawImage(bg,0,0);
+    ctx.setTransform(k,0,0,k,ox,oy);
+    ctx.save(); ctx.clip(sphere); ctx.imageSmoothingEnabled=true; ctx.globalAlpha=.9*(1-fade); ctx.drawImage(comp,0,0,BW,BH); ctx.restore();
+    ctx.setTransform(1,0,0,1,0,0); ctx.drawImage(fg,0,0); ctx.setTransform(k,0,0,k,ox,oy);
+    if(progress==null || pass>=passes.length) return;
+    const x0=passes[pass], y=progress*BH;
+    // swath edges
+    ctx.setLineDash([6*u,6*u]); ctx.strokeStyle='rgba(16,35,46,.55)'; ctx.lineWidth=1.2*u;
+    for(const s of [-1,1]){ ctx.beginPath(); ctx.moveTo(trackX(x0,0)+s*SW/2,0); ctx.lineTo(trackX(x0,y)+s*SW/2,y); ctx.stroke(); }
+    ctx.setLineDash([]);
+    // scan line
+    ctx.strokeStyle='rgba(226,87,28,.9)'; ctx.lineWidth=2*u; ctx.beginPath(); ctx.moveTo(trackX(x0,y)-SW/2,y); ctx.lineTo(trackX(x0,y)+SW/2,y); ctx.stroke();
+    // satellite glyph
+    const sx=trackX(x0,y), sy=y-40*u;
+    ctx.save(); ctx.translate(sx,sy); ctx.rotate(Math.atan(-SLOPE));
+    ctx.fillStyle='#10232e'; ctx.fillRect(-5*u,-7*u,10*u,14*u);
+    ctx.fillStyle='#2d5f86'; ctx.fillRect(-25*u,-4*u,17*u,8*u); ctx.fillRect(8*u,-4*u,17*u,8*u);
+    ctx.strokeStyle='#f2f5f4'; ctx.lineWidth=.8*u; for(const xx of [-19,-13,14,20]){ ctx.beginPath(); ctx.moveTo(xx*u,-4*u); ctx.lineTo(xx*u,4*u); ctx.stroke(); }
+    ctx.restore();
+    ctx.strokeStyle='rgba(226,87,28,.5)'; ctx.lineWidth=1*u; ctx.beginPath(); ctx.moveTo(sx,sy+8*u); ctx.lineTo(trackX(x0,y)-SW/2,y); ctx.moveTo(sx,sy+8*u); ctx.lineTo(trackX(x0,y)+SW/2,y); ctx.stroke();
+    ctx.font=`500 ${11*u}px "IBM Plex Mono", monospace`; ctx.fillStyle='#10232e'; ctx.textBaseline='middle';
+    ctx.fillText(`SENTINEL-3 · PASS ${String(pass+1).padStart(2,'0')}`, sx+32*u, sy-4*u);
+    ctx.fillStyle='rgba(16,35,46,.6)'; ctx.fillText('814 km altitude', sx+32*u, sy+11*u);
+  }
+  const sc={el,ready:false,tick(t){
+    if(!passStart) passStart=t;
+    if(pass>=passes.length){ // hold, then fade and restart
+      const e=t-passStart; fade=Math.max(0,(e-2400)/1200);
+      if(fade>=1){ rc.clearRect(0,0,BW,BH); pass=0; passStart=t; lastY=0; fade=0; }
+      draw(t,null); return;
+    }
+    const p=(t-passStart)/PASS_MS;
+    const y=Math.min(1,p)*BH;
+    paint(passes[pass], Math.max(0,lastY-4), y+2); lastY=y;
+    draw(t,Math.min(1,p));
+    if(p>=1){ pass++; passStart=t; lastY=0; }
+  }};
+  addScene(sc);
+  // pre-paint a few passes so the first frame shows the idea
+  build();
+  for(let i=0;i<3;i++) paint(passes[i],0,BH);
+  pass=3; draw(0,0.42); paint(passes[3],0,0.42*BH); lastY=0.42*BH;
+  sc.ready=true;
+  new ResizeObserver(()=>{ build(); draw(0,null); }).observe(cv);
+  if(document.fonts) document.fonts.ready.then(()=>draw(0,null));
+}
+
+/* ===================== C: seven strips ===================== */
+function sceneC(){
+  const wrap=document.getElementById('strips');
+  const defs=[
+    ['01','Sargassum','#0f4a52',sargassum],
+    ['02','Sustainable fisheries','#0b2a4a',fish],
+    ['03','The changing Arctic','#1b3346',ice],
+    ['04','Marine litter','#0d2238',litter],
+    ['05','Coastal hazards','#22303c',surge],
+    ['06','Marine heatwaves','#2a0f14',stripes],
+    ['07','Water quality','#062b2a',bloom]
+  ];
+  defs.forEach(([n,t,bgc,fn],i)=>{
+    const a=document.createElement('button'); a.className='strip'+(i===3?' on':''); a.style.background=bgc; a.setAttribute('aria-label',`Brief ${n}: ${t}`);
+    a.innerHTML=`<canvas></canvas><span class="lab"><span class="n">${n}</span><span class="t">${t}</span></span>`;
+    wrap.appendChild(a);
+    a.addEventListener('mouseenter',()=>wrap.querySelectorAll('.strip').forEach(s=>s.classList.toggle('on',s===a)));
+    a.addEventListener('focus',()=>wrap.querySelectorAll('.strip').forEach(s=>s.classList.toggle('on',s===a)));
+    const cv=a.querySelector('canvas'), ctx=cv.getContext('2d');
+    const st={cv,ctx,bg:bgc,R:rng(i*31+5),w:1,h:1,dpr:1};
+    function size(){ const r=cv.getBoundingClientRect(); st.dpr=Math.min(2,devicePixelRatio||1); cv.width=Math.max(1,r.width*st.dpr|0); cv.height=Math.max(1,r.height*st.dpr|0); st.w=cv.width; st.h=cv.height; fn(st,0,true); }
+    new ResizeObserver(size).observe(cv); size();
+    addScene({el:a,ready:true,tick(tm){ fn(st,tm,false); }});
+  });
+
+  function clear(s,alpha){ s.ctx.globalAlpha=alpha==null?1:alpha; s.ctx.fillStyle=s.bg; s.ctx.fillRect(0,0,s.w,s.h); s.ctx.globalAlpha=1; }
+  // fixed layouts are generated in a ~260x700 design box and scaled to the strip height
+  function sargassum(s,t,init){
+    if(init||!s.rafts){ s.rafts=[]; for(let i=0;i<10;i++){ const pts=[]; const n=22+s.R()*30|0; for(let j=0;j<n;j++){ const a=s.R()*6.28, r=Math.pow(s.R(),.7)*38; pts.push([Math.cos(a)*r*1.6, Math.sin(a)*r*.55, 1.5+s.R()*3.5, s.R()]); } s.rafts.push({x:s.R()*260,y:s.R()*700,pts,ph:s.R()*6}); } }
+    clear(s); const k=s.h/700, c=s.ctx;
+    const gr=c.createLinearGradient(0,0,0,s.h); gr.addColorStop(0,'#13606a'); gr.addColorStop(1,'#0a333a'); c.fillStyle=gr; c.fillRect(0,0,s.w,s.h);
+    for(const r of s.rafts){
+      const y=((r.y+t*0.006)%760)-30, x=r.x+Math.sin(t*0.0007+r.ph)*10;
+      for(const p of r.pts){ c.fillStyle=p[3]>.5?'#d1a93c':'#9c7f27'; c.globalAlpha=.85; c.beginPath(); c.arc((x+p[0])*k+s.w/2-130*k,(y+p[1])*k,p[2]*k,0,7); c.fill(); }
+    }
+    c.globalAlpha=1;
+  }
+  function fish(s,t,init){
+    if(init||!s.f){ s.f=[]; for(let i=0;i<150;i++) s.f.push({o:s.R()*6.28,r:10+s.R()*55,d:s.R()*.6+.7,lag:s.R()*900}); }
+    clear(s); const c=s.ctx, k=s.h/700, cx=s.w/2;
+    const gr=c.createLinearGradient(0,0,0,s.h); gr.addColorStop(0,'#0f3a63'); gr.addColorStop(1,'#071b30'); c.fillStyle=gr; c.fillRect(0,0,s.w,s.h);
+    for(const f of s.f){
+      const tt=(t-f.lag)*0.00042;
+      const px=Math.sin(tt)*90, py=Math.sin(tt*2)*230+350;
+      const nx=Math.sin(tt+.01)*90, ny=Math.sin((tt+.01)*2)*230+350;
+      const ox=Math.cos(f.o+t*0.0008)*f.r*.6, oy=Math.sin(f.o)*f.r;
+      const x=cx+(px+ox)*k, y=(py+oy)*k, a=Math.atan2(ny-py,nx-px);
+      c.save(); c.translate(x,y); c.rotate(a); c.fillStyle='rgba(170,220,240,.85)';
+      c.beginPath(); c.ellipse(0,0,5*k*f.d,1.6*k*f.d,0,0,7); c.fill();
+      c.beginPath(); c.moveTo(-4.5*k*f.d,0); c.lineTo(-8*k*f.d,-2*k*f.d); c.lineTo(-8*k*f.d,2*k*f.d); c.fill(); c.restore();
+    }
+  }
+  function ice(s,t,init){
+    if(init||!s.fl){ s.fl=[]; const cell=46; for(let gy=-1;gy<17;gy++) for(let gx=-1;gx<7;gx++){ if(s.R()<.18) continue; const cx=gx*cell+cell/2+(s.R()-.5)*14, cy=gy*cell+cell/2+(s.R()-.5)*14; const n=5+(s.R()*3|0), pts=[]; const sc=.55+s.R()*.4; for(let j=0;j<n;j++){ const a=j/n*6.28+s.R()*.5; const r=cell*.5*sc*(.75+s.R()*.35); pts.push([Math.cos(a)*r,Math.sin(a)*r]); } s.fl.push({cx,cy,pts,sh:.82+s.R()*.18}); } }
+    clear(s); const c=s.ctx, k=s.h/700; const off=(260*k-s.w)/2;
+    const gr=c.createLinearGradient(0,0,0,s.h); gr.addColorStop(0,'#24435a'); gr.addColorStop(1,'#11222f'); c.fillStyle=gr; c.fillRect(0,0,s.w,s.h);
+    const dy=(t*0.004)%46;
+    for(const f of s.fl){
+      const y=(f.cy-dy)*k, x=f.cx*k-off; c.beginPath(); f.pts.forEach((p,j)=>{ const X=x+p[0]*k, Y=y+p[1]*k; j?c.lineTo(X,Y):c.moveTo(X,Y); }); c.closePath();
+      const v=Math.round(225+f.sh*28); c.fillStyle=`rgb(${v-12},${v},${Math.min(255,v+6)})`; c.fill();
+      c.strokeStyle='rgba(120,170,200,.6)'; c.lineWidth=1*k; c.stroke();
+    }
+  }
+  function litter(s,t,init){
+    if(init||!s.l){ const cols=['#ff6b4a','#ffd166','#4cc9f0','#f72585','#f4f4f4','#06d6a0']; s.l=[]; for(let i=0;i<70;i++) s.l.push({x:s.R()*260,y:s.R()*700,w:4+s.R()*12,h:2+s.R()*7,c:cols[s.R()*cols.length|0],r:s.R()*6.28,v:(s.R()-.5)*.002,sh:s.R()<.3,ph:s.R()*6}); }
+    clear(s); const c=s.ctx, k=s.h/700, off=(260*k-s.w)/2;
+    const gr=c.createLinearGradient(0,0,0,s.h); gr.addColorStop(0,'#123354'); gr.addColorStop(1,'#08182a'); c.fillStyle=gr; c.fillRect(0,0,s.w,s.h);
+    c.strokeStyle='rgba(140,190,230,.12)'; c.lineWidth=1*k;
+    for(let y=20;y<700;y+=38){ c.beginPath(); for(let x=0;x<=260;x+=10){ const Y=y+Math.sin(x*.05+t*.0012+y)*4; x?c.lineTo(x*k-off,Y*k):c.moveTo(x*k-off,Y*k);} c.stroke(); }
+    for(const p of s.l){
+      const y=((p.y+t*0.01)%720)-10, x=p.x+Math.sin(t*0.001+p.ph)*6;
+      c.save(); c.translate(x*k-off,y*k); c.rotate(p.r+t*p.v); c.fillStyle=p.c; c.globalAlpha=.92;
+      if(p.sh){ c.beginPath(); c.moveTo(0,-p.h*k); c.lineTo(p.w*.6*k,p.h*k); c.lineTo(-p.w*.6*k,p.h*.6*k); c.fill(); } else c.fillRect(-p.w/2*k,-p.h/2*k,p.w*k,p.h*k);
+      c.restore();
+    }
+    c.globalAlpha=1;
+  }
+  function surge(s,t){
+    clear(s); const c=s.ctx, k=s.h/700;
+    const gr=c.createLinearGradient(0,0,0,s.h); gr.addColorStop(0,'#33475a'); gr.addColorStop(1,'#141e27'); c.fillStyle=gr; c.fillRect(0,0,s.w,s.h);
+    const rise=Math.sin(t*0.0005)*30;
+    for(let i=0;i<18;i++){
+      const base=(140+i*30-rise)*k, amp=(3+i*1.4)*k;
+      c.beginPath(); for(let x=0;x<=s.w+4;x+=4){ const y=base+Math.sin(x/(28*k)+t*0.0016+i*.7)*amp+Math.sin(x/(9*k)-t*0.002)*amp*.25; x?c.lineTo(x,y):c.moveTo(x,y); }
+      c.strokeStyle= i===0? 'rgba(255,138,76,.95)':`rgba(165,195,215,${.15+i*.035})`; c.lineWidth=(i===0?2.2:1.3)*k; c.stroke();
+    }
+  }
+  function stripes(s,t,init){
+    if(init||!s.v){ s.v=[]; for(let i=0;i<70;i++){ s.v.push(i/69*1.05-.15+(s.R()-.5)*.28); } }
+    const c=s.ctx, n=s.v.length, hh=s.h/n;
+    const st=[[0,[33,84,150]],[.3,[107,174,214]],[.5,[247,247,247]],[.7,[251,106,74]],[1,[103,0,13]]];
+    for(let i=0;i<n;i++){
+      let v=s.v[i]+Math.sin(t*0.0011+i*.4)*.03; v=Math.max(0,Math.min(1,v));
+      let col=st[st.length-1][1]; for(let j=1;j<st.length;j++){ if(v<=st[j][0]){ const a=st[j-1],b=st[j],f=(v-a[0])/(b[0]-a[0]); col=a[1].map((q,m)=>Math.round(q+(b[1][m]-q)*f)); break; } }
+      c.fillStyle=`rgb(${col})`; c.fillRect(0,Math.floor(i*hh),s.w,Math.ceil(hh)+1);
+    }
+  }
+  function bloom(s,t,init){
+    const c=s.ctx, k=s.h/700;
+    if(init||!s.p){ s.p=[]; for(let i=0;i<320;i++) s.p.push({x:s.R()*s.w,y:s.R()*s.h,c:s.R()<.6?'rgba(123,216,143,.5)':'rgba(195,245,132,.45)'}); clear(s); }
+    clear(s,.07);
+    c.lineWidth=1.3*k*1.4;
+    for(const p of s.p){
+      const X=p.x/k, Y=p.y/k;
+      const a=Math.sin(X*.025+t*.0002)*2+Math.cos(Y*.018-X*.01)*2.2;
+      const nx=p.x+Math.cos(a)*1.1*k*1.6, ny=p.y+Math.sin(a)*1.1*k*1.6;
+      c.strokeStyle=p.c; c.beginPath(); c.moveTo(p.x,p.y); c.lineTo(nx,ny); c.stroke();
+      p.x=nx; p.y=ny; if(p.x<0||p.y<0||p.x>s.w||p.y>s.h||s.R()<.004){ p.x=s.R()*s.w; p.y=s.R()*s.h; }
+    }
+  }
+  if(reduce) scenes.forEach(s=>s.tick&&s.ready&&s.tick(2000));
+}
+})();
+</script>
