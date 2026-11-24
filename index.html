@@ -11,7 +11,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira:wght@200;300;400&family=Saira+Semi+Condensed:wght@300;400;500&family=Inter+Tight:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: a single long-form "brief" read top to bottom, with a sticky reading bar that holds the pathway controls; each section is a reusable component. */
 :root{
@@ -28,7 +28,8 @@
 --signal:#0f6f7c;     /* data teal */
 --req:#6b3fa0;
 --f-display:"Inter Tight", "Inter", "Segoe UI", system-ui, sans-serif;
---f-hero:"Instrument Serif", "Iowan Old Style", Georgia, serif;
+--f-hero:"Saira", "Inter", "Segoe UI", system-ui, sans-serif;
+--f-hero-c:"Saira Semi Condensed", "Saira", "Arial Narrow", sans-serif;
 --f-body:"Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
 --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 --gutter-l:max(clamp(16px, 4vw, 64px), env(safe-area-inset-left, 0px));
@@ -190,8 +191,8 @@ body.review .reqs{display:block}
 .h-copy{position:absolute;inset:0;display:flex;align-items:center;pointer-events:none}
 .h-copy > div{max-width:min(600px,46vw);display:grid;gap:18px;pointer-events:auto}
 .h-copy .eyebrow{color:#9fdcf0}
-.h-copy h1{font-family:var(--f-hero);font-weight:400;font-size:clamp(2.7rem,5.4vw,5.4rem);line-height:.98;letter-spacing:-.01em}
-.h-copy h1 em{font-style:italic;color:#ffd08a}
+
+
 .h-copy p{font-size:1.1rem;color:rgba(234,244,248,.86);max-width:42ch}
 .h-btns{display:flex;flex-wrap:wrap;gap:10px}
 .h-btn{font:600 .95rem/1 var(--f-body);padding:.95em 1.35em;border-radius:999px;border:1.5px solid rgba(234,244,248,.7);color:#eaf4f8;background:transparent;text-decoration:none;cursor:pointer}
@@ -231,6 +232,8 @@ body.home footer{display:none}
 .h-copy > div > :nth-child(2){animation-delay:.4s}
 .h-copy > div > :nth-child(3){animation-delay:.55s}
 .h-copy > div > :nth-child(4){animation-delay:.7s}
+.h-copy > div > :nth-child(5){animation-delay:.85s}
+.h-copy > div > :nth-child(6){animation-delay:1s}
 .h-strip{animation:rise 1s cubic-bezier(.2,.7,.2,1) .9s both}
 .h-pill{transition:border-color .2s,background .2s,transform .2s}
 .h-pill.hl{transform:translateY(-2px);background:rgba(14,40,60,.8)}
@@ -255,8 +258,23 @@ body.home footer{display:none}
 .h-pill{display:flex;border-radius:999px;padding:8px 14px;font-size:.85rem}
 .h-pill .ps{display:none}
 .h-pill.hl{transform:translateY(-2px)}
-.h-copy{padding-top:84px!important}
+.h-copy{padding-top:112px!important}
 }
+
+/* hero typography: thin, widely tracked caps, teal sub-line with rules, light condensed statement */
+.h-copy .h-kicker{max-width:none;font-family:var(--f-hero);font-weight:200;text-transform:uppercase;font-size:clamp(1.05rem,2.35vw,2.35rem);letter-spacing:.38em;padding-left:.38em;line-height:1.2;color:#d6e6f2;text-shadow:0 0 24px rgba(140,200,255,.25)}
+.h-copy .h-sub{max-width:none;display:flex;align-items:center;justify-content:center;gap:18px;font-family:var(--f-hero);font-weight:400;text-transform:uppercase;font-size:clamp(.72rem,1.05vw,.95rem);letter-spacing:.42em;color:#38d6c4;margin-top:-4px}
+.h-sub span{padding-left:.42em}
+.h-sub::before,.h-sub::after{content:"";width:clamp(40px,6vw,90px);height:1px}
+.h-sub::before{background:linear-gradient(90deg,rgba(56,214,196,0),rgba(56,214,196,.6))}
+.h-sub::after{background:linear-gradient(90deg,rgba(56,214,196,.6),rgba(56,214,196,0))}
+.h-copy h1{font-family:var(--f-hero-c);font-weight:300;font-size:clamp(1.9rem,3.3vw,3.2rem);line-height:1.1;letter-spacing:.005em;color:#f2f7fb;margin-top:2px}
+.h-copy h1 em{font-style:normal;color:#f2f7fb}
+.h-copy p:not(.h-kicker):not(.h-sub){font-weight:300;color:rgba(222,234,244,.78)}
+.h-btn{font-family:var(--f-hero);font-weight:400;letter-spacing:.12em;text-transform:uppercase;font-size:.82rem}
+.h-strip::before{font-family:var(--f-hero);letter-spacing:.32em;color:#38d6c4}
+.h-pill{font-family:var(--f-hero-c);font-weight:500;font-size:1rem;letter-spacing:.01em}
+@media (max-width:820px){.h-copy .h-kicker{letter-spacing:.2em;padding-left:.2em;font-size:1rem}.h-copy .h-sub{letter-spacing:.3em;gap:10px}}
 @media (prefers-reduced-motion:reduce){#hgl,#hov{transition:none}.h-copy > div > *,.h-strip{animation:none}}
 .how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
 .how div{display:grid;gap:6px;align-content:start}
@@ -310,7 +328,8 @@ Ocean Briefs
 <canvas id="hov" aria-label="Map of Europe from space with seven points, one per Ocean Brief. The Marine litter point opens that brief."></canvas>
 <div class="h-scrim"></div>
 <div class="wrap h-copy"><div>
-<p class="eyebrow" data-i18n="h-eye">Seven Ocean Briefs</p>
+<p class="h-kicker" data-i18n="h-k">European ocean observation</p>
+<p class="h-sub"><span data-i18n="h-eye">Seven Ocean Briefs</span></p>
 <h1><span data-i18n="h-t1">Europe’s ocean,</span> <em data-i18n="h-t2">seen from space.</em></h1>
 <p data-i18n="h-p">Short, visual stories on how European satellites and ocean models help people at sea and on the coast.</p>
 <div class="h-btns"><a class="h-btn pri" href="#marine-litter" data-i18n="h-b2">Read: Marine litter</a></div>
@@ -577,7 +596,7 @@ document.getElementById('h-strip').innerHTML = briefs.map(([n,t,s,live])=> live
 /* ---------- i18n ---------- */
 const fr = {
 notice:"Démonstration conceptuelle de WyvernAI pour l’appel d’offres 26546-EU4OO, lot 1. Site non officiel d’EU4OceanObs ou de Mercator Ocean. Chiffres illustratifs, en attente de validation par des experts.",
-review:"Afficher les exigences", "h-eye":"Sept Ocean Briefs", "h-t1":"L’océan européen,", "h-t2":"vu de l’espace.", "h-p":"De courts récits visuels sur la façon dont les satellites et les modèles océaniques européens aident ceux qui vivent en mer et sur les côtes.", "h-b1":"Explorer les briefs", "h-b2":"Lire : déchets marins", "hb-e":"Tous les Ocean Briefs", "hb-h":"Choisissez un récit", "brief-of":"Ocean Brief 04 sur 07", theme:"Pollution",
+review:"Afficher les exigences", "h-k":"Observation européenne de l’océan", "h-eye":"Sept Ocean Briefs", "h-t1":"L’océan européen,", "h-t2":"vu de l’espace.", "h-p":"De courts récits visuels sur la façon dont les satellites et les modèles océaniques européens aident ceux qui vivent en mer et sur les côtes.", "h-b1":"Explorer les briefs", "h-b2":"Lire : déchets marins", "hb-e":"Tous les Ocean Briefs", "hb-h":"Choisissez un récit", "brief-of":"Ocean Brief 04 sur 07", theme:"Pollution",
 title:"Déchets marins : suivre le plastique de l’espace jusqu’au rivage",
 lede:"Satellites, modèles océaniques et relevés de plage montrent ensemble d’où viennent les déchets, où ils dérivent et où ils échouent. Ces connaissances indiquent aux équipes de nettoyage où intervenir et aux décideurs ce qui fonctionne.",
 layers:"3 niveaux de lecture", "keys-h":"Messages clés",
@@ -987,14 +1006,14 @@ ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineWidth=1.5*u; ctx.stroke();
 ctx.fillStyle=on?'#ffffff':'#8fe3ff'; ctx.beginPath(); ctx.arc(b.x,b.y,(on?4:2.8)*u,0,7); ctx.fill();
 if(on){ const gl2=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,34*u); gl2.addColorStop(0,'rgba(140,225,255,.35)'); gl2.addColorStop(1,'rgba(140,225,255,0)'); ctx.fillStyle=gl2; ctx.beginPath(); ctx.arc(b.x,b.y,34*u,0,7); ctx.fill(); }
 if(S.w/dpr<700 && !on) continue;
-ctx.font=`600 ${13*u}px "Inter Tight", sans-serif`; const tw2=ctx.measureText(b.t).width;
+ctx.font=`600 ${13*u}px "Saira Semi Condensed", sans-serif`; const tw2=ctx.measureText(b.t).width;
 const lw=tw2+40*u, lh=24*u, rr2=12*u, lx=b.id==='fisheries'? b.x-14*u-lw : b.x+14*u, ly=b.y-12*u;
 ctx.beginPath(); ctx.moveTo(lx+rr2,ly); ctx.arcTo(lx+lw,ly,lx+lw,ly+lh,rr2); ctx.arcTo(lx+lw,ly+lh,lx,ly+lh,rr2); ctx.arcTo(lx,ly+lh,lx,ly,rr2); ctx.arcTo(lx,ly,lx+lw,ly,rr2); ctx.closePath();
 ctx.fillStyle=on?'rgba(255,208,138,.95)':'rgba(6,16,28,.58)'; ctx.fill();
 ctx.strokeStyle=on?'rgba(255,208,138,1)':'rgba(170,220,245,.28)'; ctx.lineWidth=1*u; ctx.stroke();
 ctx.textBaseline='middle';
 ctx.font=`500 ${10.5*u}px "IBM Plex Mono", monospace`; ctx.fillStyle=on?'#6b4300':'rgba(160,230,255,1)'; ctx.fillText(b.n,lx+10*u,b.y);
-ctx.font=`600 ${13*u}px "Inter Tight", sans-serif`; ctx.fillStyle=on?'#1b1003':'#ffffff'; ctx.fillText(b.t,lx+30*u,b.y+.5*u);
+ctx.font=`500 ${13*u}px "Saira Semi Condensed", sans-serif`; ctx.fillStyle=on?'#1b1003':'#ffffff'; ctx.fillText(b.t,lx+30*u,b.y+.5*u);
 }
 }
 function pick(e){
