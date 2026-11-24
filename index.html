@@ -796,28 +796,47 @@ float lat=degrees(asin(clamp(w.y,-1.,1.)));
 float ndl=dot(n,uSun);
 float dif=max(ndl,0.);
 float day=smoothstep(-0.03,0.13,ndl);
+// sun direction in globe (world) coordinates
+vec3 sunW=vec3(uSun.x, uSun.y*c0+uSun.z*s0, -uSun.y*s0+uSun.z*c0);
 if(uPass==0){
-  // static surface: land, ocean, sunlight (rendered once)
+  // static surface: land with relief, ocean, sunlight (rendered once per resize)
   if(r>1.0){ gl_FragColor=vec4(0.); return; }
   vec4 lt=texture2D(uLand,uvC); float landM=lt.r; float shelf=lt.g;
-  float ln=fbm3(w*22.);
-  float L=lat+ln*7.;
-  vec3 desert=vec3(.70,.55,.36), dry=vec3(.46,.40,.26), temp=vec3(.24,.31,.17), boreal=vec3(.17,.22,.16), ice=vec3(.86,.9,.94);
-  vec3 lc=mix(desert,dry,smoothstep(25.,33.,L)); lc=mix(lc,temp,smoothstep(37.,46.,L)); lc=mix(lc,boreal,smoothstep(56.,64.,L)); lc=mix(lc,ice,smoothstep(70.,76.,L)*.85);
-  lc*=.82+.38*(fbm3(w*70.)*.5+.5);
-  float ov=fbm3(w*6.);
-  vec3 oc=mix(vec3(.03,.17,.37),vec3(.06,.29,.54),.5+.5*ov);
-  oc=mix(oc,vec3(.10,.45,.66),shelf*(1.-landM)*.7);
+  // terrain height and a cheap bump from finite differences
+  float e0=fbm5(w*8.)*.75+fbm3(w*18.)*.25;
+  vec3 wx=w+vec3(.006,0.,0.), wy=w+vec3(0.,.006*c0,-.006*s0);
+  float ex=fbm5(wx*8.)*.75+fbm3(wx*18.)*.25;
+  float ey=fbm5(wy*8.)*.75+fbm3(wy*18.)*.25;
+  float relief=clamp(1.+((e0-ex)*uSun.x+(ey-e0)*uSun.y)*2.2,.8,1.2);
+  float moist=fbm5(w*5.+vec3(3.1,1.2,7.4));
+  float L=lat+moist*8.;
+  vec3 sandA=vec3(.76,.62,.44), sandB=vec3(.68,.50,.34), sandC=vec3(.84,.75,.58), rock=vec3(.45,.38,.31);
+  vec3 desert=mix(mix(sandA,sandB,smoothstep(-.3,.3,moist)),sandC,smoothstep(.1,.7,fbm3(w*6.))*.6);
+  desert=mix(desert,rock,smoothstep(.3,.6,e0)*.5);
+  vec3 steppe=mix(vec3(.52,.47,.31),vec3(.42,.40,.27),.5+.5*moist);
+  vec3 temp=mix(vec3(.20,.28,.14),vec3(.31,.35,.19),.5+.5*fbm3(w*16.));
+  vec3 boreal=mix(vec3(.12,.18,.12),vec3(.20,.24,.17),.5+.5*moist);
+  vec3 lc=mix(desert,steppe,smoothstep(27.,34.,L));
+  lc=mix(lc,temp,smoothstep(37.,45.,L));
+  lc=mix(lc,boreal,smoothstep(55.,63.,L));
+  vec3 mountain=mix(vec3(.36,.33,.29),vec3(.92,.94,.97),smoothstep(.45,.62,e0+ (lat-45.)*.006));
+  lc=mix(lc,mountain,smoothstep(.38,.6,e0)*.6);
+  lc=mix(lc,vec3(.88,.92,.96),smoothstep(69.,75.,L)*.9);
+  lc*=relief;
+  // ocean: deep navy with faint eddies, turquoise on the shelf
+  float ov=fbm5(w*7.+fbm3(w*3.)*.8);
+  vec3 oc=mix(vec3(.015,.085,.21),vec3(.035,.20,.40),.5+.5*ov);
+  oc=mix(oc,vec3(.08,.42,.58),shelf*(1.-landM)*.75);
   vec3 surf=mix(oc,lc,landM);
-  vec3 dayc=surf*(.62+.75*dif);
-  vec3 hv=normalize(uSun+vec3(0.,0.,1.)); float spec=pow(max(dot(n,hv),0.),60.)*(1.-landM)*.35;
-  dayc+=vec3(1.,.95,.85)*spec;
-  vec3 nightc=mix(vec3(.010,.022,.045),vec3(.028,.036,.05),landM);
+  vec3 dayc=surf*(.55+.8*dif);
+  vec3 hv=normalize(uSun+vec3(0.,0.,1.)); float spec=pow(max(dot(n,hv),0.),45.)*(1.-landM)*.45;
+  dayc+=vec3(1.,.93,.80)*spec;
+  vec3 nightc=mix(vec3(.008,.018,.04),vec3(.025,.032,.045),landM);
   gl_FragColor=vec4(mix(nightc,dayc,day),1.);
   return;
 }
 if(uPass==1){
-  // clouds only, at reduced resolution, every frame
+  // clouds at reduced resolution: density (R) and self-shading (G)
   if(r>1.02){ gl_FragColor=vec4(0.); return; }
   float ang=uT*0.006; float ca=cos(ang), sa=sin(ang);
   vec3 wc=vec3(w.x*ca-w.z*sa, w.y, w.x*sa+w.z*ca);
@@ -826,31 +845,45 @@ if(uPass==1){
   float cl=fbm5(cp*1.4+wq*1.35+vec3(5.2,1.3,2.8));
   float det=fbm3(wc*14.+cl*1.5);
   float cov=cl+det*.32+.10*cos(radians(lat-55.)*4.);
-  float ca2=smoothstep(-.06,.36,cov);
-  ca2*=.55+.45*smoothstep(-.2,.4,det);
-  gl_FragColor=vec4(ca2,0.,0.,1.);
+  float d=smoothstep(-.06,.36,cov);
+  d*=.55+.45*smoothstep(-.2,.4,det);
+  d*=.82+.18*(1.-abs(snoise(wc*40.+cl)));
+  // the same field a little towards the sun: thicker there means this side lies in shade
+  vec3 wcs=wc+sunW*.03; vec3 cps=wcs*vec3(2.4,4.2,2.4);
+  float cls=fbm5(cps*1.4+wq*1.35+vec3(5.2,1.3,2.8));
+  float ds=smoothstep(-.06,.36,cls+det*.32+.10*cos(radians(lat-55.)*4.));
+  float lightT=clamp(1.-(ds-d)*.7,.78,1.);
+  gl_FragColor=vec4(d,lightT,0.,1.);
   return;
 }
 // composite: space, stored surface, clouds, lights, atmosphere
-vec3 col=mix(vec3(.035,.06,.11),vec3(.01,.02,.04),clamp(length(uvC-vec2(.62,.5))*1.3,0.,1.));
+vec3 col=mix(vec3(.03,.05,.095),vec3(.008,.015,.03),clamp(length(uvC-vec2(.62,.5))*1.3,0.,1.));
 vec2 cell=floor(px/(2.0*uPx));
 float hs=hash(cell);
 if(hs>.9975) col+=vec3(.75,.82,1.)*(hs-.9975)/.0025*.9;
 float side=max(dot(normalize(vec3(q,0.0001)),uSun),0.);
 float dist=(r-1.)*uR;
-if(r>1.) col+=vec3(.25,.55,1.)*exp(-dist/14.)*(.18+.85*side);
+if(r>1.) col+=vec3(.28,.58,1.)*(exp(-dist/10.)*.9+exp(-dist/40.)*.25)*(.12+.9*side);
 if(inside>0.){
   vec3 s=texture2D(uSurf,uvG).rgb;
-  float ca2=texture2D(uCl,uvG).r;
-  vec3 cday=vec3(.97,.98,1.)*(.62+.5*dif);
-  vec3 cnight=vec3(.055,.07,.10);
-  s=mix(s,mix(cnight,cday,day),ca2);
-  vec3 li=texture2D(uLights,uvC).rgb;
-  s+=li*(1.-day)*(1.-ca2*.7)*1.35;
+  vec2 cs=texture2D(uCl,uvG).rg; float ca2=cs.r; float lightT=cs.g;
+  // cloud shadow: density shifted away from the sun on screen
+  vec2 shOff=-uSun.xy*vec2(1.,-1.)*(6.*uPx)/uRes;
+  float shd=texture2D(uCl,uvG+shOff).r;
+  s*=1.-.38*shd*day*(1.-ca2);
+  vec3 cday=vec3(.99,.995,1.)*(.62+.5*dif)*lightT;
+  vec3 cnight=vec3(.05,.065,.095)*(.7+.3*lightT);
+  vec3 cc=mix(cnight,cday,day);
   float tw=exp(-pow((ndl-.03)/.05,2.));
-  s+=vec3(1.,.45,.18)*tw*(.05+.18*ca2);
-  float fr=pow(1.-nz,2.6);
-  s=s*(.82+.18*nz)+vec3(.30,.62,1.)*fr*(.10+.95*day);
+  cc+=vec3(1.,.5,.22)*tw*.22;
+  s=mix(s,cc,ca2*.96);
+  vec3 li=texture2D(uLights,uvC).rgb;
+  s+=li*(1.-day)*(1.-ca2*.75)*1.35;
+  s+=vec3(1.,.45,.18)*tw*.04;
+  // atmosphere: thin blue haze that thickens towards the limb on the day side
+  float fr=pow(1.-nz,2.4);
+  s=mix(s,vec3(.50,.70,.98)*(.35+.65*dif),clamp(fr*.75+.05,0.,1.)*day);
+  s=s*(.84+.16*nz)+vec3(.30,.62,1.)*pow(1.-nz,5.)*(.15+.9*day);
   col=mix(col,s,inside);
 }
 gl_FragColor=vec4(col,1.);
