@@ -1,6 +1,7 @@
-# Stand für das Angebot (eingefroren)
+# Stand für das Angebot
 
-Dieser Stand ist die Version, die im Angebot verlinkt wird. Nicht mehr verändern.
+Die Hauptadresse zeigt seit dem 25.11.2026 die überarbeitete Version (Globus, Satelliten, NASA-Bilder, EN/FR/DE).
+Der erste Angebotsstand bleibt unverändert auf dem Branch `angebot-v1` erhalten.
 
 ## Eckdaten
 
@@ -14,7 +15,7 @@ Dieser Stand ist die Version, die im Angebot verlinkt wird. Nicht mehr veränder
 
 - Webseite (Demo-Link für das Angebot): https://ocean-briefs-prototype-nine.vercel.app
 - Marine-Litter-Brief direkt: https://ocean-briefs-prototype-nine.vercel.app/#marine-litter
-- Gesicherte Kopie dieses Stands: Branch `angebot-v1`
+- Erster Angebotsstand (gesichert): Branch `angebot-v1`
 - Weiterentwicklung: Branch `entwicklung`
 
 ## Was die Demo zeigt
