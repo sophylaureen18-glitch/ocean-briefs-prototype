@@ -120,7 +120,7 @@ details.deeper[open] summary{margin-bottom:8px}
 .bar-row .mono{text-align:right;font-size:.85rem}
 /* Drift sim */
 .sim{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:22px;align-items:start}
-.sim-canvas{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--sea);aspect-ratio:4/3;max-width:100%}
+.sim-canvas{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#0b2232;aspect-ratio:2048/1795;max-width:100%}
 .sim-canvas canvas{display:block;width:100%;height:100%;cursor:crosshair;touch-action:manipulation}
 .sim-hint{position:absolute;left:10px;bottom:10px;font-size:.75rem;background:color-mix(in srgb,var(--surface) 85%,transparent);padding:3px 8px;border-radius:4px;pointer-events:none}
 .sim-side{display:grid;gap:14px}
@@ -434,6 +434,24 @@ body.brief details.deeper summary{color:#5fd6ea}
 body.brief footer{color:rgba(200,225,240,.55);border-top:1px solid rgba(160,210,235,.08)}
 @media (max-width:820px){ body.brief .hero{min-height:0} body.brief .hero-cap{position:static;margin-top:10px} }
 @media (prefers-reduced-motion:reduce){ body.brief .hero-bg{animation:none} }
+
+/* path feedback, lens notes, use-case cards as choices */
+.path-fb{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:0;padding:12px 16px;border-radius:12px;background:rgba(56,214,196,.08);border:1px solid rgba(56,214,196,.3);color:#d8f6f2;font-size:.95rem;animation:fbIn .4s ease both}
+.path-fb[hidden]{display:none}
+@keyframes fbIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.fb-go{font:500 .72rem/1 var(--f-hero);letter-spacing:.14em;text-transform:uppercase;color:#03060c;background:#38d6c4;border:0;border-radius:999px;padding:.7em 1em;cursor:pointer}
+.lens.pop{animation:lensPop 1.6s ease both}
+@keyframes lensPop{0%{opacity:0;transform:translateY(8px);box-shadow:0 0 0 0 rgba(56,214,196,0)}30%{opacity:1;transform:none;box-shadow:0 0 0 6px rgba(56,214,196,.18)}100%{box-shadow:0 0 0 0 rgba(56,214,196,0)}}
+button.case{font:inherit;color:inherit;text-align:left;cursor:pointer;position:relative;transition:border-color .2s,transform .2s,background .2s}
+button.case:hover{transform:translateY(-2px)}
+body.brief button.case[aria-pressed="true"]{background:rgba(255,208,138,.07)}
+.case .sel{display:none;position:absolute;top:14px;right:16px;font:500 .66rem/1 var(--f-hero);letter-spacing:.14em;text-transform:uppercase;color:#1b1003;background:#ffd08a;border-radius:999px;padding:.55em .8em}
+.case[aria-pressed="true"] .sel{display:inline-block}
+.case ol.flow{list-style:none;margin:auto 0 0;padding:12px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:.8rem}
+.case ol.flow li{color:rgba(222,234,244,.85)}
+.case ol.flow li+li::before{content:"→";margin-right:6px;color:#38d6c4}
+.case ol.flow{border-top:1px solid rgba(160,210,235,.12)}
+@media (prefers-reduced-motion:reduce){.lens.pop,.path-fb{animation:none}}
 @media (prefers-reduced-motion:reduce){#hgl,#hov{transition:none}.h-copy > div > *,.h-strip{animation:none}}
 .how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
 .how div{display:grid;gap:6px;align-content:start}
@@ -563,6 +581,7 @@ Ocean Briefs
 <button class="opt" data-lens="coast" aria-pressed="false"><b data-i18n="l3">Coastal action</b><span data-i18n="l3s">Clean-ups and local use</span></button>
 </div>
 </div>
+<p class="path-fb" id="path-fb" aria-live="polite" hidden></p>
 <p class="path-note"><span data-i18n="path-note">No sign-up and no profile. Your choices only change what this page shows and are remembered on this device.</span> <span class="req">REQ-LOT1-05 pathways without profiles</span></p>
 </div></div>
 <!-- 1. The problem -->
@@ -582,9 +601,9 @@ Ocean Briefs
 <div id="bars"></div>
 <p class="small" style="margin-top:10px">Example survey composition for demonstration. Lot 2 supplies the validated dataset; the chart component reads it from the CMS.</p>
 </div>
-<div class="lens" data-lens="policy"><span class="eyebrow">For policy</span>The Single-Use Plastics Directive (2019/904) targets exactly the items that top the beach counts. Repeated surveys show whether bans and extended producer responsibility reduce them.</div>
-<div class="lens" data-lens="science"><span class="eyebrow">For science</span>Counts are made with a common protocol so that beaches can be compared across countries. EMODnet Chemistry gathers these surveys into one European database.</div>
-<div class="lens" data-lens="coast"><span class="eyebrow">For coastal action</span>A local survey takes about two hours with volunteers. Results feed the same European database the scientists use.</div>
+<div class="lens" data-lens="policy"><span class="eyebrow" data-i18n="le-p">For policy</span><span data-i18n="ln1">The Single-Use Plastics Directive (2019/904) targets exactly the items that top the beach counts. Repeated surveys show whether bans and extended producer responsibility reduce them.</span></div>
+<div class="lens" data-lens="science"><span class="eyebrow" data-i18n="le-s">For science</span><span data-i18n="ln2">Counts are made with a common protocol so that beaches can be compared across countries. EMODnet Chemistry gathers these surveys into one European database.</span></div>
+<div class="lens" data-lens="coast"><span class="eyebrow" data-i18n="le-c">For coastal action</span><span data-i18n="ln3">A local survey takes about two hours with volunteers. Results feed the same European database the scientists use.</span></div>
 <details class="deeper depth-3"><summary>Method detail: how a beach survey works</summary>
 <p class="prose">Surveyors walk a fixed 100 m section from the waterline to the back of the beach, usually four times a year. Every item larger than 2.5 cm is recorded against a joint master list of around 200 categories. Trends are calculated from the median count per survey, which reduces the effect of single storm events.</p>
 </details>
@@ -597,28 +616,28 @@ Ocean Briefs
 <p class="prose" data-i18n="s2p">Rivers deliver litter to the sea. From there, currents and wind decide whether it circulates offshore or lands on a beach. Tap the sea to release your own patch.</p>
 </div>
 <div class="sim depth-2" data-component="DriftExplorer" style="position:relative">
-<div class="sim-canvas"><canvas id="sim" width="800" height="600" aria-label="Simulated litter drift in a coastal basin. Tap to release particles."></canvas><span class="sim-hint">Tap the sea to release litter</span></div>
+<div class="sim-canvas"><canvas id="sim" width="800" height="700" aria-label="Simulated litter drift in the western Mediterranean from the Rhône, Ebro and Arno. Tap the sea to release particles."></canvas><span class="sim-hint" data-i18n="sim-hint">Tap the sea to release litter</span></div>
 <div class="sim-side">
 <div class="sim-ctrl">
 <button class="btn" id="play">Pause</button>
-<button class="btn ghost" id="wind" aria-pressed="false">Onshore wind</button>
-<button class="btn ghost" id="reset">Reset</button>
+<button class="btn ghost" id="wind" aria-pressed="false" data-i18n="sim-wind">Onshore wind</button>
+<button class="btn ghost" id="reset" data-i18n="sim-reset">Reset</button>
 </div>
-<p class="day">Day <span id="day">0</span> of 60</p>
+<p class="day"><span data-i18n="sim-day">Day</span> <span id="day">0</span> / 60</p>
 <div class="readout">
-<div><b id="r-float">0</b><span>afloat</span></div>
-<div><b id="r-beach">0</b><span>beached</span></div>
-<div><b id="r-out">0</b><span>left basin</span></div>
+<div><b id="r-float">0</b><span data-i18n="sim-f">afloat</span></div>
+<div><b id="r-beach">0</b><span data-i18n="sim-b">beached</span></div>
+<div><b id="r-out">0</b><span data-i18n="sim-o">left the map</span></div>
 </div>
-<div class="legend"><span><i style="background:var(--signal)"></i>Floating</span><span><i style="background:var(--buoy)"></i>Beached</span><span><i style="background:var(--ink)"></i>River mouth</span></div>
-<p class="small">Turn on onshore wind and watch the beached count rise. Floating plastic sits at the surface, so wind pushes it more than the water around it.</p>
-<p class="small">Synthetic currents for demonstration. The production version would draw on Copernicus Marine current forecasts.</p>
+<div class="legend"><span><i style="background:#78e6ff;box-shadow:0 0 8px #78e6ff"></i><span data-i18n="sim-lf">Floating</span></span><span><i style="background:#ffd08a;box-shadow:0 0 8px #ffd08a"></i><span data-i18n="sim-lb">Beached</span></span><span><i style="background:#fff"></i><span data-i18n="sim-lr">River mouth</span></span></div>
+<p class="small" data-i18n="sim-p1">Litter from the Rhône, Ebro and Arno drifts with the currents of the western Mediterranean. Turn on onshore wind and watch the beached count rise: floating plastic sits at the surface, so wind pushes it more than the water around it.</p>
+<p class="small" data-i18n="sim-p2">Background: NASA VIIRS image, 30 July 2019. Currents are simplified for demonstration; the production version would use Copernicus Marine forecasts.</p>
 <div><span class="req">REQ-LOT1-03 reusable visualisation</span><span class="req">REQ-LOT1-11 interactive &lt; 2 s</span></div>
 </div>
 </div>
-<div class="lens" data-lens="policy"><span class="eyebrow">For policy</span>Drift modelling shows that litter crosses borders. A beach can be polluted by a river in another country, which is why regional sea conventions coordinate monitoring.</div>
-<div class="lens" data-lens="science"><span class="eyebrow">For science</span>Real drift studies advect virtual particles through modelled surface currents, Stokes drift and windage. Model choices, such as how much wind a floating object feels, change landing sites considerably.</div>
-<div class="lens" data-lens="coast"><span class="eyebrow">For coastal action</span>After storms with onshore wind, beaches downstream of busy river mouths are the first to fill up. A forecast lets teams plan the clean-up before the litter is buried or washed back out.</div>
+<div class="lens" data-lens="policy"><span class="eyebrow" data-i18n="le-p">For policy</span><span data-i18n="ln4">Drift modelling shows that litter crosses borders. A beach can be polluted by a river in another country, which is why regional sea conventions coordinate monitoring.</span></div>
+<div class="lens" data-lens="science"><span class="eyebrow" data-i18n="le-s">For science</span><span data-i18n="ln5">Real drift studies advect virtual particles through modelled surface currents, Stokes drift and windage. Model choices, such as how much wind a floating object feels, change landing sites considerably.</span></div>
+<div class="lens" data-lens="coast"><span class="eyebrow" data-i18n="le-c">For coastal action</span><span data-i18n="ln6">After storms with onshore wind, beaches downstream of busy river mouths are the first to fill up. A forecast lets teams plan the clean-up before the litter is buried or washed back out.</span></div>
 <details class="deeper depth-3"><summary>Model detail: from currents to particle tracks</summary>
 <p class="prose">Each particle moves by the sum of the surface current, a share of the wind speed (windage, typically 1–3 % for floating plastic) and a random component that stands in for small eddies the model cannot resolve. A particle that reaches the coast is counted as beached. Operational systems run this with hourly current fields from Copernicus Marine and wind from Copernicus atmospheric products.</p>
 </details>
@@ -636,14 +655,14 @@ Ocean Briefs
 <!-- 4. Use cases -->
 <section class="blk depth-2" id="cases"><div class="wrap">
 <div class="blk-head">
-<p class="eyebrow">In practice</p>
-<h2>Who uses this knowledge</h2>
-<p class="small">Example use cases for demonstration. Final cases come from the EU4OceanObs network via Lot 2.</p>
+<p class="eyebrow" data-i18n="c-e">In practice</p>
+<h2 data-i18n="c-h">Who uses this knowledge</h2>
+<p class="small" data-i18n="c-s">Choose a use case to read the whole brief from that point of view. Examples for demonstration; final cases come from the EU4OceanObs network via Lot 2.</p>
 </div>
 <div class="cases" data-component="UseCaseCards" style="position:relative">
-<article class="case" data-lens="coast"><p class="who">Coastal municipality</p><h3>Plan clean-ups before the storm passes</h3><p>A drift forecast shows which beaches will receive litter after three days of onshore wind. Crews go there first.</p><p class="flow">Currents + wind → drift forecast → crew schedule</p></article>
-<article class="case" data-lens="science"><p class="who">Research team</p><h3>Spot floating patches from orbit</h3><p>High-resolution optical imagery picks out windrows of floating material. Field teams check samples to tell plastic from seaweed and wood.</p><p class="flow">Satellite imagery → detection index → validated map</p></article>
-<article class="case" data-lens="policy"><p class="who">National authority</p><h3>Report progress to Brussels</h3><p>Beach counts, seafloor trawls and floating-litter observations feed the six-yearly MSFD assessment of each marine region.</p><p class="flow">Surveys → EMODnet database → MSFD assessment</p></article>
+<button type="button" class="case" data-lens="coast" aria-pressed="false"><span class="sel" data-i18n="c-sel">✓ Your view</span><p class="who" data-i18n="c1w">Coastal municipality</p><h3 data-i18n="c1t">Plan clean-ups before the storm passes</h3><p data-i18n="c1p">A drift forecast shows which beaches will receive litter after three days of onshore wind. Crews go there first.</p><ol class="flow"><li data-i18n="c1a">Currents + wind</li><li data-i18n="c1b">Drift forecast</li><li data-i18n="c1c">Crew schedule</li></ol></button>
+<button type="button" class="case" data-lens="science" aria-pressed="false"><span class="sel" data-i18n="c-sel">✓ Your view</span><p class="who" data-i18n="c2w">Research team</p><h3 data-i18n="c2t">Spot floating patches from orbit</h3><p data-i18n="c2p">High-resolution optical imagery picks out windrows of floating material. Field teams check samples to tell plastic from seaweed and wood.</p><ol class="flow"><li data-i18n="c2a">Satellite imagery</li><li data-i18n="c2b">Detection index</li><li data-i18n="c2c">Validated map</li></ol></button>
+<button type="button" class="case" data-lens="policy" aria-pressed="false"><span class="sel" data-i18n="c-sel">✓ Your view</span><p class="who" data-i18n="c3w">National authority</p><h3 data-i18n="c3t">Report progress to Brussels</h3><p data-i18n="c3p">Beach counts, seafloor trawls and floating-litter observations feed the six-yearly MSFD assessment of each marine region.</p><ol class="flow"><li data-i18n="c3a">Surveys</li><li data-i18n="c3b">EMODnet database</li><li data-i18n="c3c">MSFD assessment</li></ol></button>
 </div>
 </div></section>
 <!-- 5. Go further -->
@@ -663,9 +682,9 @@ Ocean Briefs
 <!-- 6. Library -->
 <section class="blk" id="library"><div class="wrap">
 <div class="blk-head">
-<p class="eyebrow">All Ocean Briefs</p>
-<h2>Seven briefs, one structure</h2>
-<p class="small">Working titles. Editors add a new brief in the CMS from the same building blocks, without a developer. <span class="req">REQ-LOT1-01/02 extensible architecture</span> <span class="req">REQ-LOT1-07 CMS + multilingual</span></p>
+<p class="eyebrow" data-i18n="lb-e">All Ocean Briefs</p>
+<h2 data-i18n="lb-h">Seven briefs, one structure</h2>
+<p class="small"><span data-i18n="lb-s">Working titles. Every brief is built from the same blocks, so editors can add new ones without a developer.</span> <span class="req">REQ-LOT1-01/02 extensible architecture</span> <span class="req">REQ-LOT1-07 CMS + multilingual</span></p>
 </div>
 <div class="lib" id="lib" data-component="BriefLibrary" style="position:relative"></div>
 </div></section>
@@ -710,15 +729,27 @@ const cur = B.dataset.lens;
 const next = (cur===l) ? "" : l;
 B.dataset.lens = next;
 document.querySelectorAll('.opt[data-lens]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.lens===next));
-document.querySelectorAll('.case').forEach(c=>c.classList.toggle('hl', !!next && c.dataset.lens===next));
-// move matching case first
-const wrap = document.querySelector('.cases');
-const m = next && wrap.querySelector('.case[data-lens="'+next+'"]');
-if(m) wrap.prepend(m);
+document.querySelectorAll('.case').forEach(c=>{ const on=!!next && c.dataset.lens===next; c.classList.toggle('hl',on); c.setAttribute('aria-pressed',on); });
+document.querySelectorAll('.lens').forEach(el=>{ el.classList.remove('pop'); if(next && el.dataset.lens===next){ void el.offsetWidth; el.classList.add('pop'); } });
 store.set('ob-lens', next);
+pathFeedback();
 }
-document.querySelectorAll('.opt[data-depth]').forEach(b=>b.addEventListener('click',()=>{ setDepth(+b.dataset.depth); if(window.__sim) window.__sim.resize(); }));
-document.querySelectorAll('.opt[data-lens]').forEach(b=>b.addEventListener('click',()=>setLens(b.dataset.lens)));
+const FB={
+ en:{lens:{policy:'Policy',science:'Science',coast:'Coastal action'}, on:(l,n)=>`✓ ${l} view on: ${n} extra notes are now shown in the sections below.`, go:'Jump to the first note ↓', off:'No view selected: the brief shows the general text.'},
+ fr:{lens:{policy:'Politiques',science:'Science',coast:'Action côtière'}, on:(l,n)=>`✓ Point de vue « ${l} » : ${n} notes supplémentaires apparaissent dans les sections ci-dessous.`, go:'Aller à la première note ↓', off:'Aucun point de vue : le brief affiche le texte général.'},
+ de:{lens:{policy:'Politik',science:'Wissenschaft',coast:'Küstenpraxis'}, on:(l,n)=>`✓ Perspektive „${l}“ an: ${n} zusätzliche Hinweise erscheinen jetzt in den Abschnitten unten.`, go:'Zum ersten Hinweis springen ↓', off:'Keine Perspektive gewählt: Der Brief zeigt den allgemeinen Text.'}};
+let fbTouched=false;
+function pathFeedback(){
+ const fb=document.getElementById('path-fb'); if(!fb) return; const L=FB[window.__obLang]||FB.en, lens=B.dataset.lens;
+ if(!lens){ fb.hidden=!fbTouched; fb.innerHTML=L.off; return; }
+ const notes=[...document.querySelectorAll('.lens[data-lens="'+lens+'"]')].filter(el=>el.offsetParent!==null);
+ fb.hidden=false; fb.innerHTML=`${L.on(L.lens[lens],notes.length)} <button type="button" class="fb-go">${L.go}</button>`;
+ fb.querySelector('.fb-go').onclick=()=>{ const t=notes[0]; if(t) t.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'}); };
+}
+window.addEventListener('oblang',pathFeedback);
+document.querySelectorAll('.case[data-lens]').forEach(c=>c.addEventListener('click',()=>{ fbTouched=true; setLens(c.dataset.lens); }));
+document.querySelectorAll('.opt[data-depth]').forEach(b=>b.addEventListener('click',()=>{ setDepth(+b.dataset.depth); if(window.__sim) window.__sim.resize(); if(B.dataset.lens) pathFeedback(); }));
+document.querySelectorAll('.opt[data-lens]').forEach(b=>b.addEventListener('click',()=>{ fbTouched=true; setLens(b.dataset.lens); }));
 setDepth(+(store.get('ob-depth')||2));
 const sl = store.get('ob-lens'); if(sl) setLens(sl);
 /* ---------- Reviewer mode ---------- */
@@ -772,8 +803,7 @@ const briefs = [
 ];
 const libHTML = briefs.map(([n,t,s,live])=> live
 ? `<a class="card live" href="#marine-litter"><span class="n">Brief ${n}</span><h3>${t}</h3><p class="small">${s}</p><span class="st">● Open prototype →</span></a>`
-: `<article class="card"><span class="n">Brief ${n}</span><h3>${t}</h3><p class="small">${s}</p><span class="st">Content from Lot 2</span></article>`).join('') +
-`<article class="card add"><span class="n">CMS</span><h3>+ New brief</h3><p class="small">Created by Mercator Ocean editors from existing blocks.</p></article>`;
+: `<article class="card"><span class="n">Brief ${n}</span><h3>${t}</h3><p class="small">${s}</p><span class="st">Content from Lot 2</span></article>`).join('') ;
 document.getElementById('lib').innerHTML = libHTML;
 document.getElementById('h-strip').innerHTML = briefs.map(([n,t,s,live])=> live
 ? `<button type="button" class="h-pill live" data-n="${n}"><b>${n}</b><span class="pt">${t}</span><span class="ps">${s}</span></button>`
@@ -781,7 +811,7 @@ document.getElementById('h-strip').innerHTML = briefs.map(([n,t,s,live])=> live
 /* ---------- i18n ---------- */
 const fr = {
 notice:"Démonstration conceptuelle de WyvernAI pour l’appel d’offres 26546-EU4OO, lot 1. Site non officiel d’EU4OceanObs ou de Mercator Ocean. Chiffres illustratifs, en attente de validation par des experts.",
-review:"Afficher les exigences", "h-k":"Observation européenne de l’océan", back:"← Tous les Ocean Briefs", upd:"Mis à jour nov. 2026", "hero-cap":"Image réelle : Baléares, Sardaigne et Corse · NASA VIIRS · 30 juillet 2019", "f-cue":"Les satellites", "f-k":"Les satellites derrière les briefs", "f-sub":"La flotte Copernicus Sentinel", "f-h":"Sept briefs, une flotte qui observe les mers d’Europe.", "f-p":"Chaque brief commence en orbite. Ces satellites européens mesurent chaque jour la couleur, la température, la hauteur et la rugosité de la mer, et en tirent les données de chaque récit.", "f-note":"Dessins de satellites simplifiés. Orbites : Sentinel-1 693 km, Sentinel-2 786 km, Sentinel-3 814 km, Sentinel-6 1 336 km.", "h-eye":"Sept Ocean Briefs", "h-t1":"L’océan européen,", "h-t2":"vu de l’espace.", "h-p":"De courts récits visuels sur la façon dont les satellites et les modèles océaniques européens aident ceux qui vivent en mer et sur les côtes.", "h-b1":"Explorer les briefs", "h-b2":"Lire : déchets marins", "hb-e":"Tous les Ocean Briefs", "hb-h":"Choisissez un récit", "brief-of":"Ocean Brief 04 sur 07", theme:"Pollution",
+review:"Afficher les exigences", "h-k":"Observation européenne de l’océan", "lb-e":"Tous les Ocean Briefs", "lb-h":"Sept briefs, une seule structure", "lb-s":"Titres provisoires. Chaque brief est construit avec les mêmes blocs ; les éditeurs en ajoutent sans développeur.", "le-p":"Pour les politiques", "le-s":"Pour la science", "le-c":"Pour l’action côtière", ln1:"La directive sur les plastiques à usage unique (2019/904) vise précisément les objets en tête des comptages de plage. Des relevés répétés montrent si interdictions et responsabilité élargie des producteurs les réduisent.", ln2:"Les comptages suivent un protocole commun pour comparer les plages d’un pays à l’autre. EMODnet Chemistry rassemble ces relevés dans une base européenne.", ln3:"Un relevé local prend environ deux heures avec des bénévoles. Les résultats alimentent la même base européenne que celle des scientifiques.", ln4:"La modélisation de la dérive montre que les déchets traversent les frontières. Une plage peut être polluée par un fleuve d’un autre pays ; c’est pourquoi les conventions de mers régionales coordonnent la surveillance.", ln5:"Les vraies études de dérive transportent des particules virtuelles dans les courants modélisés, la dérive de Stokes et l’effet du vent. Ces choix de modèle changent fortement les lieux d’échouage.", ln6:"Après des tempêtes avec vent de mer, les plages en aval des grandes embouchures se remplissent en premier. Une prévision permet de planifier le nettoyage avant que les déchets ne soient enfouis ou repartent en mer.",  "c-sel":"✓ Votre point de vue", "c-e":"En pratique", "c-h":"Qui utilise ces connaissances", "c-s":"Choisissez un cas d’usage pour lire tout le brief de ce point de vue. Exemples pour la démonstration ; les cas définitifs viendront du réseau EU4OceanObs via le lot 2.", c1w:"Commune côtière", c1t:"Planifier le nettoyage avant la tempête", c1p:"Une prévision de dérive montre quelles plages recevront des déchets après trois jours de vent de mer. Les équipes y vont en premier.", c1a:"Courants + vent", c1b:"Prévision de dérive", c1c:"Planning des équipes", c2w:"Équipe de recherche", c2t:"Repérer les nappes flottantes depuis l’orbite", c2p:"L’imagerie optique haute résolution détecte les alignements de matière flottante. Des équipes de terrain distinguent plastique, algues et bois.", c2a:"Images satellite", c2b:"Indice de détection", c2c:"Carte validée", c3w:"Autorité nationale", c3t:"Rendre compte à Bruxelles", c3p:"Comptages de plage, chalutages et observations de déchets flottants alimentent l’évaluation DCSMM de chaque région marine tous les six ans.", c3a:"Relevés", c3b:"Base EMODnet", c3c:"Évaluation DCSMM",  "sim-hint":"Touchez la mer pour lâcher des déchets", "sim-wind":"Vent de mer", "sim-reset":"Réinitialiser", "sim-day":"Jour", "sim-f":"à la dérive", "sim-b":"échoués", "sim-o":"sortis de la carte", "sim-lf":"À la dérive", "sim-lb":"Échoués", "sim-lr":"Embouchure", "sim-p1":"Les déchets du Rhône, de l’Èbre et de l’Arno dérivent avec les courants de la Méditerranée occidentale. Activez le vent de mer et regardez les échouages augmenter : le plastique flottant reste en surface, le vent le pousse plus que l’eau.", "sim-p2":"Fond : image NASA VIIRS du 30 juillet 2019. Courants simplifiés pour la démonstration ; la version finale utiliserait les prévisions Copernicus Marine.",  back:"← Tous les Ocean Briefs", upd:"Mis à jour nov. 2026", "hero-cap":"Image réelle : Baléares, Sardaigne et Corse · NASA VIIRS · 30 juillet 2019", "f-cue":"Les satellites", "f-k":"Les satellites derrière les briefs", "f-sub":"La flotte Copernicus Sentinel", "f-h":"Sept briefs, une flotte qui observe les mers d’Europe.", "f-p":"Chaque brief commence en orbite. Ces satellites européens mesurent chaque jour la couleur, la température, la hauteur et la rugosité de la mer, et en tirent les données de chaque récit.", "f-note":"Dessins de satellites simplifiés. Orbites : Sentinel-1 693 km, Sentinel-2 786 km, Sentinel-3 814 km, Sentinel-6 1 336 km.", "h-eye":"Sept Ocean Briefs", "h-t1":"L’océan européen,", "h-t2":"vu de l’espace.", "h-p":"De courts récits visuels sur la façon dont les satellites et les modèles océaniques européens aident ceux qui vivent en mer et sur les côtes.", "h-b1":"Explorer les briefs", "h-b2":"Lire : déchets marins", "hb-e":"Tous les Ocean Briefs", "hb-h":"Choisissez un récit", "brief-of":"Ocean Brief 04 sur 07", theme:"Pollution",
 title:"Déchets marins : suivre le plastique de l’espace jusqu’au rivage",
 lede:"Satellites, modèles océaniques et relevés de plage montrent ensemble d’où viennent les déchets, où ils dérivent et où ils échouent. Ces connaissances indiquent aux équipes de nettoyage où intervenir et aux décideurs ce qui fonctionne.",
 layers:"3 niveaux de lecture", "keys-h":"Messages clés",
@@ -796,7 +826,7 @@ s2e:"Où vont-ils ?", s2h:"Suivez les déchets portés par les courants", s2p:"L
 s3e:"De l’observation au bénéfice", s3h:"Comment l’observation européenne devient action"
 };
 const de = {
-review:"Ausschreibungs-Anforderungen zeigen", "h-k":"Europäische Meeresbeobachtung", back:"← Alle Ocean Briefs", upd:"Aktualisiert Nov. 2026", "hero-cap":"Echtes Bild: Balearen, Sardinien und Korsika · NASA VIIRS · 30. Juli 2019", "f-cue":"Die Satelliten", "f-k":"Die Satelliten hinter den Briefs", "f-sub":"Die Copernicus-Sentinel-Flotte", "f-h":"Sieben Briefs, eine Flotte, die Europas Meere beobachtet.", "f-p":"Jeder Brief beginnt im Orbit. Diese europäischen Satelliten messen täglich Farbe, Temperatur, Höhe und Rauigkeit des Meeres und liefern die Daten hinter jeder Geschichte.", "f-note":"Satelliten vereinfacht gezeichnet. Umlaufhöhen: Sentinel-1 693 km, Sentinel-2 786 km, Sentinel-3 814 km, Sentinel-6 1.336 km.", "h-eye":"Sieben Ocean Briefs", "h-t1":"Europas Ozean,", "h-t2":"aus dem All gesehen.", "h-p":"Kurze, visuelle Geschichten darüber, wie europäische Satelliten und Ozeanmodelle Menschen auf See und an der Küste helfen.", "h-b2":"Lesen: Meeresmüll", "brief-of":"Ocean Brief 04 von 07", theme:"Verschmutzung",
+review:"Ausschreibungs-Anforderungen zeigen", "h-k":"Europäische Meeresbeobachtung", "lb-e":"Alle Ocean Briefs", "lb-h":"Sieben Briefs, eine Struktur", "lb-s":"Arbeitstitel. Jeder Brief besteht aus denselben Bausteinen, so können Redakteure neue ohne Entwickler anlegen.", "le-p":"Für die Politik", "le-s":"Für die Wissenschaft", "le-c":"Für die Küstenpraxis", ln1:"Die Einwegkunststoff-Richtlinie (2019/904) zielt genau auf die Gegenstände, die bei Strandzählungen vorn liegen. Wiederholte Zählungen zeigen, ob Verbote und Herstellerverantwortung sie verringern.", ln2:"Gezählt wird nach einem gemeinsamen Protokoll, damit sich Strände länderübergreifend vergleichen lassen. EMODnet Chemistry führt die Zählungen in einer europäischen Datenbank zusammen.", ln3:"Eine Zählung vor Ort dauert mit Freiwilligen etwa zwei Stunden. Die Ergebnisse fließen in dieselbe europäische Datenbank, die auch die Forschung nutzt.", ln4:"Driftmodelle zeigen, dass Müll Grenzen überquert. Ein Strand kann durch einen Fluss aus einem anderen Land verschmutzt werden; deshalb koordinieren regionale Meeresübereinkommen die Überwachung.", ln5:"Echte Driftstudien bewegen virtuelle Partikel durch modellierte Oberflächenströmungen, Stokes-Drift und Windeinfluss. Solche Modellentscheidungen verändern die Anlandeorte erheblich.", ln6:"Nach Stürmen mit auflandigem Wind füllen sich zuerst die Strände unterhalb großer Flussmündungen. Eine Prognose hilft, das Aufräumen zu planen, bevor der Müll vergraben oder wieder ins Meer gespült wird.",  "c-sel":"✓ Ihre Perspektive", "c-e":"In der Praxis", "c-h":"Wer dieses Wissen nutzt", "c-s":"Wählen Sie einen Anwendungsfall, um den ganzen Brief aus dieser Sicht zu lesen. Beispiele für die Demo; die endgültigen Fälle kommen über Los 2 aus dem EU4OceanObs-Netzwerk.", c1w:"Küstengemeinde", c1t:"Aufräumen planen, bevor der Sturm vorbei ist", c1p:"Eine Driftprognose zeigt, an welchen Stränden nach drei Tagen auflandigem Wind Müll ankommt. Die Teams fahren zuerst dorthin.", c1a:"Strömung + Wind", c1b:"Driftprognose", c1c:"Einsatzplan", c2w:"Forschungsteam", c2t:"Treibende Felder aus dem Orbit finden", c2p:"Hochauflösende Satellitenbilder zeigen Streifen aus treibendem Material. Feldteams prüfen Proben, um Plastik von Algen und Holz zu unterscheiden.", c2a:"Satellitenbild", c2b:"Erkennungsindex", c2c:"Geprüfte Karte", c3w:"Nationale Behörde", c3t:"Fortschritt an Brüssel melden", c3p:"Strandzählungen, Grundschleppnetze und Beobachtungen von Treibgut fließen alle sechs Jahre in die MSRL-Bewertung jeder Meeresregion.", c3a:"Erhebungen", c3b:"EMODnet-Datenbank", c3c:"MSRL-Bewertung",  "sim-hint":"Tippen Sie aufs Meer, um Müll auszusetzen", "sim-wind":"Auflandiger Wind", "sim-reset":"Zurücksetzen", "sim-day":"Tag", "sim-f":"treibend", "sim-b":"angespült", "sim-o":"Karte verlassen", "sim-lf":"Treibend", "sim-lb":"Angespült", "sim-lr":"Flussmündung", "sim-p1":"Müll aus Rhône, Ebro und Arno treibt mit den Strömungen des westlichen Mittelmeers. Schalten Sie auflandigen Wind ein und sehen Sie, wie die Zahl der angespülten Teile steigt: Plastik schwimmt an der Oberfläche, deshalb schiebt der Wind es stärker als das Wasser.", "sim-p2":"Hintergrund: NASA-VIIRS-Bild vom 30. Juli 2019. Strömungen für die Demo vereinfacht; die fertige Version nutzt Prognosen von Copernicus Marine.",  back:"← Alle Ocean Briefs", upd:"Aktualisiert Nov. 2026", "hero-cap":"Echtes Bild: Balearen, Sardinien und Korsika · NASA VIIRS · 30. Juli 2019", "f-cue":"Die Satelliten", "f-k":"Die Satelliten hinter den Briefs", "f-sub":"Die Copernicus-Sentinel-Flotte", "f-h":"Sieben Briefs, eine Flotte, die Europas Meere beobachtet.", "f-p":"Jeder Brief beginnt im Orbit. Diese europäischen Satelliten messen täglich Farbe, Temperatur, Höhe und Rauigkeit des Meeres und liefern die Daten hinter jeder Geschichte.", "f-note":"Satelliten vereinfacht gezeichnet. Umlaufhöhen: Sentinel-1 693 km, Sentinel-2 786 km, Sentinel-3 814 km, Sentinel-6 1.336 km.", "h-eye":"Sieben Ocean Briefs", "h-t1":"Europas Ozean,", "h-t2":"aus dem All gesehen.", "h-p":"Kurze, visuelle Geschichten darüber, wie europäische Satelliten und Ozeanmodelle Menschen auf See und an der Küste helfen.", "h-b2":"Lesen: Meeresmüll", "brief-of":"Ocean Brief 04 von 07", theme:"Verschmutzung",
 title:"Meeresmüll: Plastik vom All bis zum Strand verfolgen",
 lede:"Satelliten, Ozeanmodelle und Strandzählungen zeigen gemeinsam, woher Müll kommt, wohin er treibt und wo er landet. Dieses Wissen sagt Aufräumteams, wo sie hin müssen, und der Politik, was wirkt.",
 layers:"3 Detailstufen", "keys-h":"Kernaussagen",
@@ -841,108 +871,115 @@ window.dispatchEvent(new CustomEvent('oblang',{detail:l}));
 ['en','fr','de'].forEach(x=>document.getElementById('lang-'+x).addEventListener('click',()=>setLang(x)));
 window.__obLang='en';
 setLang(store.get('ob-lang') || 'en');
-/* ---------- Drift explorer ---------- */
+/* ---------- Drift explorer: real western Mediterranean, NASA image, glowing particles ---------- */
 const cv = document.getElementById('sim'), ctx = cv.getContext('2d');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let W=800,H=600, parts=[], step=0, playing=!reduce, wind=false, colors={};
+let W=800,H=700, parts=[], step=0, playing=!reduce, wind=false, colors={};
 const MAXSTEP = 240; // 4 steps per day, 60 days
-const rivers = [{x:.30,y:.80,label:'River A'},{x:.11,y:.42,label:'River B'},{x:.62,y:.86,label:'River C'}];
-// land: west coast and south coast with a headland, in unit coordinates
-function coastS(x){ return .84 + .05*Math.sin(x*7.0) + (x>.42&&x<.55 ? -.12*Math.sin((x-.42)/.13*Math.PI) : 0); }
-function coastW(y){ return .07 + .03*Math.sin(y*9.0+1) ; }
-function isLand(x,y){ return y>coastS(x) || x<coastW(y); }
-// stream function: basin gyre + secondary eddies
-function psi(x,y){ return .9*Math.sin(Math.PI*x)*Math.sin(Math.PI*y) + .25*Math.sin(3*Math.PI*x)*Math.sin(2*Math.PI*y); }
+const BOX={lat0:36.5,lon0:-1,lat1:44.5,lon1:11};
+const toXY=(lon,lat)=>[(lon-BOX.lon0)/(BOX.lon1-BOX.lon0),(BOX.lat1-lat)/(BOX.lat1-BOX.lat0)];
+const rivers=[{name:'Rhône',lon:4.85,lat:43.33,dir:[0,1]},{name:'Ebro',lon:.87,lat:40.72,dir:[1,0]},{name:'Arno',lon:10.28,lat:43.68,dir:[-1,0]}]
+  .map(r=>{ const [x,y]=toXY(r.lon,r.lat); return {...r,x,y}; });
+// land mask from the pre-rendered Natural Earth mask
+let MW=0,MH=0,mask=null;
+function isLand(x,y){ if(!mask) return false; if(x<0||y<0||x>=1||y>=1) return false; return mask[(Math.floor(y*MH))*MW+Math.floor(x*MW)]>127; }
+// synthetic, but plausible: cyclonic gyre in the north basin (Northern Current flows west along France and Spain),
+// Algerian Current eastward along the south, small eddies
+function psi(x,y){ return 1.1*Math.exp(-(((x-.45)/.36)**2+((y-.42)/.3)**2)) + .18*Math.sin(5*x+1)*Math.sin(4*y); }
 function vel(x,y){
-const e=1e-3;
-let u =  (psi(x,y+e)-psi(x,y-e))/(2*e);
-let v = -(psi(x+e,y)-psi(x-e,y))/(2*e);
-if(wind){ u += -0.35; v += 0.75; } // onshore toward south-west coasts
-return [u,v];
+  const e=1e-3;
+  let u=-(psi(x,y+e)-psi(x,y-e))/(2*e), v=(psi(x+e,y)-psi(x-e,y))/(2*e);
+  const s=Math.max(0,Math.min(1,(y-.78)/.12)); u+=1.6*s*s*(3-2*s);
+  if(wind){ u+=.25; v-=1.1; } // southerly wind: pushes floating litter onto the French and Spanish coasts
+  return [u,v];
 }
 function rnd(){ return Math.random()*2-1; }
-function release(x,y,n){ for(let i=0;i<n;i++){ const px=x+rnd()*.015, py=y+rnd()*.015; if(!isLand(px,py)) parts.push({x:px,y:py,s:0,trail:[]}); } }
-function seedRivers(){ rivers.forEach(r=>{ // nudge release point offshore
-let x=r.x,y=r.y; for(let k=0;k<40 && isLand(x,y);k++){ x+= (r.x<.2? .01:0); y-= (r.x<.2? 0:.01);} r.sx=x+(r.x<.2?.02:0); r.sy=y-(r.x<.2?0:.02); }); }
-seedRivers();
-function riverPulse(){ if(step<160 && step%8===0) rivers.forEach(r=>release(r.sx,r.sy,4)); }
-const dt = .0045;
+function release(x,y,n){ for(let i=0;i<n;i++){ const px=x+rnd()*.012, py=y+rnd()*.012; if(!isLand(px,py)) parts.push({x:px,y:py,s:0,trail:[],age:0}); } }
+function seedRivers(){ rivers.forEach(r=>{ let x=r.x,y=r.y; for(let k=0;k<60 && isLand(x,y);k++){ x+=r.dir[0]*.004; y+=r.dir[1]*.004; } r.sx=x+r.dir[0]*.012; r.sy=y+r.dir[1]*.012; }); }
+function riverPulse(){ if(step<170 && step%6===0) rivers.forEach(r=>release(r.sx,r.sy,4)); }
+const dt=.0026;
 function advance(){
-riverPulse();
-for(const p of parts){
-if(p.s) continue;
-const [u,v]=vel(p.x,p.y);
-p.trail.push(p.x,p.y); if(p.trail.length>24) p.trail.splice(0,2);
-p.x += u*dt + rnd()*.0022; p.y += v*dt + rnd()*.0022;
-if(isLand(p.x,p.y)) p.s=1;
-else if(p.x>1||p.y<0||p.y>1) p.s=2;
-}
-step++;
+  riverPulse();
+  for(const p of parts){
+    if(p.s) continue;
+    const [u,v]=vel(p.x,p.y);
+    p.trail.push(p.x,p.y); if(p.trail.length>40) p.trail.splice(0,2);
+    p.x+=u*dt+rnd()*.0016; p.y+=v*dt+rnd()*.0016; p.age++;
+    if(p.x<0||p.y<0||p.x>1||p.y>1) p.s=2; else if(isLand(p.x,p.y)) p.s=1;
+  }
+  step++;
 }
 function readColors(){ const cs=getComputedStyle(document.getElementById('top')); ['--sea','--sea-deep','--land','--signal','--buoy','--ink','--line','--muted'].forEach(k=>colors[k]=cs.getPropertyValue(k).trim()); }
 readColors();
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{readColors(); draw();});
-new MutationObserver(()=>{readColors(); draw();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 new MutationObserver(()=>{readColors(); draw();}).observe(document.body,{attributes:true,attributeFilter:['class']});
-let landPath=null;
-function buildLand(){
-landPath = new Path2D();
-landPath.moveTo(0,H); for(let i=0;i<=200;i++){ const x=i/200; landPath.lineTo(x*W, coastS(x)*H); } landPath.lineTo(W,H); landPath.closePath();
-const w = new Path2D(); w.moveTo(0,0); for(let i=0;i<=200;i++){ const y=i/200; w.lineTo(coastW(y)*W, y*H);} w.lineTo(0,H); w.closePath();
-landPath.addPath(w);
+// background: real image, darkened; flow lines precomputed
+let bg=null, flow=[];
+const img=new Image(); img.src='img/litter.jpg'; img.onload=()=>{ buildBg(); draw(); };
+const lm=new Image(); lm.src='img/land.png'; lm.onload=()=>{
+  const sx=(BOX.lon0+180)/360*lm.width, sw=(BOX.lon1-BOX.lon0)/360*lm.width, sy=(90-BOX.lat1)/180*lm.height, sh=(BOX.lat1-BOX.lat0)/180*lm.height;
+  MW=480; MH=Math.round(MW*sh/sw*1.0); const c=document.createElement('canvas'); c.width=MW; c.height=MH; const x=c.getContext('2d'); x.imageSmoothingEnabled=true; x.drawImage(lm,sx,sy,sw,sh,0,0,MW,MH);
+  const d=x.getImageData(0,0,MW,MH).data; mask=new Uint8Array(MW*MH); for(let i=0;i<MW*MH;i++) mask[i]=d[i*4];
+  seedRivers(); buildFlow(); reset(); buildBg(); draw(); };
+function buildFlow(){
+  flow=[]; for(let i=0;i<70;i++){ let x=.04+Math.random()*.92, y=.04+Math.random()*.92; if(isLand(x,y)) continue; const pts=[x,y];
+    for(let k=0;k<60;k++){ const [u,v]=vel(x,y); const m=Math.hypot(u,v)||1; x+=u/m*.006; y+=v/m*.006; if(x<0||y<0||x>1||y>1||isLand(x,y)) break; pts.push(x,y); }
+    if(pts.length>12) flow.push(pts); } }
+function buildBg(){
+  if(!img.complete||!W) return; const dpr=Math.min(2,devicePixelRatio||1);
+  bg=document.createElement('canvas'); bg.width=Math.round(W*dpr); bg.height=Math.round(H*dpr); const b=bg.getContext('2d');
+  b.drawImage(img,0,0,bg.width,bg.height);
+  b.globalCompositeOperation='multiply'; b.fillStyle='rgba(125,155,185,1)'; b.fillRect(0,0,bg.width,bg.height);
+  b.globalCompositeOperation='source-over';
+  const g=b.createRadialGradient(bg.width*.5,bg.height*.45,0,bg.width*.5,bg.height*.45,bg.width*.8); g.addColorStop(0,'rgba(3,10,20,0)'); g.addColorStop(1,'rgba(3,8,16,.55)'); b.fillStyle=g; b.fillRect(0,0,bg.width,bg.height);
+  if(false){ // (coast outline disabled: the mask is too coarse at this scale)
+    const c=document.createElement('canvas'); c.width=MW; c.height=MH; const x=c.getContext('2d'), id=x.createImageData(MW,MH);
+    for(let yy=1;yy<MH-1;yy++) for(let xx=1;xx<MW-1;xx++){ const i=yy*MW+xx; const l=mask[i]>127; const edge=l && (mask[i-1]<=127||mask[i+1]<=127||mask[i-MW]<=127||mask[i+MW]<=127); if(edge){ id.data[i*4]=150; id.data[i*4+1]=220; id.data[i*4+2]=240; id.data[i*4+3]=150; } }
+    x.putImageData(id,0,0); b.globalAlpha=.55; b.imageSmoothingEnabled=true; b.drawImage(c,0,0,bg.width,bg.height); b.globalAlpha=1; }
 }
-function draw(){
-if(!landPath) buildLand();
-ctx.clearRect(0,0,W,H);
-const g = ctx.createLinearGradient(W,0,0,H); g.addColorStop(0,colors['--sea-deep']); g.addColorStop(1,colors['--sea']);
-ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-// current arrows
-ctx.strokeStyle=colors['--muted']; ctx.globalAlpha=.28; ctx.lineWidth=1;
-for(let gx=.06;gx<1;gx+=.075) for(let gy=.06;gy<1;gy+=.075){
-if(isLand(gx,gy)) continue; const [u,v]=vel(gx,gy); const m=Math.hypot(u,v)||1; const L=Math.min(14, 6+m*5);
-const x=gx*W,y=gy*H, ex=x+u/m*L, ey=y+v/m*L;
-ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(ex,ey); ctx.stroke();
-const a=Math.atan2(ey-y,ex-x); ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(ex-4*Math.cos(a-.5),ey-4*Math.sin(a-.5)); ctx.moveTo(ex,ey); ctx.lineTo(ex-4*Math.cos(a+.5),ey-4*Math.sin(a+.5)); ctx.stroke();
-}
-ctx.globalAlpha=1;
-// trails
-ctx.strokeStyle=colors['--signal']; ctx.lineWidth=1.4; ctx.globalAlpha=.35;
-for(const p of parts){ if(p.s===2||p.trail.length<4) continue; ctx.beginPath(); ctx.moveTo(p.trail[0]*W,p.trail[1]*H); for(let i=2;i<p.trail.length;i+=2) ctx.lineTo(p.trail[i]*W,p.trail[i+1]*H); ctx.lineTo(p.x*W,p.y*H); ctx.stroke(); }
-ctx.globalAlpha=1;
-// land
-ctx.fillStyle=colors['--land']; ctx.fill(landPath);
-ctx.strokeStyle=colors['--line']; ctx.lineWidth=1.5; ctx.stroke(landPath);
-// particles
-for(const p of parts){
-if(p.s===2) continue;
-ctx.fillStyle = p.s===1? colors['--buoy'] : colors['--signal'];
-ctx.beginPath(); ctx.arc(p.x*W,p.y*H, p.s===1?3.2:2.6, 0, 7); ctx.fill();
-}
-// rivers
-ctx.font = '500 13px "IBM Plex Mono", monospace'; ctx.textBaseline='middle';
-for(const r of rivers){
-const x=r.sx*W,y=r.sy*H; ctx.fillStyle=colors['--ink']; ctx.beginPath(); ctx.arc(x,y,6,0,7); ctx.fill();
-ctx.strokeStyle=colors['--sea']; ctx.lineWidth=2; ctx.stroke();
-const lx = r.x<.2? x+12 : x-30, ly = r.x<.2? y : y-16;
-ctx.fillStyle=colors['--ink']; ctx.fillText(r.label, lx, ly);
-}
-// compass / scale
-ctx.fillStyle=colors['--ink']; ctx.font='500 12px "IBM Plex Mono", monospace';
-ctx.fillText('N ↑', W-40, 22);
-ctx.fillRect(W-130, H-24, 100, 2); ctx.fillText('≈ 50 km', W-112, H-36);
-if(wind){ ctx.fillText('wind ↙', W-120, 46); }
-// readout
-let f=0,b=0,o=0; for(const p of parts){ if(p.s===0)f++; else if(p.s===1)b++; else o++; }
-document.getElementById('r-float').textContent=f; document.getElementById('r-beach').textContent=b; document.getElementById('r-out').textContent=o;
-document.getElementById('day').textContent=Math.floor(step/4);
+const sprite=(r,g,bl)=>{ const c=document.createElement('canvas'); c.width=c.height=32; const x=c.getContext('2d'); const gr=x.createRadialGradient(16,16,0,16,16,16); gr.addColorStop(0,`rgba(${r},${g},${bl},1)`); gr.addColorStop(.25,`rgba(${r},${g},${bl},.65)`); gr.addColorStop(1,`rgba(${r},${g},${bl},0)`); x.fillStyle=gr; x.fillRect(0,0,32,32); return c; };
+const glowC=sprite(120,230,255), glowG=sprite(255,208,138);
+function draw(t){
+  t=t||performance.now();
+  ctx.clearRect(0,0,W,H);
+  if(bg) ctx.drawImage(bg,0,0,W,H); else { ctx.fillStyle='#0b2232'; ctx.fillRect(0,0,W,H); }
+  // flowing current lines
+  ctx.save(); ctx.lineWidth=1; ctx.strokeStyle='rgba(170,225,245,.22)'; ctx.setLineDash([3,9]); ctx.lineDashOffset=reduce?0:-(t/90)%12;
+  for(const f of flow){ ctx.beginPath(); ctx.moveTo(f[0]*W,f[1]*H); for(let i=2;i<f.length;i+=2) ctx.lineTo(f[i]*W,f[i+1]*H); ctx.stroke(); }
+  ctx.restore();
+  // trails
+  ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.lineCap='round';
+  for(const p of parts){ if(p.s===2||p.trail.length<6) continue; const n=p.trail.length/2;
+    for(let i=1;i<n;i++){ ctx.strokeStyle=`rgba(90,210,240,${.03+.22*i/n})`; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(p.trail[i*2-2]*W,p.trail[i*2-1]*H); ctx.lineTo(p.trail[i*2]*W,p.trail[i*2+1]*H); ctx.stroke(); } }
+  // particles with glow
+  for(const p of parts){ if(p.s===2) continue; const x=p.x*W, y=p.y*H, s=p.s===1?14:11; ctx.drawImage(p.s===1?glowG:glowC,x-s/2,y-s/2,s,s); }
+  ctx.restore();
+  for(const p of parts){ if(p.s===2) continue; ctx.fillStyle=p.s===1?'#fff1d6':'#e6fbff'; ctx.beginPath(); ctx.arc(p.x*W,p.y*H,p.s===1?1.7:1.4,0,7); ctx.fill(); }
+  // rivers
+  ctx.font='500 12px "Saira Semi Condensed", "Inter", sans-serif'; ctx.textBaseline='middle';
+  for(const r of rivers){ if(r.sx==null) continue; const x=r.sx*W, y=r.sy*H; const pulse=reduce?0:((t/1600)%1);
+    ctx.strokeStyle=`rgba(255,255,255,${.6*(1-pulse)})`; ctx.lineWidth=1.2; ctx.beginPath(); ctx.arc(x,y,5+pulse*14,0,7); ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x,y,3.5,0,7); ctx.fill();
+    const label=r.name, tw=ctx.measureText(label).width, lx=r.dir[0]<0? x-tw-26 : x+10, ly=r.dir[1]>0? y+16 : y-14;
+    ctx.fillStyle='rgba(3,10,20,.72)'; ctx.strokeStyle='rgba(170,225,245,.35)'; ctx.lineWidth=1;
+    const bx=lx-6, by=ly-10, bw=tw+12, bh=20; ctx.beginPath(); ctx.moveTo(bx+10,by); ctx.arcTo(bx+bw,by,bx+bw,by+bh,10); ctx.arcTo(bx+bw,by+bh,bx,by+bh,10); ctx.arcTo(bx,by+bh,bx,by,10); ctx.arcTo(bx,by,bx+bw,by,10); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#eaf4f8'; ctx.fillText(label,lx,ly+.5); }
+  // north arrow and scale (200 km)
+  ctx.fillStyle='rgba(234,244,248,.85)'; ctx.font='500 11px "IBM Plex Mono", monospace';
+  ctx.fillText('N ↑', W-40, 22);
+  const km=W*200/((BOX.lon1-BOX.lon0)*111*Math.cos(40.5*Math.PI/180));
+  ctx.fillRect(W-24-km, H-24, km, 2); ctx.fillText('200 km', W-24-km, H-36);
+  if(wind){ ctx.fillText('wind ↑', W-110, 22); }
+  let f=0,b=0,o=0; for(const p of parts){ if(p.s===0)f++; else if(p.s===1)b++; else o++; }
+  document.getElementById('r-float').textContent=f; document.getElementById('r-beach').textContent=b; document.getElementById('r-out').textContent=o;
+  document.getElementById('day').textContent=Math.floor(step/4);
 }
 function resize(){
-const r = cv.getBoundingClientRect(); if(!r.width) return;
-const dpr = Math.min(2, devicePixelRatio||1);
-cv.width = Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr);
-ctx.setTransform(dpr,0,0,dpr,0,0); W=r.width; H=r.height; buildLand(); draw();
+  const r=cv.getBoundingClientRect(); if(!r.width) return;
+  const dpr=Math.min(2,devicePixelRatio||1);
+  cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0); W=r.width; H=r.height; buildBg(); draw();
 }
-function reset(){ parts=[]; step=0; for(let i=0;i<60;i++) advance(); draw(); }
+function reset(){ parts=[]; step=0; if(!mask) return; for(let i=0;i<60;i++) advance(); draw(); }
 window.__sim = {resize};
 const playBtn=document.getElementById('play');
 function setPlay(p){ playing=p; playBtn.textContent = p?'Pause':'Play'; }
@@ -951,17 +988,19 @@ document.getElementById('reset').addEventListener('click',()=>{ reset(); setPlay
 const wb=document.getElementById('wind');
 wb.addEventListener('click',()=>{ wind=!wind; wb.setAttribute('aria-pressed',wind); draw(); });
 cv.addEventListener('click',e=>{ const r=cv.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height; if(isLand(x,y)) return; release(x,y,30); if(step>=MAXSTEP){ step=MAXSTEP-120; } if(!playing) setPlay(true); draw(); });
-let last=0;
+let last=0, vis=true;
+if('IntersectionObserver' in window) new IntersectionObserver(es=>{ vis=es[0].isIntersecting; }).observe(cv);
 function loop(t){
-if(playing && t-last>33){ last=t; if(step<MAXSTEP){ advance(); advance(); draw(); } else { setPlay(false); draw(); } }
-requestAnimationFrame(loop);
+  if(vis && !cv.closest('[hidden]') && t-last>33){ last=t; if(playing && step<MAXSTEP){ advance(); advance(); } else if(playing){ setPlay(false); } draw(t); }
+  requestAnimationFrame(loop);
 }
 addEventListener('resize',resize);
 if(window.ResizeObserver) new ResizeObserver(resize).observe(cv);
 setPlay(playing);
-reset(); resize();
+resize();
 requestAnimationFrame(loop);
-if(document.fonts) document.fonts.ready.then(draw);
+if(document.fonts) document.fonts.ready.then(()=>draw());
+
 })();
 </script>
 <script>
