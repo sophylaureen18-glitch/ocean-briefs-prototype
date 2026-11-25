@@ -366,6 +366,74 @@ body.home footer{display:none}
  radial-gradient(ellipse 70vw 1.6vh at 100% calc(100% + 5vh), rgba(255,228,190,.42), rgba(255,228,190,0))}
 .h-copy{z-index:2}
 body.home.scrolled .bar{background:rgba(2,4,9,.88)}
+
+/* ================= Brief page in the same space look as the home page ================= */
+body.brief{background:var(--stars,none) 0 0/1024px 1024px repeat, linear-gradient(180deg,#03060d 0%,#050b16 40%,#03060d 100%);color:#e6eef4}
+body.brief #top, body.brief footer{
+  --paper:#050b16; --surface:rgba(10,22,38,.72); --ink:#eef4f8; --muted:#97adbb; --line:rgba(160,210,235,.16);
+  --sea:#0d2a3a; --sea-deep:#164358; --land:#2a3540; --buoy:#ffd08a; --buoy-ink:#1b1003; --signal:#5fd6ea; --req:#c3a2ee; color-scheme:dark}
+body.brief .bar{background:rgba(2,4,9,.86);border-bottom:1px solid rgba(160,210,235,.1);color:#eaf4f8}
+body.brief .brand{color:#eaf4f8}
+body.brief .chipbtn{border-color:rgba(234,244,248,.3);color:#eaf4f8}
+body.brief .chipbtn[aria-pressed="true"]{background:#eaf4f8;color:#03060c;border-color:#eaf4f8}
+body.brief .progress{background:linear-gradient(90deg,#38d6c4,#ffd08a)}
+body.brief #top h1,body.brief #top h2,body.brief #top h3{font-family:var(--f-hero-c);letter-spacing:0}
+body.brief #top h2{font-weight:300;font-size:clamp(1.9rem,3.4vw,2.9rem);color:#f2f7fb}
+body.brief #top h3{font-weight:500}
+body.brief #top .eyebrow{font-family:var(--f-hero);font-size:.72rem;letter-spacing:.3em;color:#38d6c4}
+body.brief #top p,body.brief #top li{font-weight:300}
+/* hero band */
+body.brief .hero{position:relative;overflow:hidden;padding-block:0 clamp(48px,7vw,90px);min-height:min(88vh,860px);display:flex;flex-direction:column}
+body.brief .hero-bg{position:absolute;inset:0;background:
+  linear-gradient(90deg,rgba(3,6,13,.95) 0%,rgba(3,6,13,.78) 34%,rgba(3,6,13,.2) 62%,rgba(3,6,13,0) 100%),
+  linear-gradient(180deg,rgba(3,6,13,.55) 0%,rgba(3,6,13,0) 25%,rgba(3,6,13,0) 70%,#050b16 100%),
+  url(img/litter.jpg) 62% 50%/cover no-repeat;transform:scale(1.04);animation:heroDrift 40s ease-in-out infinite alternate}
+@keyframes heroDrift{to{transform:scale(1.1) translate(-1.5%,1%)}}
+body.brief .hero > .wrap{position:relative;z-index:1;width:100%}
+body.brief .hero-top{display:block!important;padding-block:22px 0}
+body.brief .hero > .wrap:last-child{margin-top:auto;align-items:end;padding-top:clamp(40px,8vh,90px)}
+body.brief .hero h1{font-weight:300;font-size:clamp(2.6rem,5.6vw,5.2rem);line-height:1.02;color:#f4f8fb;margin-top:14px;max-width:16ch}
+body.brief .hero .lede{color:rgba(222,234,244,.82);font-size:1.15rem;line-height:1.65}
+body.brief .meta-row{color:rgba(200,225,240,.6)}
+body.brief .meta-row span+span::before{content:"·";margin-right:18px;color:rgba(200,225,240,.35)}
+body.brief .hero-cap{position:absolute;right:var(--gutter-r);bottom:-34px;font-family:var(--f-mono);font-size:.66rem;color:rgba(200,225,240,.55);margin:0}
+body.brief .back{font-family:var(--f-hero);font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:#eaf4f8;border:1px solid rgba(234,244,248,.3);border-radius:999px;padding:.75em 1.15em;background:rgba(3,6,13,.4)}
+body.brief .back:hover{border-color:#ffd08a;color:#ffd08a}
+body.brief .keys{background:rgba(6,16,28,.78);border:1px solid rgba(160,210,235,.2);border-radius:18px;padding:26px}
+body.brief .keys li{font-size:1rem;line-height:1.55;color:#e6eef4}
+body.brief .keys li::before{background:transparent;border:1px solid #38d6c4;color:#38d6c4;font-size:.72rem}
+/* reading path */
+body.brief .path{background:rgba(6,14,26,.7);border-block:1px solid rgba(160,210,235,.12)}
+body.brief .path h3{font-family:var(--f-hero)!important;font-weight:400!important;font-size:.74rem!important;letter-spacing:.24em;text-transform:uppercase;color:#38d6c4}
+body.brief .opt{background:rgba(255,255,255,.03);border:1px solid rgba(160,210,235,.18);border-radius:12px;padding:11px 16px;color:#e6eef4;transition:border-color .2s,background .2s}
+body.brief .opt b{font-family:var(--f-hero-c);font-weight:500;font-size:1.05rem}
+body.brief .opt:hover{border-color:rgba(160,230,255,.5)}
+body.brief .opt[aria-pressed="true"]{border-color:#ffd08a;background:rgba(255,208,138,.1)}
+/* sections and cards */
+body.brief section.blk{border-bottom:1px solid rgba(160,210,235,.08)}
+body.brief .stat,body.brief .bars,body.brief .vc,body.brief .case,body.brief .ext,body.brief .card,body.brief .readout div,body.brief .reqpanel{background:rgba(8,20,34,.72);border:1px solid rgba(160,210,235,.15);border-radius:16px}
+body.brief .stat{padding:24px}
+body.brief .stat .num{font-family:var(--f-hero-c);font-weight:300;font-size:3.6rem;color:#ffd08a}
+body.brief .stat .src{border-top-color:rgba(160,210,235,.12)}
+body.brief .bar-track{background:rgba(160,210,235,.1);border-radius:999px}
+body.brief .bar-fill{background:linear-gradient(90deg,#1f8fa8,#5fd6ea);border-radius:999px}
+body.brief .lens{border-left-color:#38d6c4;background:rgba(56,214,196,.05);border-radius:0 10px 10px 0;padding:12px 16px}
+body.brief .sim-canvas{border-radius:16px;border-color:rgba(160,210,235,.18)}
+body.brief .btn{background:#eaf4f8;border-color:#eaf4f8;color:#03060c;border-radius:999px;font-family:var(--f-hero);letter-spacing:.06em;font-weight:500}
+body.brief .btn.ghost{background:transparent;color:#eaf4f8;border-color:rgba(234,244,248,.35)}
+body.brief .btn[aria-pressed="true"]{background:#ffd08a;border-color:#ffd08a;color:#1b1003}
+body.brief .vc-dot{background:rgba(3,6,13,.6)}
+body.brief .vc-step[aria-selected="true"] .vc-dot{background:#5fd6ea;color:#03060c}
+body.brief .vc-panel{border-top-color:rgba(160,210,235,.12)}
+body.brief .ext:hover,body.brief .case:hover{border-color:rgba(160,230,255,.45)}
+body.brief .case.hl{border-color:#ffd08a;box-shadow:0 0 0 1px #ffd08a}
+body.brief .card.live{background:#ffd08a;color:#1b1003;border-color:#ffd08a}
+body.brief .card.live .n{color:#7a4a00}
+body.brief .card.live .small{color:rgba(27,16,3,.72)}
+body.brief details.deeper summary{color:#5fd6ea}
+body.brief footer{color:rgba(200,225,240,.55);border-top:1px solid rgba(160,210,235,.08)}
+@media (max-width:820px){ body.brief .hero{min-height:0} body.brief .hero-cap{position:static;margin-top:10px} }
+@media (prefers-reduced-motion:reduce){ body.brief .hero-bg{animation:none} }
 @media (prefers-reduced-motion:reduce){#hgl,#hov{transition:none}.h-copy > div > *,.h-strip{animation:none}}
 .how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
 .how div{display:grid;gap:6px;align-content:start}
@@ -458,17 +526,17 @@ Ocean Briefs
 </section>
 </main>
 <main id="top" data-view="brief" hidden>
-<div class="wrap" style="padding-top:18px"><a class="back" href="#home">← All Ocean Briefs</a></div>
-<section class="hero"><div class="wrap">
+<section class="hero"><div class="hero-bg" aria-hidden="true"></div><div class="wrap hero-top"><a class="back" href="#home" data-i18n="back">← All Ocean Briefs</a></div><div class="wrap">
 <div>
 <p class="eyebrow"><span data-i18n="brief-of">Ocean Brief 04 of 07</span> · <span data-i18n="theme">Pollution</span></p>
-<h1 style="margin-top:12px" data-i18n="title">Marine litter: tracking plastic from space to shore</h1>
+<h1 data-i18n="title">Marine litter: tracking plastic from space to shore</h1>
 <p class="lede" data-i18n="lede">Satellites, ocean models and beach surveys together show where litter comes from, where it travels and where it lands. That knowledge tells clean-up teams where to go and tells policy makers what is working.</p>
 <div class="meta-row mono">
-<span id="readtime">≈ 5 min read</span><span>Updated Nov 2026</span><span data-i18n="layers">3 depth layers</span>
+<span id="readtime">≈ 5 min read</span><span data-i18n="upd">Updated Nov 2026</span><span data-i18n="layers">3 depth layers</span>
 </div>
 <div class="reqs" style="margin-top:14px"><span class="req">REQ-LOT1-01 common brief template</span><span class="req">REQ-LOT1-03 layered content</span></div>
 </div>
+<p class="hero-cap" data-i18n="hero-cap">Real image: Balearic Islands, Sardinia and Corsica · NASA VIIRS · 30 July 2019</p>
 <aside class="keys" data-component="KeyMessages" style="position:relative">
 <p class="eyebrow" data-i18n="keys-h">Key messages</p>
 <ol>
@@ -713,7 +781,7 @@ document.getElementById('h-strip').innerHTML = briefs.map(([n,t,s,live])=> live
 /* ---------- i18n ---------- */
 const fr = {
 notice:"Démonstration conceptuelle de WyvernAI pour l’appel d’offres 26546-EU4OO, lot 1. Site non officiel d’EU4OceanObs ou de Mercator Ocean. Chiffres illustratifs, en attente de validation par des experts.",
-review:"Afficher les exigences", "h-k":"Observation européenne de l’océan", "f-cue":"Les satellites", "f-k":"Les satellites derrière les briefs", "f-sub":"La flotte Copernicus Sentinel", "f-h":"Sept briefs, une flotte qui observe les mers d’Europe.", "f-p":"Chaque brief commence en orbite. Ces satellites européens mesurent chaque jour la couleur, la température, la hauteur et la rugosité de la mer, et en tirent les données de chaque récit.", "f-note":"Dessins de satellites simplifiés. Orbites : Sentinel-1 693 km, Sentinel-2 786 km, Sentinel-3 814 km, Sentinel-6 1 336 km.", "h-eye":"Sept Ocean Briefs", "h-t1":"L’océan européen,", "h-t2":"vu de l’espace.", "h-p":"De courts récits visuels sur la façon dont les satellites et les modèles océaniques européens aident ceux qui vivent en mer et sur les côtes.", "h-b1":"Explorer les briefs", "h-b2":"Lire : déchets marins", "hb-e":"Tous les Ocean Briefs", "hb-h":"Choisissez un récit", "brief-of":"Ocean Brief 04 sur 07", theme:"Pollution",
+review:"Afficher les exigences", "h-k":"Observation européenne de l’océan", back:"← Tous les Ocean Briefs", upd:"Mis à jour nov. 2026", "hero-cap":"Image réelle : Baléares, Sardaigne et Corse · NASA VIIRS · 30 juillet 2019", "f-cue":"Les satellites", "f-k":"Les satellites derrière les briefs", "f-sub":"La flotte Copernicus Sentinel", "f-h":"Sept briefs, une flotte qui observe les mers d’Europe.", "f-p":"Chaque brief commence en orbite. Ces satellites européens mesurent chaque jour la couleur, la température, la hauteur et la rugosité de la mer, et en tirent les données de chaque récit.", "f-note":"Dessins de satellites simplifiés. Orbites : Sentinel-1 693 km, Sentinel-2 786 km, Sentinel-3 814 km, Sentinel-6 1 336 km.", "h-eye":"Sept Ocean Briefs", "h-t1":"L’océan européen,", "h-t2":"vu de l’espace.", "h-p":"De courts récits visuels sur la façon dont les satellites et les modèles océaniques européens aident ceux qui vivent en mer et sur les côtes.", "h-b1":"Explorer les briefs", "h-b2":"Lire : déchets marins", "hb-e":"Tous les Ocean Briefs", "hb-h":"Choisissez un récit", "brief-of":"Ocean Brief 04 sur 07", theme:"Pollution",
 title:"Déchets marins : suivre le plastique de l’espace jusqu’au rivage",
 lede:"Satellites, modèles océaniques et relevés de plage montrent ensemble d’où viennent les déchets, où ils dérivent et où ils échouent. Ces connaissances indiquent aux équipes de nettoyage où intervenir et aux décideurs ce qui fonctionne.",
 layers:"3 niveaux de lecture", "keys-h":"Messages clés",
@@ -728,7 +796,7 @@ s2e:"Où vont-ils ?", s2h:"Suivez les déchets portés par les courants", s2p:"L
 s3e:"De l’observation au bénéfice", s3h:"Comment l’observation européenne devient action"
 };
 const de = {
-review:"Ausschreibungs-Anforderungen zeigen", "h-k":"Europäische Meeresbeobachtung", "f-cue":"Die Satelliten", "f-k":"Die Satelliten hinter den Briefs", "f-sub":"Die Copernicus-Sentinel-Flotte", "f-h":"Sieben Briefs, eine Flotte, die Europas Meere beobachtet.", "f-p":"Jeder Brief beginnt im Orbit. Diese europäischen Satelliten messen täglich Farbe, Temperatur, Höhe und Rauigkeit des Meeres und liefern die Daten hinter jeder Geschichte.", "f-note":"Satelliten vereinfacht gezeichnet. Umlaufhöhen: Sentinel-1 693 km, Sentinel-2 786 km, Sentinel-3 814 km, Sentinel-6 1.336 km.", "h-eye":"Sieben Ocean Briefs", "h-t1":"Europas Ozean,", "h-t2":"aus dem All gesehen.", "h-p":"Kurze, visuelle Geschichten darüber, wie europäische Satelliten und Ozeanmodelle Menschen auf See und an der Küste helfen.", "h-b2":"Lesen: Meeresmüll", "brief-of":"Ocean Brief 04 von 07", theme:"Verschmutzung",
+review:"Ausschreibungs-Anforderungen zeigen", "h-k":"Europäische Meeresbeobachtung", back:"← Alle Ocean Briefs", upd:"Aktualisiert Nov. 2026", "hero-cap":"Echtes Bild: Balearen, Sardinien und Korsika · NASA VIIRS · 30. Juli 2019", "f-cue":"Die Satelliten", "f-k":"Die Satelliten hinter den Briefs", "f-sub":"Die Copernicus-Sentinel-Flotte", "f-h":"Sieben Briefs, eine Flotte, die Europas Meere beobachtet.", "f-p":"Jeder Brief beginnt im Orbit. Diese europäischen Satelliten messen täglich Farbe, Temperatur, Höhe und Rauigkeit des Meeres und liefern die Daten hinter jeder Geschichte.", "f-note":"Satelliten vereinfacht gezeichnet. Umlaufhöhen: Sentinel-1 693 km, Sentinel-2 786 km, Sentinel-3 814 km, Sentinel-6 1.336 km.", "h-eye":"Sieben Ocean Briefs", "h-t1":"Europas Ozean,", "h-t2":"aus dem All gesehen.", "h-p":"Kurze, visuelle Geschichten darüber, wie europäische Satelliten und Ozeanmodelle Menschen auf See und an der Küste helfen.", "h-b2":"Lesen: Meeresmüll", "brief-of":"Ocean Brief 04 von 07", theme:"Verschmutzung",
 title:"Meeresmüll: Plastik vom All bis zum Strand verfolgen",
 lede:"Satelliten, Ozeanmodelle und Strandzählungen zeigen gemeinsam, woher Müll kommt, wohin er treibt und wo er landet. Dieses Wissen sagt Aufräumteams, wo sie hin müssen, und der Politik, was wirkt.",
 layers:"3 Detailstufen", "keys-h":"Kernaussagen",
@@ -811,10 +879,11 @@ else if(p.x>1||p.y<0||p.y>1) p.s=2;
 }
 step++;
 }
-function readColors(){ const cs=getComputedStyle(document.documentElement); ['--sea','--sea-deep','--land','--signal','--buoy','--ink','--line','--muted'].forEach(k=>colors[k]=cs.getPropertyValue(k).trim()); }
+function readColors(){ const cs=getComputedStyle(document.getElementById('top')); ['--sea','--sea-deep','--land','--signal','--buoy','--ink','--line','--muted'].forEach(k=>colors[k]=cs.getPropertyValue(k).trim()); }
 readColors();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{readColors(); draw();});
 new MutationObserver(()=>{readColors(); draw();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+new MutationObserver(()=>{readColors(); draw();}).observe(document.body,{attributes:true,attributeFilter:['class']});
 let landPath=null;
 function buildLand(){
 landPath = new Path2D();
@@ -904,7 +973,7 @@ const h=location.hash.replace('#','');
 const v = (h==='marine-litter') ? 'brief' : 'home';
 const changed = views[v].hidden;
 for(const k in views) views[k].hidden = (k!==v);
-document.body.classList.toggle('home', v==='home'); document.documentElement.classList.toggle('home', v==='home');
+document.body.classList.toggle('home', v==='home'); document.body.classList.toggle('brief', v==='brief'); document.documentElement.classList.toggle('home', v==='home');
 if(changed) window.scrollTo(0,0);
 document.title = v==='brief' ? 'Marine Litter · Ocean Brief Prototype' : 'Ocean Brief Prototype';
 window.dispatchEvent(new Event('resize'));
@@ -1362,7 +1431,7 @@ pills.forEach(el=>{
   const b=BRIEFS.find(x=>x.n===el.dataset.n);
   el.addEventListener('mouseenter',()=>{ loadDet(b); if(!zoomed){ hover=b; syncPills(); } });
   el.addEventListener('mouseleave',()=>{ hover=null; syncPills(); });
-  el.addEventListener('click',e=>{ e.preventDefault(); zoomTo(b); });
+  el.addEventListener('click',e=>{ e.preventDefault(); el.classList.add('hl'); requestAnimationFrame(()=>setTimeout(()=>zoomTo(b),0)); });
 });
 function pick(e){
   const r=cv.getBoundingClientRect(); const x=e.clientX-r.left, y=e.clientY-r.top;
@@ -1472,7 +1541,7 @@ const glc=document.getElementById('fleet-gl');
 (function starTile(){ const S=1024, c=document.createElement('canvas'); c.width=S; c.height=S; const x=c.getContext('2d');
   for(let cy=0;cy<S/2;cy++) for(let cx=0;cx<S/2;cx++){ const h=Math.sin((cx+3.1)*127.1+(cy+7.7)*311.7)*43758.5453, hs=h-Math.floor(h);
     if(hs>.9975){ const b=.12+(hs-.9975)/.0025*.7; x.fillStyle=`rgba(200,215,255,${b})`; x.fillRect(cx*2,cy*2,hs>.9996?2:1.5,hs>.9996?2:1.5); } }
-  document.getElementById('view-home').style.setProperty('--stars',`url(${c.toDataURL()})`); })();
+  document.documentElement.style.setProperty('--stars',`url(${c.toDataURL()})`); })();
 const head=sec.querySelector('.fleet-head');
 const SATS={s1:'Sentinel-1',s2:'Sentinel-2',s3:'Sentinel-3',s6:'Sentinel-6'};
 const DESC={en:{s1:'radar · 693 km',s2:'optical 10 m · 786 km',s3:'colour & temperature · 814 km',s6:'sea level · 1,336 km'},fr:{s1:'radar · 693 km',s2:'optique 10 m · 786 km',s3:'couleur et température · 814 km',s6:'niveau de la mer · 1 336 km'},de:{s1:'Radar · 693 km',s2:'Optik 10 m · 786 km',s3:'Farbe & Temperatur · 814 km',s6:'Meeresspiegel · 1.336 km'}};
