@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
+<link rel="preload" href="img/land.png" as="image">
+<link rel="preload" href="img/earth-day-s.jpg" as="image">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ocean Brief Prototype</title>
 <meta name="description" content="Concept prototype of an interactive Ocean Briefs platform: Europe from space, seven briefs and a full Marine litter brief. Design demo by WyvernAI.">
@@ -222,9 +224,9 @@ body.home footer{display:none}
 .h-pill:not(.live):hover,.h-pill.hl{border-color:rgba(160,230,255,.8)}
 .h-cap{bottom:10px;font-size:.66rem;left:var(--gutter-l);right:var(--gutter-r);text-align:left}
 
-#hgl,#hov{opacity:0;transition:opacity 1.8s ease}
+#hgl,#hov{opacity:0;transition:opacity .5s ease}
 #hgl.on,#hov.on{opacity:1}
-#hov{transition-delay:.6s}
+#hov{transition-delay:.2s}
 @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 .h-copy > div > *{animation:rise 1s cubic-bezier(.2,.7,.2,1) both}
 .h-copy > div > :nth-child(1){animation-delay:.25s}
@@ -992,9 +994,10 @@ let ok=false, U, prog, gd=1, surf, surfHalf, cl, sky, dummy, texL, texC, surfFul
 const FS0=`precision highp float;
 uniform vec2 uRes; uniform float uPx; uniform vec3 uCam; uniform vec2 uRot; uniform vec3 uSun; uniform vec3 uSunW; uniform float uT;
 uniform int uPass;
-uniform sampler2D uLand; uniform sampler2D uLights; uniform sampler2D uSurf; uniform sampler2D uCl; uniform sampler2D uSpace;
+uniform sampler2D uLand; uniform sampler2D uLights; uniform sampler2D uSurf; uniform sampler2D uDetP; uniform sampler2D uSpace;
 uniform vec3 uMoon; uniform vec2 uSunP;
 uniform sampler2D uBM; uniform sampler2D uDet; uniform vec4 uDetBox; uniform float uDetMix; uniform float uDetData; uniform float uZoom;
+uniform vec4 uDetBoxP; uniform float uDetMixP; uniform float uDetDataP;
 vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
 vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
 vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
@@ -1105,7 +1108,7 @@ float side=max(dot(normalize(vec3(q,0.0001)),uSun),0.);
 float dist=(r-1.)*uCam.z/uPx;
 if(r>1.){ vec3 hl=vec3(.28,.58,1.)*(exp(-dist/10.)*.9+exp(-dist/30.)*.2)*(.12+.9*side)*smoothstep(1.,.86,uvC.y); col+=hl; al=max(al,max(hl.r,max(hl.g,hl.b))); }
 if(inside>0.){
-  vec4 lt=texture2D(uLand,uvE); float landM=lt.r; float shelf=lt.g;
+  float landM=texture2D(uLand,uvE).r; float shelf=texture2D(uLand,uvE,4.5).r;
   vec4 bk=texture2D(uSurf,uvE);
   float ov=bk.g*2.-1., iceN=bk.b*2.-1., cracks=bk.a;
   vec3 lc=pow(texture2D(uBM,uvE).rgb,vec3(.9))*1.1;
@@ -1129,7 +1132,10 @@ if(inside>0.){
   vec2 du=vec2((lonD-uDetBox.y)/(uDetBox.w-uDetBox.y),(uDetBox.z-lat)/(uDetBox.z-uDetBox.x));
   float din=smoothstep(0.,.04,du.x)*smoothstep(1.,.96,du.x)*smoothstep(0.,.04,du.y)*smoothstep(1.,.96,du.y);
   float dfade=din*uDetMix;
-  ca2*=1.-uDetMix*(uDetData>.5?.85:1.);
+  vec2 duP=vec2((lonD-uDetBoxP.y)/(uDetBoxP.w-uDetBoxP.y),(uDetBoxP.z-lat)/(uDetBoxP.z-uDetBoxP.x));
+  float dinP=smoothstep(0.,.04,duP.x)*smoothstep(1.,.96,duP.x)*smoothstep(0.,.04,duP.y)*smoothstep(1.,.96,duP.y);
+  float dfadeP=dinP*uDetMixP;
+  ca2*=1.-max(uDetMix*(uDetData>.5?.85:1.),uDetMixP*(uDetDataP>.5?.85:1.));
   s*=1.-.38*shd*day*(1.-ca2);
   vec3 cday=vec3(.98,.99,1.)*(.55+.55*dif)*lightT;
   vec3 cnight=vec3(.075,.09,.125)*(.75+.25*lightT);
@@ -1140,10 +1146,12 @@ if(inside>0.){
   float lv=texture2D(uLights,uvE).r, lg=texture2D(uLights,uvE,3.).r;
   vec3 li=vec3(1.,.8,.5)*lv*1.6+vec3(1.,.62,.28)*lg*1.4;
   s+=li*(1.-day)*(1.-ca2*.75);
+  if(dfadeP>0.){ vec4 dp=texture2D(uDetP,clamp(duP,0.,1.));
+    if(uDetDataP>.5) s=mix(s,dp.rgb,dp.a*.88*dfadeP); else s=mix(s,dp.rgb*1.02,dfadeP); }
   if(dfade>0.){ vec4 dc=texture2D(uDet,clamp(du,0.,1.));
     if(uDetData>.5) s=mix(s,dc.rgb,dc.a*.88*dfade);
     else s=mix(s,dc.rgb*1.02,dfade); }
-  s*=1.-.6*uDetMix*(1.-din);
+  s*=1.-.6*max(uDetMix,uDetMixP)*(1.-max(din*step(.001,uDetMix),dinP*step(.001,uDetMixP)));
   s+=vec3(1.,.5,.25)*tw*.025;
   float fr=pow(1.-nz,2.4);
   s=mix(s,vec3(.50,.70,.98)*(.35+.65*dif),clamp(fr*.75+.05,0.,1.)*day);
@@ -1164,7 +1172,7 @@ if(gl){ try{
   const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
   const loc=gl.getAttribLocation(prog,'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
   const cache={}; U=n=>cache[n]||(cache[n]=gl.getUniformLocation(prog,n));
-  gl.uniform1i(U('uLand'),0); gl.uniform1i(U('uLights'),1); gl.uniform1i(U('uSurf'),2); gl.uniform1i(U('uCl'),3); gl.uniform1i(U('uSpace'),5); gl.uniform1i(U('uBM'),6); gl.uniform1i(U('uDet'),7);
+  gl.uniform1i(U('uLand'),0); gl.uniform1i(U('uLights'),1); gl.uniform1i(U('uSurf'),2); gl.uniform1i(U('uDetP'),3); gl.uniform1i(U('uSpace'),5); gl.uniform1i(U('uBM'),6); gl.uniform1i(U('uDet'),7);
   dummy=gl.createTexture(); gl.activeTexture(gl.TEXTURE4); gl.bindTexture(gl.TEXTURE_2D,dummy); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,0]));
   bind=(unit,t)=>{ gl.activeTexture(gl.TEXTURE0+unit); gl.bindTexture(gl.TEXTURE_2D,t); };
   ok=true;
@@ -1186,14 +1194,9 @@ function runPass(p,fbo,scale){
 }
 
 // ---------- world textures (built once) ----------
-function buildWorld(g,day,night){
+function buildWorld(land,day,night){
   if(!ok) return;
-  const TW=4096, TH=2048;
-  const lc=offscreen(TW,TH), x=lc.getContext('2d'); x.fillStyle='#000'; x.fillRect(0,0,TW,TH);
-  const landP=new Path2D(g.land);
-  if('filter' in x){ x.filter='blur(10px)'; x.fillStyle='rgb(0,255,0)'; x.fill(landP); x.filter='none'; }
-  x.globalCompositeOperation='lighter'; x.fillStyle='rgb(255,0,0)'; x.fill(landP);
-  texL=worldTex(0,lc); texC=worldTex(1,night); worldTex(6,day);
+  texL=worldTex(0,land); texC=worldTex(1,night||offscreen(1,1)); worldTex(6,day);
   // bake clouds and ocean texture into a 2048x1024 world map (once)
   { const t=gl.createTexture(); bind(2,t); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,2048,1024,0,gl.RGBA,gl.UNSIGNED_BYTE,null); linTex();
     const f=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,f); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0);
@@ -1231,7 +1234,12 @@ function prefetchDetails(){
 function useDetail(b){
   if(!ok) return;
   loadDet(b).then(t=>{ if(!t||zoomed!==b) return; bind(7,t);
-    gl.uniform4f(U('uDetBox'),...b.box); gl.uniform1f(U('uDetData'),b.data?1:0); detFor=b; });
+    gl.uniform4f(U('uDetBox'),...b.box); gl.uniform1f(U('uDetData'),b.data?1:0); detFor=b; curTex=t; });
+}
+let curTex=null, prevMix=0, prevStart=0;
+function handOver(){ // the close-up on screen stays and fades out during the next flight
+  if(!ok) return; if(detFor && curTex && detMix>0){ bind(3,curTex); gl.uniform4f(U('uDetBoxP'),...detFor.box); gl.uniform1f(U('uDetDataP'),detFor.data?1:0); prevStart=detMix; prevMix=detMix; gl.uniform1f(U('uDetMixP'),prevMix); }
+  detFor=null; curTex=null; detMix=0; gl.uniform1f(U('uDetMix'),0);
 }
 // ---------- size-dependent targets ----------
 let S={};
@@ -1297,6 +1305,7 @@ let lastGL=0;
 function draw(t,force){
   if(!cam) return;
   if(ok){ const want=(zoomed && detFor===zoomed && (!animating || (t-t0)/dur>.38))?1:0; detTarget=want;
+    if(prevMix>0){ const pr=animating?Math.min(1,(t-t0)/dur):1; prevMix=prevStart*(1-Math.min(1,Math.max(0,(pr-.05)/.4))); if(prevMix<.01) prevMix=0; gl.uniform1f(U('uDetMixP'),prevMix); force=true; }
     if(detMix!==detTarget){ detMix+= (detTarget-detMix)*.16; if(Math.abs(detTarget-detMix)<.01) detMix=detTarget; gl.uniform1f(U('uDetMix'),detMix); force=true; } }
   if(animating){
     const x=Math.min(1,(t-t0)/dur), e=ease(x);
@@ -1327,7 +1336,7 @@ function fly(target,nextZoom){
 addEventListener('obzoom',e=>{ const b=BRIEFS.find(x=>x.n===e.detail); if(!b) return; window.scrollTo({top:0,behavior:reduce?'auto':'smooth'}); setTimeout(()=>zoomTo(b), reduce?0:450); });
 function zoomTo(b){
   if(zoomed===b) return;
-  fly(zoomCam(W,H,b),b); zoomed=b; hover=null; tip.style.opacity=0; resetBtn.hidden=true; detFor=null; detMix=0; ok&&gl.uniform1f(U('uDetMix'),0); useDetail(b);
+  handOver(); fly(zoomCam(W,H,b),b); zoomed=b; hover=null; tip.style.opacity=0; resetBtn.hidden=true; useDetail(b);
   hero.classList.add('zoomed');
   fillPanel(b);
   panel.hidden=false; panel.classList.remove('in'); void panel.offsetWidth; panel.classList.add('in');
@@ -1345,7 +1354,7 @@ function fillPanel(b){
 function zoomOut(){
   resetBtn.hidden=true; hero.classList.remove('exploring');
   if(!zoomed) return;
-  fly(baseCam(W,H),null); zoomed=null; hero.classList.remove('zoomed'); panel.hidden=true; syncPills();
+  handOver(); fly(baseCam(W,H),null); zoomed=null; hero.classList.remove('zoomed'); panel.hidden=true; syncPills();
 }
 document.getElementById('hp-back').addEventListener('click',zoomOut);
 addEventListener('keydown',e=>{ if(e.key==='Escape') zoomOut(); });
@@ -1419,8 +1428,10 @@ cv.addEventListener('click',e=>{ if(suppressClick) return; const b=pick(e); if(b
 // ---------- start ----------
 let visible=true;
 if('IntersectionObserver' in window) new IntersectionObserver(es=>{ visible=es[0].isIntersecting; }).observe(hero);
-Promise.all([fetch('world.json').then(r=>r.json()),loadImg('img/earth-day.jpg'),loadImg('img/earth-night.jpg')]).then(([g,day,night])=>{
-  buildWorld(g,day,night);
+Promise.all([loadImg('img/land.png'),loadImg('img/earth-day-s.jpg')]).then(([land,day])=>{
+  buildWorld(land,day,null);
+  // sharp day texture and city lights replace the preview as soon as they arrive
+  if(ok){ loadImg('img/earth-day.jpg').then(im=>{ worldTex(6,im); draw(performance.now(),true); }); loadImg('img/earth-night.jpg').then(im=>{ worldTex(1,im); draw(performance.now(),true); }); }
   resize();
   prefetchDetails();
   glc.classList.add('on'); cv.classList.add('on');

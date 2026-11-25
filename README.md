@@ -27,3 +27,4 @@ Then open http://localhost:8000.
 - Coastlines: Natural Earth (public domain). Clouds on the globe are generated, not weather data.
 - 3D satellites in the satellite section are rendered with three.js r149 (MIT licence, `vendor/three-LICENSE.txt`). Models are simplified illustrations, not engineering models.
 - Real clouds on the satellite-section Earth: extracted from NASA VIIRS/MODIS true-colour mosaics of 21 June 2024 (GIBS); ocean mask derived from Blue Marble.
+- Land mask `img/land.png` is pre-rendered from Natural Earth coastlines; `img/earth-day-s.jpg` is a small preview so the globe appears instantly.
