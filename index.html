@@ -1666,7 +1666,7 @@ const head=sec.querySelector('.fleet-head');
 const SATS={s1:'Sentinel-1',s2:'Sentinel-2',s3:'Sentinel-3',s6:'Sentinel-6'};
 const DESC={en:{s1:'radar · 693 km',s2:'optical 10 m · 786 km',s3:'colour & temperature · 814 km',s6:'sea level · 1,336 km'},fr:{s1:'radar · 693 km',s2:'optique 10 m · 786 km',s3:'couleur et température · 814 km',s6:'niveau de la mer · 1 336 km'},de:{s1:'Radar · 693 km',s2:'Optik 10 m · 786 km',s3:'Farbe & Temperatur · 814 km',s6:'Meeresspiegel · 1.336 km'}};
 // lanes: 0 above the heading, 1-2 in the gap, 3 below the cards; size in px of the model's width
-const FLEET=[{id:'s1',lane:0,dy:-20,v:-9,px:380,x0:.72,yaw:-.35},{id:'s2',lane:0,dy:30,v:7,px:200,x0:.12,yaw:.6},{id:'s3',lane:1,dy:0,v:4,px:640,x0:.42,yaw:.5,roll:-.38,pitch:.35,hero:true},{id:'s6',lane:0,dy:-70,v:6,px:200,x0:.42,yaw:-.6}];
+const FLEET=[{id:'s1',lane:0,dy:-10,v:7,px:360,x0:.36,yaw:-.35},{id:'s2',lane:0,dy:40,v:7,px:190,x0:0,yaw:.6},{id:'s3',lane:1,dy:0,v:4,px:640,x0:.42,yaw:.5,roll:-.38,pitch:.35,hero:true},{id:'s6',lane:0,dy:20,v:7,px:200,x0:.72,yaw:-.6}];
 let W=0,H=0,dpr=1,vis=false,LANES=[0,0,0,0],t0=performance.now();
 const T=window.THREE;
 let R3=null;
@@ -1905,8 +1905,8 @@ function draw(now){
   ctx.font='500 11px "IBM Plex Mono", monospace'; ctx.textBaseline='middle';
   const u=R3?worldPerPx():0;
   for(const f of FLEET){
-    const wpx=f.px*(small?.55:1), span=W+wpx*2;
-    const x=((f.x0*W + wpx + f.v*(reduce?0:t)) % span + span) % span - wpx;
+    const wpx=f.px*(small?.55:1), span=W+400*(small?.55:1)+wpx;
+    const x=f.hero ? W*.5-wpx*.5+(reduce?0:Math.sin(t*.05)*W*.04) : ((f.x0*span + f.v*(reduce?0:t)) % span + span) % span - wpx;
     const y=LANES[f.lane] + (f.dy||0) + Math.sin(t*.25+f.x0*9)*6;
     ctx.strokeStyle='rgba(190,220,240,.18)'; ctx.setLineDash([2,8]); ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); ctx.setLineDash([]);
     if(R3){ const o=R3.sats.find(s=>s.userData===f); o.position.set((x-W/2)*u,(H/2-y)*u,0); o.scale.setScalar(wpx*u);
