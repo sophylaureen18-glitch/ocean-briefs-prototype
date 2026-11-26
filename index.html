@@ -485,16 +485,31 @@ body.brief button.case[aria-pressed="true"]{background:rgba(255,208,138,.07)}
 .ct-band h2{font-family:var(--f-hero-c);font-weight:300;font-size:clamp(1.8rem,3.2vw,2.8rem);color:#f2f7fb;margin:0}
 .ct-band p{font-weight:300;color:rgba(222,234,244,.8);margin:0}
 .ct-brief{padding-block:56px}
-.ct-dlg{width:min(720px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:0;border:1px solid rgba(160,210,235,.22);border-radius:20px;background:#07111f;color:#eaf4f8;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.ct-dlg{width:min(748px,calc(100vw - 8px));max-width:none;max-height:none;padding:14px;border:0;background:transparent;color:#eaf4f8;overflow:visible}
+.ct-card{position:relative;max-height:calc(100dvh - 44px);overflow:auto;border-radius:20px;background:#040a15;box-shadow:0 30px 90px rgba(0,0,0,.7),0 0 0 1px rgba(160,210,235,.12),0 0 40px rgba(56,214,196,.12);isolation:isolate;overscroll-behavior:contain}
+.ct-sky{position:absolute;inset:0;z-index:-1;overflow:hidden;border-radius:inherit;pointer-events:none;
+ background:radial-gradient(70% 55% at 0% 100%,rgba(56,214,196,.11),transparent 70%),radial-gradient(60% 50% at 100% 0%,rgba(70,120,255,.16),transparent 70%),linear-gradient(180deg,#050d1c,#03070f)}
+.ct-sky::before{content:"";position:absolute;inset:0;background-image:var(--ct-stars,none);background-size:384px 384px;opacity:.9;animation:ctTw 7s ease-in-out infinite alternate}
+@keyframes ctTw{from{opacity:.55}to{opacity:1}}
+.ct-planet{--d:460px;position:absolute;width:var(--d);height:var(--d);right:-175px;top:-262px;border-radius:50%;
+ background:#02050b url(img/earth-night.jpg) repeat-x;background-size:calc(var(--d)*4) calc(var(--d)*2);background-position:calc(var(--d)*-1.65) calc(var(--d)*.27);
+ box-shadow:0 0 50px 8px rgba(70,150,255,.28),0 0 120px 30px rgba(56,120,255,.12);animation:ctSpin 46s ease-in-out infinite alternate;filter:brightness(1.8) saturate(1.25)}
+.ct-planet::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 26px 5px rgba(110,190,255,.55),inset 30px -40px 90px rgba(0,0,0,.65);background:radial-gradient(circle at 70% 30%,transparent 55%,rgba(2,5,12,.55) 100%)}
+@keyframes ctSpin{from{background-position:calc(var(--d)*-1.85) calc(var(--d)*.27)}to{background-position:calc(var(--d)*-1.45) calc(var(--d)*.27)}}
+.ct-fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.ct-dlg[open]{animation:ctIn .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes ctIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+@media (max-width:600px){.ct-planet{--d:300px;right:-150px;top:-200px}}
+@media (prefers-reduced-motion:reduce){.ct-planet,.ct-sky::before,.ct-dlg[open]{animation:none}}
 .ct-dlg::backdrop{background:rgba(2,4,9,.72)}
 .ct-dlg form{position:relative;display:grid;gap:14px;padding:clamp(20px,4vw,34px)}
 .ct-dlg .h-kicker{font-family:var(--f-hero);font-weight:300;text-transform:uppercase;letter-spacing:.3em;font-size:.72rem;color:#38d6c4;margin:0}
 .ct-dlg h2{font-family:var(--f-hero-c);font-weight:300;font-size:1.8rem;margin:0}
-.ct-x{position:absolute;top:12px;right:14px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(234,244,248,.25);background:transparent;color:#eaf4f8;font-size:1.3rem;line-height:1;cursor:pointer}
+.ct-x{position:absolute;z-index:2;top:12px;right:14px;backdrop-filter:blur(4px);width:36px;height:36px;border-radius:50%;border:1px solid rgba(234,244,248,.25);background:transparent;color:#eaf4f8;font-size:1.3rem;line-height:1;cursor:pointer}
 .ct-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .ct-grid label{display:grid;gap:6px;font-size:.82rem;color:rgba(200,225,240,.8);min-width:0}
 .ct-wide{grid-column:1/-1}
-.ct-grid input,.ct-grid select,.ct-grid textarea{font:inherit;font-size:1rem;color:#eaf4f8;background:rgba(255,255,255,.04);border:1px solid rgba(160,210,235,.22);border-radius:10px;padding:10px 12px;width:100%}
+.ct-grid input,.ct-grid select,.ct-grid textarea{font:inherit;font-size:1rem;color:#eaf4f8;background:rgba(6,14,28,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(160,210,235,.22);border-radius:10px;padding:10px 12px;width:100%}
 .ct-grid textarea{resize:vertical}
 .ct-grid select option{background:#07111f}
 .ct-grid input:focus,.ct-grid select:focus,.ct-grid textarea:focus{outline:2px solid #38d6c4;outline-offset:1px;border-color:transparent}
@@ -784,6 +799,7 @@ a.card.live:hover{outline:2px solid var(--buoy);outline-offset:2px}
 <section class="ct-band ct-brief"><div class="wrap ct-in"><div class="ct-text"><p class="h-kicker" data-i18n="ct-k2">Question about this brief?</p><h2 data-i18n="ct-h2">Ask the Ocean Briefs team</h2></div><button type="button" class="h-btn pri ct-open" data-topic="04" data-i18n="ct-cta">Write to the team</button></div></section>
 </main>
 <dialog id="ct-dlg" class="ct-dlg" aria-labelledby="ct-title">
+<div class="ct-card"><div class="ct-sky" aria-hidden="true"><div class="ct-planet"></div></div>
 <form id="ct-form" novalidate>
 <button type="button" class="ct-x" id="ct-close" aria-label="Close">×</button>
 <p class="h-kicker" data-i18n="ct-k">Get in touch</p>
@@ -799,7 +815,8 @@ a.card.live:hover{outline:2px solid var(--buoy);outline-offset:2px}
 </div>
 <p class="ct-status" id="ct-status" role="status" aria-live="polite"></p>
 <div class="ct-actions"><button type="submit" class="h-btn pri" id="ct-send" data-i18n="ct-send">Send message</button></div>
-</form>
+</form></div>
+<canvas class="ct-fx" aria-hidden="true"></canvas>
 </dialog>
 <footer><div class="wrap">
 <p>Concept prototype of the Ocean Briefs platform. Not an official EU4OceanObs or Mercator Ocean website, and not endorsed by Mercator Ocean International, EU4OceanObs or the European Commission. Statistics are rounded from public EU sources and shown for illustration; final content is produced and validated under Lot 2.</p>
@@ -1979,12 +1996,78 @@ const MSG={
  fr:{gen:'Question générale', brief:'Ocean Brief', sending:'Envoi…', ok:'Merci, votre message a été envoyé. L’équipe vous répondra par e-mail.', invalid:'Merci d’indiquer un nom, un e-mail valide, un message d’au moins 10 caractères et de cocher la case de consentement.', rate:'Trop de messages en peu de temps. Réessayez dans quelques minutes.', nc:'Merci ! Ceci est un prototype : sur la plateforme finale, votre message est transmis directement à l’équipe éditoriale Ocean Briefs, qui répond par e-mail.', fail:'Le message n’a pas pu être envoyé. Réessayez plus tard.'},
  de:{gen:'Allgemeine Frage', brief:'Ocean Brief', sending:'Wird gesendet …', ok:'Danke, Ihre Nachricht wurde gesendet. Das Team antwortet per E-Mail.', invalid:'Bitte Name, eine gültige E-Mail, eine Nachricht mit mindestens 10 Zeichen angeben und die Einwilligung ankreuzen.', rate:'Zu viele Nachrichten in kurzer Zeit. Bitte in ein paar Minuten erneut versuchen.', nc:'Danke! Dies ist ein Prototyp: Auf der fertigen Plattform geht Ihre Nachricht direkt an die Ocean-Briefs-Redaktion, die per E-Mail antwortet.', fail:'Die Nachricht konnte nicht gesendet werden. Bitte später erneut versuchen.'}};
 const L=()=>MSG[window.__obLang]||MSG.en;
+/* light-particle frame, star field and "send to orbit" beam for the contact dialog */
+const FX=(function(){
+  const cv=dlg.querySelector('.ct-fx'), card=dlg.querySelector('.ct-card'), sky=dlg.querySelector('.ct-sky'), ctx=cv.getContext('2d');
+  const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W=0,H=0,dpr=1,raf=0,t0=0,last=0,energy=0,run=false, I=14,R=20, P=1, dust=[], sparks=[], beams=[];
+  const TEAL='56,214,196', GOLD='255,208,138', ICE='150,205,255', WHITE='255,255,255';
+  // star tile, made once
+  try{ const c=document.createElement('canvas'); c.width=c.height=384; const g=c.getContext('2d'); let s=7;
+    const rnd=()=>((s=(s*16807)%2147483647)/2147483647);
+    for(let i=0;i<70;i++){ const x=rnd()*384,y=rnd()*384,r=rnd()<.08?1.2:rnd()*.7+.25,a=rnd()*.45+.15; g.fillStyle=`rgba(${rnd()<.2?'255,226,190':'215,232,255'},${a})`; g.beginPath(); g.arc(x,y,r,0,7); g.fill(); }
+    sky.style.setProperty('--ct-stars',`url(${c.toDataURL()})`); }catch(e){}
+  // point on the rounded-rect border, s in [0,P)
+  function seg(){ const w=W-2*I, h=H-2*I, a=Math.PI*R/2; return {w,h,a,L:[w-2*R,a,h-2*R,a,w-2*R,a,h-2*R,a]}; }
+  let G=seg();
+  function at(s){ s=((s%P)+P)%P; const {L}=G, x0=I, y0=I, x1=W-I, y1=H-I; let k=0;
+    while(s>L[k]&&k<7){ s-=L[k]; k++; }
+    const arc=(cx,cy,a0)=>{ const a=a0+s/R; return [cx+Math.cos(a)*R, cy+Math.sin(a)*R, Math.cos(a), Math.sin(a)]; };
+    switch(k){ case 0: return [x0+R+s,y0,0,-1]; case 1: return arc(x1-R,y0+R,-Math.PI/2);
+      case 2: return [x1,y0+R+s,1,0]; case 3: return arc(x1-R,y1-R,0);
+      case 4: return [x1-R-s,y1,0,1]; case 5: return arc(x0+R,y1-R,Math.PI/2);
+      case 6: return [x0,y1-R-s,-1,0]; default: return arc(x0+R,y0+R,Math.PI); } }
+  function size(){ const r=dlg.getBoundingClientRect(); W=r.width; H=r.height; dpr=Math.min(window.__lite?1:2,devicePixelRatio||1);
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); G=seg(); P=G.L.reduce((a,b)=>a+b,0);
+    const n=window.__lite?46:Math.round(Math.min(130,P/14));
+    dust=Array.from({length:n},(_,i)=>({s:Math.random()*P, v:(Math.random()-.5)*14, o:(Math.random()**2)*(Math.random()<.7?7:-5), r:Math.random()*1.1+.45, ph:Math.random()*7, c:Math.random()<.22?GOLD:Math.random()<.5?ICE:TEAL})); }
+  const SPR=new Map();
+  function sprite(c){ let k=SPR.get(c); if(k) return k; k=document.createElement('canvas'); k.width=k.height=64; const g=k.getContext('2d'), r=g.createRadialGradient(32,32,0,32,32,32);
+    r.addColorStop(0,`rgba(${c},1)`); r.addColorStop(.12,`rgba(${c},.85)`); r.addColorStop(.3,`rgba(${c},.32)`); r.addColorStop(1,`rgba(${c},0)`); g.fillStyle=r; g.fillRect(0,0,64,64); SPR.set(c,k); return k; }
+  function dot(x,y,r,c,a){ if(a<=.01) return; ctx.globalAlpha=Math.min(1,a); const q=r*4; ctx.drawImage(sprite(c),x-q,y-q,q*2,q*2); }
+  function frame(now){ if(!run) return; raf=requestAnimationFrame(frame);
+    const dt=Math.min(.05,(now-(last||now))/1000); last=now; const t=(now-t0)/1000; energy*=Math.pow(.25,dt);
+    ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H); ctx.globalCompositeOperation='lighter';
+    // faint border line
+    ctx.lineWidth=1; ctx.strokeStyle='rgba(160,210,235,.16)'; ctx.beginPath(); ctx.roundRect?ctx.roundRect(I+.5,I+.5,W-2*I-1,H-2*I-1,R):ctx.rect(I,I,W-2*I,H-2*I); ctx.stroke();
+    const sp=P/(9-4*Math.min(1,energy)), heads=[{s:t*sp,c:TEAL},{s:t*sp+P/2,c:GOLD}];
+    heads.forEach((h,hi)=>{ // trail
+      const N=window.__lite?30:60, len=Math.min(P*.3,380);
+      for(let i=N;i>=0;i--){ const f=i/N, [x,y]=at(h.s-f*len), a=(1-f)**1.6;
+        dot(x,y,(1-f)*3+.7,h.c,a*.75); }
+      const [x,y,nx,ny]=at(h.s); dot(x,y,9,h.c,.55); dot(x,y,4,h.c,1); dot(x,y,1.8,WHITE,1);
+      if(Math.random()<(.5+energy*2)*dt*30) sparks.push({x,y,vx:nx*(8+Math.random()*26)+(Math.random()-.5)*14,vy:ny*(8+Math.random()*26)+(Math.random()-.5)*14,l:1,c:h.c});
+      h.p=at(h.s); });
+    // dust that lights up when a comet passes
+    dust.forEach(d=>{ d.s+=d.v*dt*(1+energy*3); const [x,y,nx,ny]=at(d.s);
+      let near=0; heads.forEach(h=>{ let k=((h.s-d.s)%P+P)%P; near=Math.max(near, k<300? (1-k/300)**2 : 0); });
+      const tw=.35+.25*Math.sin(t*2.3+d.ph); dot(x+nx*d.o,y+ny*d.o,d.r*(1+near*.8),d.c,Math.min(1,tw*.6+near*.9)); });
+    // sparks
+    for(let i=sparks.length-1;i>=0;i--){ const s=sparks[i]; s.l-=dt*1.4; if(s.l<=0){ sparks.splice(i,1); continue; } s.x+=s.vx*dt; s.y+=s.vy*dt; s.vx*=.97; s.vy*=.97; dot(s.x,s.y,1.1,s.c,s.l*.8); }
+    // beams to the planet
+    for(let i=beams.length-1;i>=0;i--){ const b=beams[i]; b.t+=dt/1.3; if(b.t>1.6){ beams.splice(i,1); continue; }
+      for(let k=0;k<60;k++){ const u=b.t-k*.006; if(u<0||u>1) continue; const e=1-(1-u)**3, x=b.x0+(b.x1-b.x0)*e+Math.sin(u*9+b.ph)*b.w*(1-u), y=b.y0+(b.y1-b.y0)*e; dot(x,y,(k?2.6:5)-k*.035,k?b.c:WHITE,(1-k/60)*.8); }
+      if(b.t>=1&&!b.hit){ b.hit=1; for(let k=0;k<26;k++){ const a=Math.random()*7, v=20+Math.random()*60; sparks.push({x:b.x1,y:b.y1,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1,c:b.c}); } } }
+    ctx.globalCompositeOperation='source-over'; ctx.globalAlpha=1;
+  }
+  function start(){ size(); if(RM){ run=true; frame(performance.now()); run=false; return; } if(run) return; run=true; t0=performance.now(); last=0; raf=requestAnimationFrame(frame); }
+  function stop(){ run=false; cancelAnimationFrame(raf); }
+  addEventListener('resize',()=>{ if(dlg.open) size(); });
+  dlg.addEventListener('input',()=>{ energy=Math.min(1.4,energy+.12); });
+  function beam(){ if(RM) return; const r=dlg.getBoundingClientRect(), b=send.getBoundingClientRect(), pl=dlg.querySelector('.ct-planet').getBoundingClientRect();
+    const x1=Math.min(r.width-I-30, pl.left-r.left+pl.width*.32), y1=Math.max(I+24, pl.top-r.top+pl.height*.72);
+    for(let k=0;k<5;k++) beams.push({x0:b.left-r.left+b.width*(.3+k*.1), y0:b.top-r.top+4, x1, y1, t:-k*.12, ph:k*1.7, w:10+k*4, c:k%2?GOLD:TEAL});
+    energy=1.4; }
+  return {start,stop,beam};
+})();
+
 function fillTopics(sel){ const names=(window.OB_BRIEFS||{})[window.__obLang], en=['Sargassum','Sustainable fisheries','The changing Arctic','Marine litter','Coastal hazards','Marine heatwaves','Water quality'];
   const cur=sel||topic.value; topic.innerHTML=`<option value="general">${L().gen}</option>`+en.map((t,i)=>`<option value="${String(i+1).padStart(2,'0')}">${L().brief} ${String(i+1).padStart(2,'0')} · ${names?names[i][0]:t}</option>`).join(''); if(cur) topic.value=cur; }
-function open(t){ fillTopics(t||'general'); st.textContent=''; st.className='ct-status'; if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open',''); setTimeout(()=>document.getElementById('ct-name').focus(),30); }
+function open(t){ fillTopics(t||'general'); st.textContent=''; st.className='ct-status'; if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open',''); requestAnimationFrame(()=>FX.start()); setTimeout(()=>document.getElementById('ct-name').focus(),30); }
 document.querySelectorAll('.ct-open').forEach(b=>b.addEventListener('click',()=>open(b.dataset.topic)));
 document.getElementById('ct-close').addEventListener('click',()=>dlg.close());
 dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.close(); });
+dlg.addEventListener('close',()=>FX.stop());
 addEventListener('oblang',()=>fillTopics());
 form.addEventListener('submit',async e=>{
   e.preventDefault();
@@ -1995,9 +2078,9 @@ form.addEventListener('submit',async e=>{
   try{
     const r=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
     const j=await r.json().catch(()=>({}));
-    if(r.ok&&j.ok){ st.className='ct-status ok'; st.textContent=L().ok; form.reset(); fillTopics('general'); }
-    else{ st.className='ct-status err'; st.textContent= j.error==='invalid'?L().invalid : j.error==='rate'?L().rate : j.error==='not_configured'?L().nc : L().fail; if(j.error==='not_configured'){ st.className='ct-status ok'; form.reset(); fillTopics('general'); } }
-  }catch(err){ st.className='ct-status ok'; st.textContent=L().nc; form.reset(); fillTopics('general'); }
+    if(r.ok&&j.ok){ FX.beam(); st.className='ct-status ok'; st.textContent=L().ok; form.reset(); fillTopics('general'); }
+    else{ st.className='ct-status err'; st.textContent= j.error==='invalid'?L().invalid : j.error==='rate'?L().rate : j.error==='not_configured'?L().nc : L().fail; if(j.error==='not_configured'){ FX.beam(); st.className='ct-status ok'; form.reset(); fillTopics('general'); } }
+  }catch(err){ FX.beam(); st.className='ct-status ok'; st.textContent=L().nc; form.reset(); fillTopics('general'); }
   send.disabled=false;
 });
 })();
